@@ -1,0 +1,371 @@
+:root {
+    /* Primary Surfaces */
+    --volvo-onyx: #1A1A1A;
+    --volvo-vapour: #D8D8D6;
+    --volvo-dawn: #F0EEE9;
+    /* Cream/Beige */
+
+    /* Accents */
+    --volvo-blue: #4A6B8A;
+    --volvo-sand: #CBBFA6;
+    --volvo-white: #F9F9F9;
+    --volvo-text: #1A1A1A;
+    /* Dark text for light mode */
+    --volvo-icon: #1A1A1A;
+
+    /* Gradients */
+    --bg-gradient: linear-gradient(135deg, #F0EEE9 0%, #F9F9F9 100%);
+    /* Light Dawn Gradient */
+    --gradient-northern: radial-gradient(circle, rgba(230, 230, 250, 0.8) 0%, rgba(216, 191, 216, 0.6) 100%);
+    /* Soft Purple Aura */
+
+    /* UI Elements */
+    --glass-bg: rgba(26, 26, 26, 0.05);
+    --glass-border: rgba(26, 26, 26, 0.1);
+    --blur-amount: 16px;
+
+    /* Type */
+    --font-display: 'Manrope', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+    background: var(--volvo-dawn);
+    color: var(--volvo-text);
+    height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    max-width: 480px;
+    /* Mobile-like width as per mockup */
+    margin: 0 auto;
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    /* Optional border for desktop view */
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+.status-indicator,
+.caption-text,
+.brand-logo,
+.input-placeholder {
+    font-family: var(--font-display);
+}
+
+/* Header */
+.top-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    position: relative;
+    z-index: 50;
+    /* Ensure on top of aurora */
+}
+
+.brand-logo {
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    font-size: 1rem;
+    color: var(--volvo-text);
+    text-transform: uppercase;
+}
+
+.brand-logo-img {
+    height: 16px;
+    /* Adjust based on SVG aspect ratio */
+    width: auto;
+    display: block;
+}
+
+/* Settings button styles removed */
+
+/* Visualizer */
+.voice-interface {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 2rem;
+}
+
+.visualizer-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+/* The Core Orb (Purple) */
+.visualizer-core {
+    width: 100px;
+    height: 100px;
+    background: #E6E6FA;
+    /* Lavender */
+    border-radius: 50%;
+    opacity: 0.5;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    box-shadow: 0 0 40px rgba(216, 191, 216, 0.4);
+}
+
+/* Aura Glow */
+.aurora-glow {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: var(--gradient-northern);
+    border-radius: 50%;
+    filter: blur(50px);
+    opacity: 0.6;
+    transition: all 1s ease;
+    z-index: 1;
+}
+
+/* Rings - White/Subtle */
+.visualizer-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    /* Stronger white in light mode */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.ring-1 {
+    width: 140px;
+    height: 140px;
+}
+
+.ring-2 {
+    width: 200px;
+    height: 200px;
+}
+
+/* STATE: IDLE (Breathing) */
+.visualizer-core {
+    animation: breathe-idle 5s ease-in-out infinite;
+}
+
+@keyframes breathe-idle {
+
+    0%,
+    100% {
+        transform: scale(0.98);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.02);
+        opacity: 0.6;
+    }
+}
+
+/* STATE: LISTENING (Pulse) */
+.is-listening .visualizer-core {
+    background: #D8BFD8;
+    /* Thistle */
+    opacity: 0.8;
+    transform: scale(1.1);
+    animation: none;
+    box-shadow: 0 0 50px rgba(186, 85, 211, 0.3);
+}
+
+.is-listening .visualizer-ring {
+    animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    border-color: rgba(147, 112, 219, 0.3);
+    /* Purple rings */
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.4);
+        opacity: 0;
+    }
+}
+
+/* STATE: SPEAKING (Modulate) */
+.is-speaking .visualizer-core {
+    background: #9370DB;
+    /* Medium Purple */
+    animation: voice-modulate 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes voice-modulate {
+    from {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    to {
+        transform: scale(1.15);
+        opacity: 0.9;
+    }
+}
+
+/* Captions */
+.captions-area {
+    min-height: 80px;
+    text-align: center;
+    max-width: 90%;
+    z-index: 20;
+    margin-top: 2rem;
+}
+
+.caption-text {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--volvo-onyx);
+    transition: opacity 0.3s ease;
+}
+
+/* Footer / Capsule */
+.input-capsule-container {
+    padding: 2rem;
+    padding-bottom: 3rem;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 50;
+    /* Ensure on top of aurora */
+}
+
+.input-capsule {
+    background: rgba(165, 160, 160, 0.15);
+    /* Darker overlay */
+    backdrop-filter: blur(20px);
+    border-radius: 9999px;
+    padding: 0.5rem 0.5rem 0.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.capsule-text-input {
+    background: transparent;
+    border: none;
+    color: var(--volvo-onyx);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1rem;
+    width: 100%;
+    outline: none;
+    padding: 0;
+}
+
+.capsule-text-input::placeholder {
+    color: rgba(26, 26, 26, 0.4);
+    opacity: 1;
+    /* Firefox fix */
+}
+
+.mic-btn-capsule {
+    background: rgba(255, 255, 255, 0.4);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--volvo-onyx);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mic-btn-capsule:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.05);
+}
+
+.mic-btn-capsule.active {
+    background: var(--volvo-onyx);
+    color: var(--volvo-white);
+    animation: pulse-mic 2s infinite;
+}
+
+@keyframes pulse-mic {
+    0% {
+        box-shadow: 0 0 0 0 rgba(26, 26, 26, 0.3);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(26, 26, 26, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(26, 26, 26, 0);
+    }
+}
+
+/* Settings Overlay (Light Mode) */
+.settings-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(240, 238, 233, 0.95);
+    /* Dawn with opacity */
+    backdrop-filter: blur(20px);
+    z-index: 100;
+    padding: 2rem;
+    flex-direction: column;
+    display: flex;
+    /* hidden class handles display property */
+}
+
+.settings-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.close-btn {
+    color: var(--volvo-onyx);
+}
+
+.setting-label {
+    color: var(--volvo-onyx);
+}
+
+.setting-description {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.setting-description em {
+    color: var(--volvo-blue);
+}
+
+/* Helpers */
+.hidden {
+    display: none !important;
+}

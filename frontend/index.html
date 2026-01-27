@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volvo Assistant</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Manrope:wght@300;500&display=swap"
+    rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+  <script src="/static/js/app.js" type="module"></script>
+</head>
+
+<body class="theme-volvo-dark">
+  <div class="app-container">
+    <!-- Main Visualizer Area -->
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <img src="/static/img/volvo-spread-wordmark.svg" alt="VOLVO" class="brand-logo-img">
+    </header>
+
+    <main class="voice-interface">
+      <div class="visualizer-container">
+        <div class="aurora-glow"></div>
+        <div class="visualizer-core" id="visualizerCore"></div>
+        <div class="visualizer-ring ring-1"></div>
+        <div class="visualizer-ring ring-2"></div>
+      </div>
+
+      <div class="captions-area" id="captionsArea">
+        <!-- Caption text will appear here -->
+      </div>
+    </main>
+
+    <!-- Controls Capsule -->
+    <footer class="input-capsule-container">
+      <div class="input-capsule">
+        <form id="inlineMessageForm" style="flex: 1; display: flex;">
+          <input type="text" id="inlineMessageInput" class="capsule-text-input" placeholder="Ask Volvo Vän"
+            autocomplete="off">
+        </form>
+        <button class="mic-btn-capsule" id="micButton" title="Start/Stop">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+      <!-- Hidden keyboard button for functionality preservation if needed, or remove if strictly following mockup -->
+      <button class="control-btn secondary hidden" id="keyboardButton" title="Type"></button>
+    </footer>
+
+</body>
+
+</html>
