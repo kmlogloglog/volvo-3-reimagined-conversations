@@ -4,10 +4,10 @@ import asyncio
 import base64
 import json
 import logging
+import os
 import warnings
 from pathlib import Path
-
-import os
+from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -16,18 +16,18 @@ from fastapi.staticfiles import StaticFiles
 from google.adk.agents.live_request_queue import LiveRequestQueue
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.runners import Runner
+from google.adk.sessions.in_memory_session_service import InMemorySessionService
 from google.genai import types
 
-from .file_session_service import FileSessionService
-from .firestore_session_service import FirestoreSessionService
-from .simple_memory_service import SimpleMemoryService
+from .volvo_agent.services.firestore_session_service import FirestoreSessionService
+from .volvo_agent.services.memory_service import MemoryService
 
 # Load environment variables from .env file BEFORE importing agent
 load_dotenv(Path(__file__).parent / ".env")
 
 # Import agent after loading environment variables
 # pylint: disable=wrong-import-position
-from .volvo_agent.volvo_agent import root_agent as agent
+from .volvo_agent.volvo_agent import root_agent as agent  # noqa: E402
 
 # Configure logging
 logging.basicConfig(
@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 # Application name constant
-APP_NAME = "volvo-agent"
+APP_NAME = "volvo-vaen"
 
 # ========================================
 # Phase 1: Application Initialization (once at startup)
@@ -60,12 +60,12 @@ if use_firestore:
     if not google_cloud_project:
         logger.warning("USE_FIRESTORE is True but GOOGLE_CLOUD_PROJECT is not set.")
     logger.info("Using FirestoreSessionService")
-    session_service = FirestoreSessionService(project_id=google_cloud_project)
+    session_service: Any = FirestoreSessionService(project_id=google_cloud_project)
 else:
-    logger.info("Using FileSessionService")
-    session_service = FileSessionService()
+    logger.info("Using InMemorySessionService")
+    session_service = InMemorySessionService()
 
-memory_service = SimpleMemoryService(session_service=session_service)
+memory_service = MemoryService(session_service=session_service)
 
 # Define your runner
 runner = Runner(

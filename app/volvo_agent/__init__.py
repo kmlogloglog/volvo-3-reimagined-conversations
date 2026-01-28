@@ -1,2 +1,2 @@
 # Needed for ADK Web
-from .volvo_agent import root_agent
+from .volvo_agent import root_agent as root_agent

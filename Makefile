@@ -3,14 +3,14 @@
 # ==============================================================================
 
 # GCP Project Configuration
-PROJECT_ID       := patoz-sandbox#vml-map-xd-volvo
-PROJECT_NUMBER   := 948309917453#719852784419
+PROJECT_ID       := vml-map-xd-volvo
+PROJECT_NUMBER   := 719852784419
 PROJECT_LOCATION := europe-west4
-SERVICE_ACCOUNT  := cymbal-direct-ai-sa@patoz-sandbox.iam.gserviceaccount.com
-DOMAIN           := google.com#vml.com
+SERVICE_ACCOUNT  := volvo-vaen-sa@$(PROJECT_ID).iam.gserviceaccount.com
+DOMAIN           := vml.com
 
 # Service Names
-AGENT_SERVICE_NAME := volvo-agent
+AGENT_SERVICE_NAME := volvo-vaen
 
 # Service URLs
 SERVICE_URL  := https://$(AGENT_SERVICE_NAME)-$(PROJECT_NUMBER).$(PROJECT_LOCATION).run.app
@@ -44,9 +44,31 @@ auth: ## Authenticate with Google Cloud
 	gcloud auth application-default login
 	gcloud config set project $(PROJECT_ID)
 	gcloud auth application-default set-quota-project $(PROJECT_ID)
-
+setup-apis: ## Enable required Google Cloud APIs
+	gcloud services enable aiplatform.googleapis.com firestore.googleapis.com run.googleapis.com cloudbuild.googleapis.com logging.googleapis.com iam.googleapis.com iap.googleapis.com --project $(PROJECT_ID)
 setup-firestore: ## Create the default Firestore database (if it doesn't exist)
 	gcloud firestore databases create --location=$(PROJECT_LOCATION) --database="(default)" --project=$(PROJECT_ID) || echo "Database might already exist or error occurred."
+
+setup-sa: ## Create or Update Service Account and grant necessary roles
+	@echo "Checking service account $(SERVICE_ACCOUNT)..."
+	@if gcloud iam service-accounts describe $(SERVICE_ACCOUNT) --project $(PROJECT_ID) >/dev/null 2>&1; then \
+		echo "Service account exists. Updating..."; \
+		gcloud iam service-accounts update $(SERVICE_ACCOUNT) --display-name "Volvo Vän Service Account" --project $(PROJECT_ID) --quiet >/dev/null; \
+	else \
+		echo "Creating service account..."; \
+		gcloud iam service-accounts create $(shell echo $(SERVICE_ACCOUNT) | cut -d@ -f1) \
+			--display-name "Volvo Vän Service Account" \
+			--project $(PROJECT_ID) --quiet >/dev/null; \
+	fi
+	@echo "Granting roles..."
+	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/aiplatform.user" --condition=None --quiet >/dev/null
+	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/datastore.user" --condition=None --quiet >/dev/null
+	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/iam.serviceAccountTokenCreator" --condition=None --quiet >/dev/null
+	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/logging.logWriter" --condition=None --quiet >/dev/null
+	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/run.invoker" --condition=None --quiet >/dev/null
+	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/run.serviceAgent" --condition=None --quiet >/dev/null
+	@echo "Done."
+
 
 lint: ## Run linting and type checking
 	uv sync --dev --extra lint
@@ -67,19 +89,11 @@ kill: ## Kill local development processes (ports 8000-8004)
 ## ----------------------------------------------------------------------
 
 run-agent: # Run the agent with using the main (same as in Cloud Run) - Runs on port 8001
-#	uv run -m app.main
-	uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8001
-
-run-debug: ## Run the agent and show debug link
 	@echo "----------------------------------------------------------"
 	@echo "Debug UI available at: http://127.0.0.1:8001/debug"
 	@echo "Voice UI available at: http://127.0.0.1:8001/"
 	@echo "----------------------------------------------------------"
-	@$(MAKE) run-agent
-
-run-adk: # Run the ADK Web UI to interact with the agent - Runs on port 8000
-	uv run adk web agents --port 8000
-
+	uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8001
 ## ----------------------------------------------------------------------
 ## Deployment
 ## ----------------------------------------------------------------------
@@ -98,7 +112,8 @@ deploy-agent: ## Deploy Volvo Agent to Cloud Run
 	--set-env-vars GOOGLE_CLOUD_LOCATION=$(PROJECT_LOCATION) \
 	--set-env-vars SERVICE_ACCOUNT=$(SERVICE_ACCOUNT) \
 	--set-env-vars HOST_URL=${SERVICE_URL} \
-	--min-instances 1
+	--set-env-vars USE_FIRESTORE=True \
+	--min 1
 	@echo "Adding IAP binding..."
 	gcloud beta iap web add-iam-policy-binding \
 	--member domain:$(DOMAIN) \

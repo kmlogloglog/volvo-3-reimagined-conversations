@@ -41,6 +41,7 @@ function generateNewSession() {
 }
 
 userIdInput.addEventListener("change", updateConnectionConfig);
+sessionIdInput.addEventListener("change", updateConnectionConfig);
 newSessionBtn.addEventListener("click", generateNewSession);
 
 // Get checkbox elements for RunConfig options

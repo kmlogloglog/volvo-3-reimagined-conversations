@@ -210,3 +210,4 @@ __marimo__/
 test_agent.sh
 test_mcp.sh
 nextjs/
+*.excalidraw

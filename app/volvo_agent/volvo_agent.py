@@ -6,7 +6,8 @@ from google.adk.tools import AgentTool
 from google.adk.tools.google_search_tool import GoogleSearchTool
 from google.adk.tools.load_memory_tool import load_memory_tool
 
-from .prompts import PROMPT
+from .config.prompts import PROMPT
+from .tools.save_memory_tool import save_memory_tool
 
 load_dotenv()
 
@@ -25,7 +26,7 @@ volvo_agent = LlmAgent(
     name="volvo_agent",
     instruction=PROMPT,
     # "You are a Volvo agent that is able to answer questions about Volvo cars and services.",
-    tools=[AgentTool(google_search_agent), load_memory_tool],
+    tools=[AgentTool(google_search_agent), load_memory_tool, save_memory_tool],
 )
 
 root_agent = volvo_agent
