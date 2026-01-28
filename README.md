@@ -93,13 +93,14 @@ Start the local development server with hot-reloading:
 make run-agent
 ```
 
-By default, the agent uses **In-Memory persistence** (`USE_FIRESTORE=False`). Sessions and memories are lost when the server restarts.
+By default, the agent uses **In-Memory persistence** (`USE_FIRESTORE=False` in `.env`). Sessions and memories are lost when the server restarts.
 
 To use Firestore locally (requires `make auth` first):
 1. Ensure your Google Cloud project has Firestore enabled.
-2. Run with `USE_FIRESTORE=True`:
+2. Set `USE_FIRESTORE=True` in your `app/.env` file.
+3. Run the agent:
    ```bash
-   USE_FIRESTORE=True make run-agent
+   make run-agent
    ```
 
 -   **Voice UI**: http://127.0.0.1:8001/
