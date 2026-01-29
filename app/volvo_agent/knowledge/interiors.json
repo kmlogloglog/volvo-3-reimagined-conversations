@@ -1,0 +1,40 @@
+[
+    {
+        "interior": "Cardamom Quilted",
+        "description": "Considered light colored, creamy, elegant and airy. It features quilted Nordico for a textured, elegant look. It's a leather-free option with a blend of charcoal and warm cardamom colors, made from recycled and bio-based materials, and is easy to clean.",
+        "attributes": [
+            "cardamom nordico",
+            "cardamon light",
+            "light interior",
+            "creamy air interior",
+            "minimalist",
+            "scandinavian quilted"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-interiors/Cardamom-Nordico-1.png"
+    },
+    {
+        "interior": "Charcoal Nordico",
+        "description": "Considered dark, sleek, black, diplomat and business. It's a sophisticated and modern interior using Nordico, a leather-free material made from recycled and bio-based sources like forest materials and cork. It has an elegant look and is easy to clean.",
+        "attributes": [
+            "charcoal nordico",
+            "dark interior",
+            "sleek black",
+            "business class",
+            "modern interior"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-interiors/Charcoal-Nordico-1.png"
+    },
+    {
+        "interior": "Dawn Quilted Nordico",
+        "description": "Considered bright, clean, minimalistic, airy, pure. Made from recycled and bio-based sources and easy to clean. It comes with back-lit Light White Ash wood decor and dual-tone tailored steering wheel for an airy, elegant ambience.",
+        "attributes": [
+            "dawn quilted",
+            "bright",
+            "airy",
+            "pristine",
+            "minimalist",
+            "calming"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-interiors/Dawn-Nordico-1.png"
+    }
+]
