@@ -30,14 +30,14 @@
         //             city: 'Jägersro, Malmö',
         //         },
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'booking',
         // },
         // {
         //     content: {
         //         text: 'Refined materials rather than outright sportiness.',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         // {
@@ -45,28 +45,28 @@
         // eslint-disable-next-line
         //         text: 'The Volvo XC60 has been a cornerstone of Volvo\'s SUV lineup since its introduction in 2008, establishing itself as one of the most compelling options in the fiercely competitive compact luxury SUV segment. The current second-generation model arrived in 2018 and has been continuously refined over the years. For 2026, Volvo has given the XC60 a notable refresh that includes exterior styling updates, a significantly improved infotainment system, and new color options—all while retaining the understated Scandinavian elegance and safety-focused engineering that have become hallmarks of the Volvo brand.An elder statesman of the compact luxury SUV segment, the 2026 Volvo XC60 leans heavily on its Scandinavian heritage to present an understated yet dignified option in this crowded and highly competitive segment. Car and Driver The XC60 competes directly with vehicles like the BMW X3, Audi Q5, Mercedes-Benz GLC, Acura RDX, Genesis GV70, Lexus NX, and Porsche Macan, yet it distinguishes itself through its emphasis on comfort, safety, and refined materials rather than outright sportiness.',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         // {
         //     content: {
         //         text: 'Refined materials rather than outright sportiness.',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         // {
         //     content: {
         //         text: 'The Volvo XC90 is a luxury SUV that offers a blend of performance, safety, and Scandinavian design',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         // {
         //     content: {
         //         text: 'The Volvo XC90 is a luxury SUV that offers a blend of performance, safety, and Scandinavian design',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         // {
@@ -74,7 +74,7 @@
         // eslint-disable-next-line
         //         text: '<p>The Volvo XC90</p><img src="https://placehold.net/7-600x800.png" /><p>A luxury SUV that offers a blend of performance, safety, and Scandinavian design</p>',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         // {
@@ -82,21 +82,21 @@
         // eslint-disable-next-line
         //         text: 'The Volvo XC60 has been a cornerstone of Volvo\'s SUV lineup since its introduction in 2008, establishing itself as one of the most compelling options in the fiercely competitive compact luxury SUV segment. The current second-generation model arrived in 2018 and has been continuously refined over the years. For 2026, Volvo has given the XC60 a notable refresh that includes exterior styling updates, a significantly improved infotainment system, and new color options—all while retaining the understated Scandinavian elegance and safety-focused engineering that have become hallmarks of the Volvo brand.An elder statesman of the compact luxury SUV segment, the 2026 Volvo XC60 leans heavily on its Scandinavian heritage to present an understated yet dignified option in this crowded and highly competitive segment. Car and Driver The XC60 competes directly with vehicles like the BMW X3, Audi Q5, Mercedes-Benz GLC, Acura RDX, Genesis GV70, Lexus NX, and Porsche Macan, yet it distinguishes itself through its emphasis on comfort, safety, and refined materials rather than outright sportiness.',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         // {
         //     content: {
         //         text: 'Refined materials rather than outright sportiness.',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         // {
         //     content: {
         //         text: 'The Volvo XC90 is a luxury SUV that offers a blend of performance, safety, and Scandinavian design',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         // {
@@ -104,14 +104,14 @@
         // eslint-disable-next-line
         //         text: 'The Volvo XC60 has been a cornerstone of Volvo\'s SUV lineup since its introduction in 2008, establishing itself as one of the most compelling options in the fiercely competitive compact luxury SUV segment. The current second-generation model arrived in 2018 and has been continuously refined over the years. For 2026, Volvo has given the XC60 a notable refresh that includes exterior styling updates, a significantly improved infotainment system, and new color options—all while retaining the understated Scandinavian elegance and safety-focused engineering that have become hallmarks of the Volvo brand.An elder statesman of the compact luxury SUV segment, the 2026 Volvo XC60 leans heavily on its Scandinavian heritage to present an understated yet dignified option in this crowded and highly competitive segment. Car and Driver The XC60 competes directly with vehicles like the BMW X3, Audi Q5, Mercedes-Benz GLC, Acura RDX, Genesis GV70, Lexus NX, and Porsche Macan, yet it distinguishes itself through its emphasis on comfort, safety, and refined materials rather than outright sportiness.',
         //     },
-        //     sender: 'gemeni',
+        //     sender: 'gemini',
         //     type: 'text',
         // },
         {
             content: {
                 text: 'The Volvo XC90 is a luxury SUV that offers a blend of performance, safety, and Scandinavian design',
             },
-            sender: 'gemeni',
+            sender: 'gemini',
             type: 'text',
         },
     ]);

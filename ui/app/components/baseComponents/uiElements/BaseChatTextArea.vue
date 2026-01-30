@@ -29,7 +29,7 @@
     });
 
     const isListening = ref(false);
-    const placeholderTxt = computed(() => isListening.value ? 'Recording' : 'Ask Gemeni');
+    const placeholderTxt = computed(() => isListening.value ? 'Recording' : 'Ask Gemini');
 
     function onSubmit() {
         if(vModel.value === '') {
