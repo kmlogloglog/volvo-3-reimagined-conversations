@@ -1,0 +1,143 @@
+:root {
+    --border-radius: 1.25rem;
+    --max-width: 768px
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Display
+   ---------------------------------------- */
+.hidden {
+    display: none;
+}
+
+.block {
+    display: block;
+}
+
+/* Flexbox
+   ---------------------------------------- */
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Text Alignment
+   ---------------------------------------- */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Button Reset
+   ---------------------------------------- */
+.button-reset {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: unset;
+    outline: none;
+    line-height: normal;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sizing
+   ---------------------------------------- */
+.w-full {
+    width: 100%;
+}
+
+.h-full {
+    height: 100%;
+}
+
+/* Spacing
+   ---------------------------------------- */
+@for $i from 1 through 20 {
+    $value: $i * 5px;
+
+    // Margin
+    .m-#{$i * 5} {
+        margin: $value;
+    }
+
+    .mt-#{$i * 5} {
+        margin-top: $value;
+    }
+
+    .mr-#{$i * 5} {
+        margin-right: $value;
+    }
+
+    .mb-#{$i * 5} {
+        margin-bottom: $value;
+    }
+
+    .ml-#{$i * 5} {
+        margin-left: $value;
+    }
+
+    .mx-#{$i * 5} {
+        margin-left: $value;
+        margin-right: $value;
+    }
+
+    .my-#{$i * 5} {
+        margin-top: $value;
+        margin-bottom: $value;
+    }
+
+    // Padding
+    .p-#{$i * 5} {
+        padding: $value;
+    }
+
+    .pt-#{$i * 5} {
+        padding-top: $value;
+    }
+
+    .pr-#{$i * 5} {
+        padding-right: $value;
+    }
+
+    .pb-#{$i * 5} {
+        padding-bottom: $value;
+    }
+
+    .pl-#{$i * 5} {
+        padding-left: $value;
+    }
+
+    .px-#{$i * 5} {
+        padding-left: $value;
+        padding-right: $value;
+    }
+
+    .py-#{$i * 5} {
+        padding-top: $value;
+        padding-bottom: $value;
+    }
+}

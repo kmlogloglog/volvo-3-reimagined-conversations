@@ -1,0 +1,38 @@
+{
+    "name": "volvo-vaen",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview --port 8080",
+        "preview:default": "nuxt preview",
+        "start": "PORT=8080 node .output/server/index.mjs",
+        "postinstall": "nuxt prepare",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
+    },
+    "dependencies": {
+        "@nuxtjs/color-mode": "^4.0.0",
+        "@vueuse/core": "^14.1.0",
+        "axios": "^1.13.2",
+        "eslint-plugin-vue": "10.4.0",
+        "isomorphic-dompurify": "^2.35.0",
+        "nuxt": "^4.2.2",
+        "pinia": "^3.0.4",
+        "vue": "^3.5.26",
+        "vue-router": "^4.6.4"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.2",
+        "@nuxt/eslint": "^1.12.1",
+        "@stylistic/eslint-plugin": "^5.7.0",
+        "@vitejs/plugin-vue": "^6.0.3",
+        "eslint": "^9.39.2",
+        "eslint-plugin-stylistic": "^0.0.0-0",
+        "eslint-plugin-vue": "~10.6.2",
+        "globals": "^17.0.0",
+        "sass": "1.90.0"
+    }
+}
