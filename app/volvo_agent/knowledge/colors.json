@@ -1,0 +1,120 @@
+[
+    {
+        "model": "EX90",
+        "color": "Platinum Grey",
+        "description": "Elegant yet still commanding.",
+        "attributes": [
+            "platinum grey",
+            "elegant grey",
+            "toned down",
+            "metallic",
+            "classic grey",
+            "cement", 
+            "concrete",
+            "polished"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-colors/Platinum-grey.png"
+    },
+    {
+        "model": "EX90",
+        "color": "Sand Dune",
+        "description": "Earthy and elegant.",
+        "attributes": [
+            "earthy", 
+            "warm grey", 
+            "sandy", 
+            "natural tone", 
+            "desert", 
+            "soft sand",
+            "sand dune"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-colors/Sand-dune.png"
+    },
+    {
+        "model": "EX90",
+        "color": "Denim Blue",
+        "description": "A classic, mid-tone blue, reminiscent of your favorite jeans.",
+        "attributes": [
+            "classic blue", 
+            "jeans color", 
+            "everyday blue", 
+            "bold", 
+            "brave", 
+            "eye-catching"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-colors/Denim-blue.png"
+    },
+    {
+        "model": "EX90",
+        "color": "Onyx Black",
+        "description": "A deep, sleek, and commanding black.",
+        "attributes": [
+            "sleek black", 
+            "diplomatic", 
+            "commanding color", 
+            "premium black", 
+            "diplomat's car", 
+            "understated", 
+            "luxury", 
+            "formal color"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-colors/Onyx-black.png"
+    },
+    {
+        "model": "EX90",
+        "color": "Vapour Grey",
+        "description": "This is the most popular choice, offering a modern, refined, and soft grey.",
+        "attributes": [
+            "most popular color", 
+            "popular choice", 
+            "modern grey", 
+            "stylish grey", 
+            "refined look", 
+            "soft grey", 
+            "neutral yet elegant"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-colors/Vapour-grey.png"
+    },
+    {
+        "model": "EX90",
+        "color": "Silver Dawn",
+        "description": "A bright, luminous silver that's shiny and reflects light beautifully, giving it a fresh and airy feel.",
+        "attributes": [
+            "bright silver", 
+            "shiny color", 
+            "luminous silver", 
+            "light silver", 
+            "reflective", 
+            "fresh", 
+            "airy"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-colors/Aurora-silver.png"
+    },
+    {
+        "model": "EX90",
+        "color": "Crystal White",
+        "description": "A pure, clean, and timeless white that emphasizes the car's design lines with a crisp, clear finish.",
+        "attributes": [
+            "pure white", 
+            "clean color", 
+            "timeless white", 
+            "crisp white", 
+            "classic white", 
+            "pristine"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-colors/Chrystal-white.png"
+    },
+    {
+        "model": "EX90",
+        "color": "Mulberry Red",
+        "description": "This is a rich, deep red, reminiscent of dark berries or fine wine. It's a strong, noticeable color. A bold choice.",
+        "attributes": [
+            "rich red", 
+            "dark red", 
+            "bold color", 
+            "vibrant color",
+            "eye-catching"
+        ],
+        "image_url": "https://storage.googleapis.com/vml-map-xd-volvo-pilot/vml-map-xd-volvo-pilot/ex90-colors/Mulberry-red.png"
+    }
+]
