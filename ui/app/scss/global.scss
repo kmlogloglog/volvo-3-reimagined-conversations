@@ -1,0 +1,59 @@
+@use './reset.scss';
+@use './colors.scss';
+@use './theme.scss';
+@use './helpers.scss';
+@use './typography.scss';
+@use './icons.scss';
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: transparent;
+    overflow: hidden;
+    overscroll-behavior: none;
+    background-color: var(--color-background-solid-bottom);
+}
+
+#__nuxt {
+    min-height: 100%;
+    overflow: hidden;
+}
+
+/* ========== iOS-style Scrollbar ========== */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(128, 128, 128, 0.4) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.4);
+    border-radius: 10px;
+
+    &:hover {
+        background: rgba(128, 128, 128, 0.6);
+    }
+}
