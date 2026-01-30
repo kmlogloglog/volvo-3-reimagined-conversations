@@ -211,6 +211,3 @@ test_agent.sh
 test_mcp.sh
 nextjs/
 *.excalidraw
-
-# Node dependencies
-node_modules
