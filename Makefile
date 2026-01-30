@@ -20,8 +20,8 @@ SERVICE_URL  := https://$(AGENT_SERVICE_NAME)-$(PROJECT_NUMBER).$(PROJECT_LOCATI
 # ==============================================================================
 
 .PHONY: all help install auth lint test clean kill \
-        run-adk run-mcp run-car-info run-test-drive run-orchestrator \
-        deploy-mcp deploy-car-info deploy-test-drive deploy-orchestrator
+        run-agent build-ui setup-apis setup-firestore \
+				setup-sa set-iap deploy-agent
 
 all: help
 
@@ -38,7 +38,7 @@ help: ## Show this help message
 
 install: ## Install dependencies using uv
 	@command -v uv >/dev/null 2>&1 || { echo "uv is not installed. Installing uv..."; curl -LsSf https://astral.sh/uv/0.6.12/install.sh | sh; source $HOME/.local/bin/env; }
-	uv sync
+	uv sync && cd ui && npm install && cd ..
 
 auth: ## Authenticate with Google Cloud
 	gcloud auth application-default login
@@ -46,6 +46,7 @@ auth: ## Authenticate with Google Cloud
 	gcloud auth application-default set-quota-project $(PROJECT_ID)
 setup-apis: ## Enable required Google Cloud APIs
 	gcloud services enable aiplatform.googleapis.com firestore.googleapis.com run.googleapis.com cloudbuild.googleapis.com logging.googleapis.com iam.googleapis.com iap.googleapis.com --project $(PROJECT_ID)
+
 setup-firestore: ## Create the default Firestore database (if it doesn't exist)
 	gcloud firestore databases create --location=$(PROJECT_LOCATION) --database="(default)" --project=$(PROJECT_ID) || echo "Database might already exist or error occurred."
 
@@ -69,7 +70,6 @@ setup-sa: ## Create or Update Service Account and grant necessary roles
 	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/run.serviceAgent" --condition=None --quiet >/dev/null
 	@echo "Done."
 
-
 lint: ## Run linting and type checking
 	uv sync --dev --extra lint
 	uv run codespell
@@ -82,18 +82,23 @@ clean: ## Clean up temporary files
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 
 kill: ## Kill local development processes (ports 8000-8004)
-	lsof -ti :8000,8001,8002,8003,8004 | xargs -r kill
+	lsof -ti :8000,8001,8002,8003,8004,8080 | xargs -r kill
 
 ## ----------------------------------------------------------------------
 ## Local Development (Run)
 ## ----------------------------------------------------------------------
 
+build-ui: ## Build the UI
+	npm run generate --prefix ui
+
 run-agent: # Run the agent with using the main (same as in Cloud Run) - Runs on port 8001
 	@echo "----------------------------------------------------------"
-	@echo "Debug UI available at: http://127.0.0.1:8001/debug"
-	@echo "Voice UI available at: http://127.0.0.1:8001/"
+	@echo "Debug UI available at: http://127.0.0.1:8080/debug"
+	@echo "Old UI available at: http://127.0.0.1:8080/old-ui"
+	@echo "New UI available at: http://127.0.0.1:8080/"
 	@echo "----------------------------------------------------------"
-	uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8001
+	uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8080
+
 ## ----------------------------------------------------------------------
 ## Deployment
 ## ----------------------------------------------------------------------
@@ -115,6 +120,15 @@ deploy-agent: ## Deploy Volvo Agent to Cloud Run
 	--set-env-vars USE_FIRESTORE=True \
 	--min 1
 	@echo "Adding IAP binding..."
+	gcloud beta iap web add-iam-policy-binding \
+	--member domain:$(DOMAIN) \
+	--role roles/iap.httpsResourceAccessor \
+	--region $(PROJECT_LOCATION) \
+	--resource-type cloud-run \
+	--service $(AGENT_SERVICE_NAME) \
+	--condition None
+
+set-iap:
 	gcloud beta iap web add-iam-policy-binding \
 	--member domain:$(DOMAIN) \
 	--role roles/iap.httpsResourceAccessor \
