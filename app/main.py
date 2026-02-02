@@ -52,9 +52,7 @@ app = FastAPI()
 static_dir = Path(__file__).parent.parent / "frontend"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-# Mount Nuxt UI at root
-ui_public_dir = Path(__file__).parent.parent / "ui" / ".output" / "public"
-app.mount("/", StaticFiles(directory=ui_public_dir, html=True), name="ui")
+
 
 
 # Define your session and memory services based on config
@@ -284,3 +282,8 @@ async def websocket_endpoint(
         # Always close the queue, even if exceptions occurred
         logger.debug("Closing live_request_queue")
         live_request_queue.close()
+
+
+# Mount Nuxt UI at root (Must be last to avoid capturing other routes)
+ui_public_dir = Path(__file__).parent.parent / "ui" / ".output" / "public"
+app.mount("/", StaticFiles(directory=ui_public_dir, html=True), name="ui")

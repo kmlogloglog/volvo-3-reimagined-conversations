@@ -21,7 +21,7 @@ SERVICE_URL  := https://$(AGENT_SERVICE_NAME)-$(PROJECT_NUMBER).$(PROJECT_LOCATI
 
 .PHONY: all help install auth lint test clean kill \
         run-agent build-ui setup-apis setup-firestore \
-				setup-sa set-iap deploy-agent
+				setup-sa set-iap deploy-agent lint-ui
 
 all: help
 
@@ -77,6 +77,9 @@ lint: ## Run linting and type checking
 	uv run ruff format . --check --diff
 	uv run mypy .
 
+lint-ui: ## Run linting for the frontend
+	npm run lint --prefix ui
+
 clean: ## Clean up temporary files
 	rm -rf .mypy_cache .ruff_cache .pytest_cache
 	find . -type d -name "__pycache__" -exec rm -rf {} +
@@ -91,7 +94,7 @@ kill: ## Kill local development processes (ports 8000-8004)
 build-ui: ## Build the UI
 	npm run generate --prefix ui
 
-run-agent: # Run the agent with using the main (same as in Cloud Run) - Runs on port 8001
+run-agent: # Run the agent with using the main (same as in Cloud Run) - Runs on port 8080
 	@echo "----------------------------------------------------------"
 	@echo "Debug UI available at: http://127.0.0.1:8080/debug"
 	@echo "Old UI available at: http://127.0.0.1:8080/old-ui"

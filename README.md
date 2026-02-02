@@ -61,7 +61,9 @@ Authenticate with Google Cloud to access Vertex AI models:
 make auth
 ```
 
-### 4. Enable APIs
+### 4. Enable APIs (Optional)
+
+If your Google Cloud Project already has the required APIs enabled, you can skip this step.
 
 Enable the required Google Cloud APIs for the project:
 
@@ -69,7 +71,9 @@ Enable the required Google Cloud APIs for the project:
 make setup-apis
 ```
 
-### 5. Service Account Setup
+### 5. Service Account Setup (Optional)
+
+If you already have a configured service account with the necessary roles, you can skip this step.
 
 If you plan to deploy or use Firestore features, set up the service account and permissions automatically:
 
@@ -85,15 +89,31 @@ This will create the service account (if one doesn't exist already) and grant th
 - `roles/run.invoker` (Cloud Run Invoker)
 - `roles/run.serviceAgent` (Cloud Run Service Agent)
 
-### 6. Running Locally
+### 6. Firestore Setup (Optional)
 
-Start the local development server with hot-reloading:
+If you already have a Firestore database configured, you can skip this step.
+
+If you plan to use Firestore for persistence, create the default database:
+
+```bash
+make setup-firestore
+```
+
+### 7. Running Locally
+
+First, build the UI:
+
+```bash
+make build-ui
+```
+
+Then, start the local development server with hot-reloading:
 
 ```bash
 make run-agent
 ```
 
-By default, the agent uses **In-Memory persistence** (`USE_FIRESTORE=False` in `.env`). Sessions and memories are lost when the server restarts.
+By default, the agent uses **In-Memory persistence**. This way, sessions and memories are lost when the server restarts.
 
 To use Firestore locally (requires `make auth` first):
 1. Ensure your Google Cloud project has Firestore enabled.
@@ -103,8 +123,9 @@ To use Firestore locally (requires `make auth` first):
    make run-agent
    ```
 
--   **Voice UI**: http://127.0.0.1:8001/
--   **Debug UI**: http://127.0.0.1:8001/debug
+-   **New Voice UI**: http://127.0.0.1:8080/
+-   **Old Voice UI**: http://127.0.0.1:8080/old-ui
+-   **Debug UI**: http://127.0.0.1:8080/debug
 
 ## Persistence & Memory
 
@@ -120,7 +141,7 @@ Control persistence via the `USE_FIRESTORE` environment variable:
     -   **Note**: All data is lost when the application stops.
 
 -   **Google Cloud Firestore** (`USE_FIRESTORE=True`):
-    -   Recommended for production.
+    -   Recommended for production and for realistic local development.
     -   **Hierarchy**:
         -   Sessions: `users/{user_id}/sessions/{session_id}`
         -   Memories: `users/{user_id}/memories/{memory_id}`
@@ -194,8 +215,10 @@ This command:
 | `make setup-apis` | Enable required Google Cloud APIs |
 | `make setup-sa` | Create/Update Service Account & Roles |
 | `make setup-firestore` | Create default Firestore database |
+| `make build-ui` | Build the frontend UI |
 | `make run-agent` | Run local server (Voice + Debug UI) |
 | `make deploy-agent` | Deploy to Cloud Run |
-| `make lint` | Run code linting and type checking |
+| `make lint` | Run code linting and type checking for backend code |
+| `make lint-ui` | Run code linting and type checking for frontend code |
 | `make clean` | Clean up temporary files |
 | `make kill` | Kill lingering local server processes |
