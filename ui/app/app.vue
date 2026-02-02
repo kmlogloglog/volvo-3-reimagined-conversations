@@ -17,6 +17,8 @@
     preloadRouteComponents('/');
     preloadRouteComponents('/ChatView');
     preloadRouteComponents('/AudioView');
+    preloadRouteComponents('/PhotoView');
+    preloadRouteComponents('/UploadView');
 
     const appStore = useAppStore();
     const { backgroundStyle } = useBackground(appStore);

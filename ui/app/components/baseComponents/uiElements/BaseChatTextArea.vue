@@ -6,6 +6,7 @@
             type="text"
             class="chat-text-input"
             :placeholder="placeholderTxt"
+            @keydown.enter.prevent="onSubmit"
         ></textarea>
         <button
             type="button"
@@ -28,15 +29,18 @@
         default: '',
     });
 
+    const emit = defineEmits(['submit']);
+
     const isListening = ref(false);
-    const placeholderTxt = computed(() => isListening.value ? 'Recording' : 'Ask Gemini');
+    const placeholderTxt = computed(() => isListening.value ? 'Recording' : 'Ask Volvo Vän');
 
     function onSubmit() {
         if(vModel.value === '') {
             isListening.value = !isListening.value;
-
             return;
         }
+        
+        emit('submit', vModel.value);
         vModel.value = '';
     }
 

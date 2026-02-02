@@ -5,7 +5,15 @@
 </template>
 
 <script setup>
+    import { onMounted } from 'vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
+    import { useAgentStore } from '@/stores/agentStore';
+
+    const agentStore = useAgentStore();
+
+    onMounted(() => {
+        agentStore.stopAudio();
+    });
 </script>
 
 <style lang="scss" scoped>

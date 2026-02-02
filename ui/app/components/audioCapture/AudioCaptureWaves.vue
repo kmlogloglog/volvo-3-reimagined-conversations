@@ -2,7 +2,6 @@
     <div
         ref="containerRef"
         class="audio-wave-container"
-        :style="{ height: canvasHeight + 'px' }"
     >
         <canvas ref="canvasRef"></canvas>
     </div>
@@ -12,11 +11,15 @@
     import { ref, computed, onMounted, onUnmounted } from 'vue';
     import { useResizeObserver } from '@vueuse/core';
 
+    // Agent Store Connection
+    import { useAgentStore } from '@/stores/agentStore';
+
     // ============================================
     // CONFIGURATION
     // ============================================
 
-    const canvasHeight = 250;
+    // const canvasWidth = ref(0);
+    // const canvasHeight = 250;
     const topPadding = 20;
     const waveTension = 0.4;
 
@@ -76,10 +79,16 @@
     // COMPONENT LOGIC
     // ============================================
 
+    // ============================================
+    // COMPONENT LOGIC
+    // ============================================
+
     const containerRef = ref(null);
     const canvasRef = ref(null);
     let ctx = null;
     let animationId = null;
+    const agentStore = useAgentStore();
+    let dataArray = null;
 
     const waveStates = [
         { phase: Math.random() * Math.PI * 2, offset: Math.random() * 1000 },
@@ -107,12 +116,14 @@
         ctx.scale(dpr, dpr);
     };
 
-    const generateWavePoints = (width, height, phase, layer, offset) => {
+    const generateWavePoints = (width, height, phase, layer, offset, audioLevel) => {
         const points = [];
         const baseY = height - layer.baseline;
 
         const maxAllowedAmplitude = baseY - topPadding;
-        const safeAmplitude = Math.min(layer.amplitude, maxAllowedAmplitude);
+        // Reactivity: Multiply amplitude by audioLevel (1.0 = normal, >1.0 = louder)
+        const currentAmplitude = layer.amplitude * (0.5 + (audioLevel * 1.5));
+        const safeAmplitude = Math.min(currentAmplitude, maxAllowedAmplitude);
 
         for (let x = 0; x <= width; x += 4) {
             const mainWave = Math.sin(x * layer.frequency + phase);
@@ -172,12 +183,32 @@
 
         ctx.clearRect(0, 0, width, height);
 
+        // Calculate Audio Level
+        let audioLevel = 0.5; // Base idle movement
+        if (agentStore.analyser && agentStore.listening) {
+            if (!dataArray) {
+                dataArray = new Uint8Array(agentStore.analyser.frequencyBinCount);
+            }
+            agentStore.analyser.getByteFrequencyData(dataArray);
+
+            // Simple average for volume/activity
+            let sum = 0;
+            for(let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+            }
+            const average = sum / dataArray.length;
+            // Normalize 0-255 to roughly 0-2.0
+            audioLevel = average / 64; // Adjust sensitivity
+            if (audioLevel < 0.2) audioLevel = 0.2; // Min movement
+        }
+
         layers.value.forEach((layer, index) => {
             const state = waveStates[index];
-            const points = generateWavePoints(width, height, state.phase, layer, state.offset);
+            const points = generateWavePoints(width, height, state.phase, layer, state.offset, audioLevel);
             drawSmoothWave(points, width, height, layer);
 
-            state.phase += layer.speed;
+            // Speed up waves when audio is active
+            state.phase += layer.speed * (1 + audioLevel * 2);
         });
 
         animationId = requestAnimationFrame(animate);
@@ -201,6 +232,7 @@
 <style scoped lang="scss">
 .audio-wave-container {
   position: absolute;
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
@@ -213,6 +245,8 @@
     position: absolute;
     bottom: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

@@ -71,9 +71,9 @@
         const { id, name } = navItem;
 
         // Reset recording state when navigating away from audio
-        if (activeId.value === NAVIGATION.AUDIO.id && id !== NAVIGATION.AUDIO.id) {
-            recordingControlsRef.value?.reset();
-        }
+        // if (activeId.value === NAVIGATION.AUDIO.id && id !== NAVIGATION.AUDIO.id) {
+        //    recordingControlsRef.value?.reset();
+        // }
 
         activeId.value = id;
         emit(EMITS.NAVIGATION_CHANGE, name);

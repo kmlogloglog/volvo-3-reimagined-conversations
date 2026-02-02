@@ -18,6 +18,7 @@
 
 <script setup>
     import { NAVIGATION } from '@/constants/navigation.js';
+    import { useAgentStore } from '@/stores/agentStore';
 
     const props = defineProps({
         active: {
@@ -27,9 +28,18 @@
     });
 
     const emit = defineEmits(['select', 'recording-change']);
+    const agentStore = useAgentStore();
 
     // Internal recording state
-    const isRecording = ref(false);
+    // We sync with agentStore.listening if active
+    const isRecording = computed({
+        get: () => agentStore.listening,
+        set: (val) => {
+            if (val) agentStore.startAudio();
+            else agentStore.stopAudio();
+        },
+    });
+
     const isPaused = ref(false);
 
     // Computed states
@@ -43,15 +53,12 @@
     }));
 
     const micIconClass = computed(() => {
-        if (!props.active) {
+        if (!props.active || !isRecording.value) {
             return NAVIGATION.AUDIO.icon;
         }
 
-        if (isRecording.value && !isPaused.value) {
-            return 'icon-stop';
-        }
-
-        return `${NAVIGATION.AUDIO.icon}-fill`;
+        // If recording and not paused (and active)
+        return 'icon-stop';
     });
 
     // Pause button
@@ -66,34 +73,39 @@
     // Actions test
     function handleMicrophoneClick() {
         if (props.active) {
-            if (isPaused.value) {
-                // If paused, unpause and continue recording
-                isPaused.value = false;
-            } else if (isRecording.value) {
-                // If recording (and not paused), stop recording
-                isRecording.value = false;
+            if (isRecording.value) {
+                // If recording (red), stop completely (disconnect)
+                agentStore.disconnect();
             } else {
-                // If not recording, start recording
-                isRecording.value = true;
+                // If off, START (connect)
+                agentStore.startAudio();
             }
-            emit('recording-change', { isRecording: isRecording.value, isPaused: isPaused.value });
         } else {
             // Select this navigation item
             emit('select');
+
+            // Auto-start recording when navigating to Audio tab via mic button
+            setTimeout(() => {
+                agentStore.startAudio();
+            }, 100);
         }
     }
 
     function handlePauseClick() {
         if (!isRecording.value) return;
 
-        isPaused.value = !isPaused.value;
-        emit('recording-change', { isRecording: isRecording.value, isPaused: isPaused.value });
+        if (agentStore.isMuted) {
+            agentStore.unmuteAudio();
+        } else {
+            agentStore.muteAudio();
+        }
     }
 
     // Reset state when becoming inactive
     function reset() {
-        isRecording.value = false;
-        isPaused.value = false;
+        // Do nothing on verify? User wanted it persistent.
+        // But if we want to ensure cleaner state on full reset, maybe?
+        // For now leave empty or remove usage.
     }
 
     // Expose reset for parent to call when switching away
