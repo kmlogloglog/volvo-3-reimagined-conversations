@@ -16,7 +16,6 @@
     "dependencies": {
         "@nuxtjs/color-mode": "^4.0.0",
         "@vueuse/core": "^14.1.0",
-        "axios": "^1.13.2",
         "eslint-plugin-vue": "10.4.0",
         "isomorphic-dompurify": "^2.35.0",
         "nuxt": "^4.2.2",

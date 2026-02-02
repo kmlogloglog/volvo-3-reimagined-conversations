@@ -27,7 +27,7 @@
 
     async function handleChatSubmit(payload) {
         const text = (typeof payload === 'string' ? payload : chatMessage.value).trim();
-        
+
         if (!text) return;
 
         // Ensure connected
