@@ -52,6 +52,9 @@ app = FastAPI()
 static_dir = Path(__file__).parent.parent / "frontend"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+
+
+
 # Define your session and memory services based on config
 use_firestore = os.getenv("USE_FIRESTORE", "false").lower() == "true"
 google_cloud_project = os.getenv("GOOGLE_CLOUD_PROJECT")
@@ -80,7 +83,7 @@ runner = Runner(
 # ========================================
 
 
-@app.get("/")
+@app.get("/old_ui")
 async def root() -> FileResponse:
     """Serve the Voice First UI."""
     return FileResponse(Path(__file__).parent.parent / "frontend" / "index.html")
@@ -279,3 +282,8 @@ async def websocket_endpoint(
         # Always close the queue, even if exceptions occurred
         logger.debug("Closing live_request_queue")
         live_request_queue.close()
+
+
+# Mount Nuxt UI at root (Must be last to avoid capturing other routes)
+ui_public_dir = Path(__file__).parent.parent / "ui" / ".output" / "public"
+app.mount("/", StaticFiles(directory=ui_public_dir, html=True), name="ui")

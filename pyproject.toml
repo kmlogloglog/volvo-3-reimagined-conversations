@@ -1,9 +1,10 @@
 [project]
-name = "a2a-mcp-adk-demo"
+name = "volvo-vaen"
 version = "0.1.0"
-description = ""
+description = "Volvo Vän"
 authors = [
-    {name = "Federico Patota - fpatota@google.com"},
+    {name = "Federico Patota", "email" = "fpatota@google.com"},
+    {name = "Anastasia Manokhina", "email" = "amanokhina@google.com"}
 ]
 dependencies = [
     "google-adk>=1.20.0",
@@ -51,7 +52,7 @@ select = [
     "RUF", # ruff specific rules
 ]
 ignore = ["E501", "C901"] # ignore line too long, too complex
-exclude = [".venv", "references"]
+exclude = [".venv", "references", "ui"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
@@ -72,8 +73,8 @@ ignore_missing_imports = true
 explicit_package_bases = true
 disable_error_code = ["misc", "no-untyped-call", "no-any-return"]
 
-exclude = [".venv", "references"]
+exclude = [".venv", "references", "ui"]
 
 [tool.codespell]
 ignore-words-list = "wit"
-skip = "uv.lock,.venv,**/*.ipynb,*.svg,*.excalidraw,references"
+skip = "uv.lock,.venv,**/*.ipynb,*.svg,*.excalidraw,references,ui"

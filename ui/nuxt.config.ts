@@ -12,7 +12,7 @@ export default defineNuxtConfig({
     },
     plugins: [
         '@/plugins/pinia.js',
-    ],    
+    ],
     css: [
         '@/scss/global.scss'
     ],
@@ -25,10 +25,11 @@ export default defineNuxtConfig({
         }
     },
     app: {
+        baseURL: '/',
         head: {
             meta: [
-                { 
-                    name: 'viewport', 
+                {
+                    name: 'viewport',
                     content: 'width=device-width, initial-scale=1, viewport-fit=cover'
                 },
                 {
