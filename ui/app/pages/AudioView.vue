@@ -5,7 +5,7 @@
 <script setup>
     import { useEventBus } from '@vueuse/core';
     import { useAgent } from '@/composables/useAgent';
-    import { useAgentStore } from '@/stores/agentStore.js';
+    import { useAgentStore } from '@/stores/agent';
 
     const agentStore = useAgentStore();
 

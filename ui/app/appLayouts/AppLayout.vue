@@ -25,7 +25,7 @@
     import { EMITS } from '@/constants/emits.js';
     import { NAVIGATION } from '@/constants/navigation.js';
     import { navigateTo, useRoute } from '#app';
-    import { useAgentStore } from '@/stores/agentStore.js';
+    import { useAgentStore } from '@/stores/agent';
     import VolvoLogo from '~/components/logo/VolvoLogo.vue';
 
     defineProps({
