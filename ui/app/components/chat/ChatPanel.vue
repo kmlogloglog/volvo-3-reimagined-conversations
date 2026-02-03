@@ -14,21 +14,24 @@
     </footer>
 </template>
 <script setup>
-    import { useAgentStore } from '@/stores/agent';
-
     import BaseChatTextArea from '@/components/baseComponents/uiElements/BaseChatTextArea.vue';
     import ChatStream from '@/components/chat/ChatStream.vue';
     import { EMITS } from '@/constants/emits.js';
+    import { useAgentStore } from '@/stores/agent';
+    import { useAgent } from '@/composables/useAgent';
+
+    import { ref, provide, onMounted, watch } from 'vue';
 
     const agentStore = useAgentStore();
 
+    const agent = useAgent();
+
     const chatMessage = ref('');
 
-    // eslint-disable-next-line
     async function handleChatSubmit(message) {
         chatMessage.value = '';
 
-        console.log(response);
+        agent.sendMessage(message);
     };
 
     const mainInnerRef = ref(null);
@@ -51,6 +54,14 @@
     async function onImageLoaded() {
         setScrollToBottom();
     }
+
+    watch(
+        () => agentStore.conversation,
+        () => {
+            setScrollToBottom();
+        },
+        { deep: true },
+    );
 
     const show = ref(false);
 
@@ -86,3 +97,4 @@
         padding: 0 1.25rem 1.25rem;
     }
 </style>
+

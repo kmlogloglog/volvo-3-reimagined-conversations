@@ -38,7 +38,7 @@
             type: Boolean,
             default: false,
         },
-        loading: {
+        co: {
             type: Boolean,
             default: false,
         },
@@ -48,11 +48,11 @@
         },
     });
 
-    const emit = defineEmits(['select', 'recording-change']);
+    const emit = defineEmits(['select', 'toggle-record', 'toggle-pause']);
 
-    // Internal recording state
-    const isRecording = ref(false);
-    const isPaused = ref(false);
+    // V-model refs using defineModel
+    const isRecording = defineModel('isRecording', { type: Boolean, default: false });
+    const isPaused = defineModel('isPaused', { type: Boolean, default: false });
 
     // Computed states
     const isIdle = computed(() => props.active && isPaused.value);
@@ -60,7 +60,7 @@
     // Microphone button
     const micButtonClasses = computed(() => ({
         active: props.active,
-        recording: isRecording.value,
+        recording: isRecording.value && !props.loading,
         paused: isIdle.value,
     }));
 
@@ -86,30 +86,38 @@
     );
 
     // Actions test
-    function handleMicrophoneClick() {
+    async function handleMicrophoneClick() {
         if (props.active) {
             if (isPaused.value) {
                 // If paused, unpause and continue recording
                 isPaused.value = false;
+                await nextTick();
+                emit('toggle-pause', isPaused.value);
             } else if (isRecording.value) {
                 // If recording (and not paused), stop recording
                 isRecording.value = false;
+                await nextTick();
+                emit('toggle-record', isRecording.value);
             } else {
                 // If not recording, start recording
                 isRecording.value = true;
+                await nextTick();
+                emit('toggle-record', isRecording.value);
             }
-            emit('recording-change', { isRecording: isRecording.value, isPaused: isPaused.value });
         } else {
             // Select this navigation item
             emit('select');
         }
     }
 
-    function handlePauseClick() {
-        if (!isRecording.value) return;
+    async function handlePauseClick() {
+        if (!isRecording.value) {
+            return;
+        }
 
         isPaused.value = !isPaused.value;
-        emit('recording-change', { isRecording: isRecording.value, isPaused: isPaused.value });
+        await nextTick();
+        emit('toggle-pause', isPaused.value);
     }
 
     // Reset state when becoming inactive

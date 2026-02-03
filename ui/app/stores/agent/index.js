@@ -7,6 +7,31 @@ export const useAgentStore = defineStore('agentStore', {
         conversation: [],
         audioLevel: 0,
         backgroundImageUrl: null,
+
+        // Connection state
+        connected: false,
+        connecting: false,
+        listening: false,
+        speaking: false,
+        isMuted: false,
+
+        // Audio contexts and analyzers
+        audioContext: null,
+        analyser: null,
+        inputAnalyser: null,
+        recorderContext: null,
+
+        // Internal connection state
+        websocket: null,
+        mediaStream: null,
+        audioPlayerNode: null,
+        audioRecorderNode: null,
+        currentMessageId: null,
+        currentUserMessageId: null,
+        connectionPromise: null,
+        animationId: null,
+        startingAudio: false,
+        micPermissionGranted: false,
     }),
     actions,
     getters,

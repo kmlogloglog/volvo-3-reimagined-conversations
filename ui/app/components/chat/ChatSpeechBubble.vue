@@ -32,7 +32,7 @@
         alignBubble: {
             type: String,
             default: 'none',
-            validator: (value) => ['left', 'right', 'none'].includes(value),
+            validator: (value) => ['user', 'agent', 'none'].includes(value),
         },
     });
 

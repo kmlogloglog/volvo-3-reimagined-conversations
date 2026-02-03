@@ -1,38 +1,30 @@
 import { BUS } from '@/constants/bus.js';
 import { useEventBus } from '@vueuse/core';
+import { useAgentStore } from '@/stores/agent';
 
 export function useAgent(options = {}) {
     const { onLevelChange } = options;
+
+    // Agent store - now contains all shared state
+    const agentStore = useAgentStore();
 
     // Global event bus for connection state
     const connectionBus = useEventBus(BUS.AGENT_CONNECTION);
     // Global event bus for microphone state
     const microphoneBus = useEventBus(BUS.MICROPHONE);
 
-    // State
-    const connected = ref(false);
-    const connecting = ref(false);
-    const listening = ref(false);
-    const speaking = ref(false);
-    const messages = ref([]);
-    const audioContext = ref(null);
-    const analyser = ref(null);
-    const inputAnalyser = ref(null);
-    const isMuted = ref(false);
-    const recorderContext = ref(null);
-    const audioLevel = ref(0);
+    // Use reactive references to store state for reactivity
+    const connected = computed(() => agentStore.connected);
+    const connecting = computed(() => agentStore.connecting);
+    const listening = computed(() => agentStore.listening);
+    const speaking = computed(() => agentStore.speaking);
+    const analyser = computed(() => agentStore.analyser);
+    const inputAnalyser = computed(() => agentStore.inputAnalyser);
+    const isMuted = computed(() => agentStore.isMuted);
+    const audioLevel = computed(() => agentStore.audioLevel);
 
-    // Internal state
-    let startingAudio = false;
-    let micPermissionGranted = false;
-    let websocket = null;
-    let audioPlayerNode = null;
-    let audioRecorderNode = null;
-    let mediaStream = null;
-    let currentMessageId = null;
-    let currentUserMessageId = null;
-    let connectionPromise = null;
-    let animationId = null;
+    // Internal state - use shared variables
+    // (moved to module level as shared state)
 
     // Helper to convert Float32 to Int16 PCM
     function float32ToInt16(float32) {
@@ -58,14 +50,14 @@ export function useAgent(options = {}) {
 
     function addMessage(msg) {
         console.log('Adding message to store:', msg);
-        messages.value.push(msg);
+        agentStore.conversation.push(msg);
     }
 
     function handleUserTranscription(text) {
-        if (!currentUserMessageId) {
-            currentUserMessageId = Date.now().toString();
+        if (!agentStore.currentUserMessageId) {
+            agentStore.currentUserMessageId = Date.now().toString();
             addMessage({
-                id: currentUserMessageId,
+                id: agentStore.currentUserMessageId,
                 sender: 'user',
                 content: { text: '' },
                 type: 'text',
@@ -74,25 +66,26 @@ export function useAgent(options = {}) {
             });
         }
 
-        const msg = messages.value.find(m => m.id === currentUserMessageId);
+        const msg = agentStore.conversation.find(m => m.id === agentStore.currentUserMessageId);
         if (msg && msg.content) {
+            console.log(msg);
             msg.content.text = text;
         }
     }
 
     function playAudioChunk(base64Data) {
-        speaking.value = true;
-        if (audioPlayerNode) {
+        agentStore.speaking = true;
+        if (agentStore.audioPlayerNode) {
             const arrayBuffer = base64ToArray(base64Data);
-            audioPlayerNode.port.postMessage(arrayBuffer);
+            agentStore.audioPlayerNode.port.postMessage(arrayBuffer);
         }
     }
 
     function handleTextResponse(text) {
-        if (!currentMessageId) {
-            currentMessageId = Date.now().toString();
+        if (!agentStore.currentMessageId) {
+            agentStore.currentMessageId = Date.now().toString();
             addMessage({
-                id: currentMessageId,
+                id: agentStore.currentMessageId,
                 sender: 'agent',
                 content: { text: '' },
                 type: 'text',
@@ -101,7 +94,7 @@ export function useAgent(options = {}) {
             });
         }
 
-        const msg = messages.value.find(m => m.id === currentMessageId);
+        const msg = agentStore.conversation.find(m => m.id === agentStore.currentMessageId);
         if (msg && msg.content) {
             const currentText = msg.content.text || '';
             if (currentText.endsWith(text) && text.length > 1) {
@@ -135,62 +128,114 @@ export function useAgent(options = {}) {
         }
 
         if (event.turnComplete) {
-            speaking.value = false;
-            currentMessageId = null;
-            currentUserMessageId = null;
+            agentStore.speaking = false;
+            agentStore.currentMessageId = null;
+            agentStore.currentUserMessageId = null;
         }
 
         if (event.interrupted) {
-            speaking.value = false;
-            audioPlayerNode?.port.postMessage({ command: 'clear' });
+            agentStore.speaking = false;
+            agentStore.audioPlayerNode?.port.postMessage({ command: 'clear' });
         }
     }
 
     function stopAudio() {
-        listening.value = false;
-        speaking.value = false;
+        console.log('Stopping audio...');
 
-        if (mediaStream) {
-            mediaStream.getTracks().forEach(track => track.stop());
-            mediaStream = null;
+        agentStore.listening = false;
+        agentStore.speaking = false;
+
+        // Stop and cleanup media stream
+        if (agentStore.mediaStream) {
+            agentStore.mediaStream.getTracks().forEach(track => {
+                console.log('Stopping track:', track.kind);
+                track.stop();
+            });
+            agentStore.mediaStream = null;
         }
-        audioRecorderNode = null;
 
-        if (animationId) {
-            cancelAnimationFrame(animationId);
+        // Properly disconnect and cleanup audio recorder node
+        if (agentStore.audioRecorderNode) {
+            try {
+                agentStore.audioRecorderNode.disconnect();
+                agentStore.audioRecorderNode.port.onmessage = null;
+            } catch (e) {
+                console.warn('Error disconnecting audio recorder node:', e);
+            }
+            agentStore.audioRecorderNode = null;
         }
 
-        audioLevel.value = 0;
+        // Cleanup audio player node
+        if (agentStore.audioPlayerNode) {
+            try {
+                agentStore.audioPlayerNode.disconnect();
+                agentStore.audioPlayerNode.port.postMessage({ command: 'clear' });
+            } catch (e) {
+                console.warn('Error disconnecting audio player node:', e);
+            }
+            agentStore.audioPlayerNode = null;
+        }
+
+        // Cancel animation frame
+        if (agentStore.animationId) {
+            cancelAnimationFrame(agentStore.animationId);
+            agentStore.animationId = null;
+        }
+
+        // Close and cleanup audio contexts
+        if (agentStore.audioContext && agentStore.audioContext.state !== 'closed') {
+            try {
+                agentStore.audioContext.close();
+            } catch (e) {
+                console.warn('Error closing audio context:', e);
+            }
+            agentStore.audioContext = null;
+            agentStore.analyser = null;
+        }
+
+        if (agentStore.recorderContext && agentStore.recorderContext.state !== 'closed') {
+            try {
+                agentStore.recorderContext.close();
+            } catch (e) {
+                console.warn('Error closing recorder context:', e);
+            }
+            agentStore.recorderContext = null;
+            agentStore.inputAnalyser = null;
+        }
+
+        agentStore.audioLevel = 0;
         onLevelChange?.(0);
+
         // Reflect actual permission state - permission is still granted if user granted it
-        microphoneBus.emit({ requesting: false, granted: micPermissionGranted, denied: false, ready: false });
-        console.log('stop audio');
+        microphoneBus.emit({ requesting: false, granted: agentStore.micPermissionGranted, denied: false, ready: false });
+        console.log('Audio stopped and cleaned up');
     }
 
     function muteAudio() {
         console.log('mute audio');
-        isMuted.value = true;
+        agentStore.isMuted = true;
     }
 
     function unmuteAudio() {
         console.log('unmute audio');
-        isMuted.value = false;
+        agentStore.isMuted = false;
     }
 
     function connect() {
-        if (connected.value) {
+        console.log('connect called');
+        if (agentStore.connected) {
             return Promise.resolve();
         }
-        if (connectionPromise) {
-            return connectionPromise;
+        if (agentStore.connectionPromise) {
+            return agentStore.connectionPromise;
         }
 
-        connecting.value = true;
+        agentStore.connecting = true;
         connectionBus.emit({ connecting: true, connected: false });
 
-        console.log('connecting to agent...', connecting.value);
+        console.log('connecting to agent...', agentStore.connecting);
 
-        connectionPromise = new Promise((resolve, reject) => {
+        agentStore.connectionPromise = new Promise((resolve, reject) => {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const host = window.location.host;
 
@@ -200,52 +245,53 @@ export function useAgent(options = {}) {
 
             console.log('Connecting to WebSocket:', url);
 
-            websocket = new WebSocket(url);
+            agentStore.websocket = new WebSocket(url);
 
             const timeoutId = setTimeout(() => {
-                if (websocket && websocket.readyState !== WebSocket.OPEN) {
+                if (agentStore.websocket && agentStore.websocket.readyState !== WebSocket.OPEN) {
                     console.error('WebSocket connection timed out');
-                    websocket.close();
-                    connecting.value = false;
+                    agentStore.websocket.close();
+                    agentStore.connecting = false;
                     connectionBus.emit({ connecting: false, connected: false });
                     reject(new Error('Connection timed out'));
                 }
             }, 5000);
 
-            websocket.onopen = () => {
+            agentStore.websocket.onopen = () => {
                 clearTimeout(timeoutId);
                 console.log('WebSocket Connected');
-                connected.value = true;
-                connecting.value = false;
+                agentStore.connected = true;
+                agentStore.connecting = false;
                 connectionBus.emit({ connecting: false, connected: true });
                 resolve();
             };
 
-            websocket.onerror = (err) => {
+            agentStore.websocket.onerror = (err) => {
                 clearTimeout(timeoutId);
                 console.error('WebSocket Error:', err);
-                connecting.value = false;
+                agentStore.connecting = false;
                 connectionBus.emit({ connecting: false, connected: false });
             };
 
-            websocket.onclose = (event) => {
+            agentStore.websocket.onclose = (event) => {
                 clearTimeout(timeoutId);
                 console.log('WebSocket Disconnected', event.code, event.reason);
 
-                if (!connected.value) {
-                    connecting.value = false;
+                if (!agentStore.connected) {
+                    agentStore.connecting = false;
                     connectionBus.emit({ connecting: false, connected: false });
-                    reject(new Error(`Connection failed or closed: ${event.code}`));
+                    reject(new Error(`Connection failed or closed: ${event.code} - ${event.reason}`));
                 }
 
-                connected.value = false;
-                connecting.value = false;
+                agentStore.connected = false;
+                agentStore.connecting = false;
                 connectionBus.emit({ connecting: false, connected: false });
                 stopAudio();
-                connectionPromise = null;
+                agentStore.connectionPromise = null;
+                agentStore.websocket = null;
             };
 
-            websocket.onmessage = (event) => {
+            agentStore.websocket.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
                     handleAgentEvent(data);
@@ -255,118 +301,136 @@ export function useAgent(options = {}) {
             };
         });
 
-        return connectionPromise;
+        return agentStore.connectionPromise;
     }
 
     function disconnect() {
-        if (websocket) {
-            websocket.close();
-            websocket = null;
+        console.log('disconnect called');
+        if (agentStore.websocket) {
+            agentStore.websocket.close();
+            agentStore.websocket = null;
         }
         stopAudio();
     }
 
     async function startAudio() {
-        console.log('start audio');
-        if (listening.value || startingAudio) {
+        console.log('Starting audio...');
+
+        if (agentStore.listening || agentStore.startingAudio) {
+            console.log('Audio already starting or started, returning early');
             return;
         }
 
-        startingAudio = true;
+        agentStore.startingAudio = true;
 
         try {
             // Request microphone access immediately, before connecting
-            if (!mediaStream) {
+            if (!agentStore.mediaStream) {
                 console.log('Requesting microphone access...');
                 microphoneBus.emit({ requesting: true, granted: false, denied: false });
                 try {
-                    mediaStream = await navigator.mediaDevices.getUserMedia({
+                    agentStore.mediaStream = await navigator.mediaDevices.getUserMedia({
                         audio: {
                             channelCount: 1,
+                            sampleRate: 16000,
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true,
                         },
                     });
                     console.log('Microphone access granted');
-                    micPermissionGranted = true;
+                    agentStore.micPermissionGranted = true;
                     microphoneBus.emit({ requesting: false, granted: true, denied: false });
                 } catch (err) {
                     console.error('Microphone access denied or error:', err);
-                    micPermissionGranted = false;
+                    agentStore.micPermissionGranted = false;
                     microphoneBus.emit({ requesting: false, granted: false, denied: true, error: err.message });
                     throw err;
                 }
             }
 
-            // Initialize Player Context (24kHz)
-            if (!audioContext.value) {
+            // Initialize Player Context (24kHz) - always create fresh context
+            if (!agentStore.audioContext || agentStore.audioContext.state === 'closed') {
+                console.log('Creating new audio context for playback...');
                 const ctxClass = window.AudioContext || window.webkitAudioContext;
-                audioContext.value = new ctxClass({ sampleRate: 24000 });
-                analyser.value = audioContext.value.createAnalyser();
-                analyser.value.fftSize = 256;
+                agentStore.audioContext = new ctxClass({ sampleRate: 24000 });
+                agentStore.analyser = agentStore.audioContext.createAnalyser();
+                agentStore.analyser.fftSize = 256;
 
                 try {
-                    await audioContext.value.audioWorklet.addModule('/js/audio-modules/pcm-player-processor.js');
+                    await agentStore.audioContext.audioWorklet.addModule('/js/audio-modules/pcm-player-processor.js');
+                    console.log('Player worklet loaded successfully');
                 } catch (e) {
                     console.error('Failed to load player worklet:', e);
+                    throw new Error(`Player worklet loading failed: ${e.message}`);
                 }
             }
 
-            // Initialize Recorder Context (16kHz)
-            if (!recorderContext.value) {
+            // Initialize Recorder Context (16kHz) - always create fresh context
+            if (!agentStore.recorderContext || agentStore.recorderContext.state === 'closed') {
+                console.log('Creating new recorder context...');
                 const ctxClass = window.AudioContext || window.webkitAudioContext;
-                recorderContext.value = new ctxClass({ sampleRate: 16000 });
-                inputAnalyser.value = recorderContext.value.createAnalyser();
-                inputAnalyser.value.fftSize = 256;
+                agentStore.recorderContext = new ctxClass({ sampleRate: 16000 });
+                agentStore.inputAnalyser = agentStore.recorderContext.createAnalyser();
+                agentStore.inputAnalyser.fftSize = 256;
 
                 try {
-                    await recorderContext.value.audioWorklet.addModule('/js/audio-modules/pcm-recorder-processor.js');
+                    await agentStore.recorderContext.audioWorklet.addModule('/js/audio-modules/pcm-recorder-processor.js');
+                    console.log('Recorder worklet loaded successfully');
                 } catch (e) {
                     console.error('Failed to load recorder worklet:', e);
+                    throw new Error(`Recorder worklet loading failed: ${e.message}`);
                 }
             }
 
-            if (audioContext.value.state === 'suspended') {
-                await audioContext.value.resume();
+            // Resume contexts if suspended
+            if (agentStore.audioContext.state === 'suspended') {
+                console.log('Resuming audio context...');
+                await agentStore.audioContext.resume();
             }
-            if (recorderContext.value.state === 'suspended') {
-                await recorderContext.value.resume();
+            if (agentStore.recorderContext.state === 'suspended') {
+                console.log('Resuming recorder context...');
+                await agentStore.recorderContext.resume();
             }
 
-            if (!audioPlayerNode) {
-                audioPlayerNode = new AudioWorkletNode(audioContext.value, 'pcm-player-processor');
-                audioPlayerNode.connect(analyser.value);
-                analyser.value.connect(audioContext.value.destination);
+            // Create fresh audio player node
+            if (!agentStore.audioPlayerNode) {
+                console.log('Creating audio player node...');
+                agentStore.audioPlayerNode = new AudioWorkletNode(agentStore.audioContext, 'pcm-player-processor');
+                agentStore.audioPlayerNode.connect(agentStore.analyser);
+                agentStore.analyser.connect(agentStore.audioContext.destination);
             }
 
             // Set up audio recorder only after mediaStream is confirmed available
-            if (!audioRecorderNode && mediaStream) {
+            if (!agentStore.audioRecorderNode && agentStore.mediaStream) {
                 console.log('Setting up audio recorder with MediaStream...');
-                console.log('Recorder Context Sample Rate:', recorderContext.value.sampleRate);
+                console.log('Recorder Context Sample Rate:', agentStore.recorderContext.sampleRate);
 
                 try {
-                    const micSource = recorderContext.value.createMediaStreamSource(mediaStream);
-                    audioRecorderNode = new AudioWorkletNode(recorderContext.value, 'pcm-recorder-processor');
+                    const micSource = agentStore.recorderContext.createMediaStreamSource(agentStore.mediaStream);
+                    agentStore.audioRecorderNode = new AudioWorkletNode(agentStore.recorderContext, 'pcm-recorder-processor');
 
-                    audioRecorderNode.port.onmessage = (event) => {
-                        if (connected.value && websocket && websocket.readyState === WebSocket.OPEN && !isMuted.value) {
+                    agentStore.audioRecorderNode.port.onmessage = (event) => {
+                        if (agentStore.connected && agentStore.websocket && agentStore.websocket.readyState === WebSocket.OPEN && !agentStore.isMuted) {
                             const int16Data = float32ToInt16(event.data);
-                            websocket.send(int16Data.buffer);
+                            agentStore.websocket.send(int16Data.buffer);
                         }
                     };
 
                     micSource.disconnect();
-                    micSource.connect(audioRecorderNode);
-                    micSource.connect(inputAnalyser.value);
+                    micSource.connect(agentStore.audioRecorderNode);
+                    micSource.connect(agentStore.inputAnalyser);
 
                     // Only start the draw function after everything is properly set up
-                    const inputDataArray = new Uint8Array(inputAnalyser.value.frequencyBinCount);
-                    const outputDataArray = new Uint8Array(analyser.value.frequencyBinCount);
+                    const inputDataArray = new Uint8Array(agentStore.inputAnalyser.frequencyBinCount);
+                    const outputDataArray = new Uint8Array(agentStore.analyser.frequencyBinCount);
 
                     (function draw() {
-                        animationId = requestAnimationFrame(draw);
+                        agentStore.animationId = requestAnimationFrame(draw);
 
                         // Get frequency data from both input and output analyzers
-                        inputAnalyser.value.getByteFrequencyData(inputDataArray);
-                        analyser.value.getByteFrequencyData(outputDataArray);
+                        agentStore.inputAnalyser.getByteFrequencyData(inputDataArray);
+                        agentStore.analyser.getByteFrequencyData(outputDataArray);
 
                         // Calculate levels for both input and output
                         const inputLevel = Math.round(
@@ -377,8 +441,8 @@ export function useAgent(options = {}) {
                         );
 
                         // Use the highest level from either input or output
-                        audioLevel.value = Math.max(inputLevel, outputLevel);
-                        onLevelChange?.(audioLevel.value);
+                        agentStore.audioLevel = Math.max(inputLevel, outputLevel);
+                        onLevelChange?.(agentStore.audioLevel);
                     })();
 
                     console.log('Audio recorder set up successfully');
@@ -390,20 +454,20 @@ export function useAgent(options = {}) {
                 }
             }
 
-            listening.value = true;
+            agentStore.listening = true;
 
             // Connect to WebSocket after audio setup is complete
-            if (!connected.value) {
+            if (!agentStore.connected) {
                 await connect();
             }
         } catch (error) {
             console.error('Failed to start audio:', error);
-            listening.value = false;
-            connecting.value = false;
+            agentStore.listening = false;
+            agentStore.connecting = false;
             connectionBus.emit({ connecting: false, connected: false });
             microphoneBus.emit({ requesting: false, granted: false, denied: true, ready: false });
         } finally {
-            startingAudio = false;
+            agentStore.startingAudio = false;
         }
     }
 
@@ -416,16 +480,16 @@ export function useAgent(options = {}) {
             timestamp: new Date(),
         });
 
-        if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+        if (!agentStore.websocket || agentStore.websocket.readyState !== WebSocket.OPEN) {
             console.warn('WebSocket not open, message added to UI but not sent.');
             return;
         }
 
-        websocket.send(JSON.stringify({ type: 'text', text }));
+        agentStore.websocket.send(JSON.stringify({ type: 'text', text }));
     }
 
     function clearMessages() {
-        messages.value = [];
+        agentStore.conversation.length = 0;
     }
 
     return {
@@ -435,7 +499,6 @@ export function useAgent(options = {}) {
         listening,
         speaking,
         isMuted,
-        messages,
         analyser,
         inputAnalyser,
         audioLevel,

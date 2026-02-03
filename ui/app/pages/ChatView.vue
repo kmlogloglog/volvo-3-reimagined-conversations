@@ -10,8 +10,10 @@
 
     const agent = useAgent();
 
-    onMounted(() => {
-        agent.connect();
+    onMounted(async () => {
+        await agent.connect();
+        // Test: Also try starting audio to see if that fixes the WebSocket
+        // await agent.startAudio();
     });
 </script>
 

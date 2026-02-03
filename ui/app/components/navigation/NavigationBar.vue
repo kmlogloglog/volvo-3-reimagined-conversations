@@ -7,13 +7,17 @@
                 :loading="isActive(NAVIGATION.CHAT.id) && connecting"
                 :disabled="connecting || micRequesting"
                 @click="setActive(NAVIGATION.CHAT)" />
+
             <NavigationBarAudioButton
                 ref="recordingControlsRef"
+                v-model:is-recording="isAudioRecording"
+                v-model:is-paused="isAudioPaused"
                 :active="isActive(NAVIGATION.AUDIO.id)"
                 :loading="(isActive(NAVIGATION.UPLOAD.id) && connecting) || micRequesting"
                 :disabled="connecting || micRequesting"
                 @select="setActive(NAVIGATION.AUDIO)"
-                @recording-change="onRecordingChange" />
+                @toggle-record="onToggleRecord"
+                @toggle-pause="onTogglePause" />
 
             <NavigationBarButton
                 class="navigation-photo"
@@ -42,7 +46,8 @@
 
     import { useEventBus } from '@vueuse/core';
 
-    const bus = useEventBus(BUS.NAVIGATION);
+    const busRecord = useEventBus('toggle-record');
+    const busPause = useEventBus('toggle-pause');
     const busMicrophone = useEventBus(BUS.MICROPHONE);
     const busConnection = useEventBus(BUS.AGENT_CONNECTION);
 
@@ -89,6 +94,11 @@
             activeId.value = null;
             recordingControlsRef.value?.reset();
         }
+
+        if(navItem?.id !== NAVIGATION.AUDIO.id) {
+            isAudioRecording.value = false;
+            isAudioPaused.value = false;
+        }
     }
 
     // Actions
@@ -100,13 +110,14 @@
     }
 
     const isAudioRecording = ref(false);
+    const isAudioPaused = ref(false);
 
-    function onRecordingChange({ isRecording, isPaused }) {
-        // console.log(isRecording);
+    function onToggleRecord(isRecording) {
+        busRecord.emit(isRecording);
+    }
 
-        isAudioRecording.value = isRecording;
-
-        bus.emit({ recording: isRecording, paused: isPaused });
+    function onTogglePause(isPaused) {
+        busPause.emit(isPaused);
     }
 
     // Watch route changes

@@ -13,7 +13,7 @@
         alignBubble: {
             type: String,
             default: 'none',
-            validator: (value) => ['left', 'right', 'none'].includes(value),
+            validator: (value) => ['user', 'agent', 'none'].includes(value),
         },
         padding: {
             type: String,
@@ -29,25 +29,25 @@
             border-radius: var(--border-radius);
             color: var(--speech-bubble-color-font);
             margin: 0 auto;
-            padding: 1rem;
+            padding: 0.75rem 1.25rem;
             position: relative;
             width: fit-content;
             max-width: 85%;
 
-            &[data-align="left"] {
+            &[data-align="agent"] {
                 border-radius: var(--border-radius) var(--border-radius) var(--border-radius) 0;
                 margin-left: 0;
             }
 
-            &[data-align="right"] {
+            &[data-align="user"] {
                 border-radius: var(--border-radius) var(--border-radius) 0 var(--border-radius);
                 margin-right: 0;
-                background-color: var(--color-grey-200);
+                background-color: var(--color-grey-900);
                 color: var(--color-black);
 
                 // Dark mode override if needed, or rely on variables
                 @media (prefers-color-scheme: dark) {
-                     background-color: var(--color-grey-800);
+                     background-color: var(--color-grey-100);
                      color: var(--color-white);
                 }
             }

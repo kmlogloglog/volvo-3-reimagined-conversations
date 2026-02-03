@@ -9,6 +9,16 @@
 
     const agentStore = useAgentStore();
 
+    watch(
+        () => agentStore.conversation,
+        () => {
+            console.group('ChatPanel.vue - Conversation Updated');
+            console.log(agentStore.conversation);
+            console.groupEnd();
+        },
+        { deep: true, immediate: true },
+    );
+
     const agent = useAgent({
         onLevelChange: (newLevel) => {
             agentStore.audioLevel = newLevel;
@@ -16,11 +26,14 @@
     });
 
     // --- Event bus (preserved) ---
-    const bus = useEventBus('navigation');
-    bus.on((payload) => {
-        console.log(payload);
+    const busRecord = useEventBus('toggle-record');
+    const busPause = useEventBus('toggle-pause');
+    busRecord.on(async(recording) => {
+        console.log(recording);
 
-        if(payload.recording && !payload.paused) {
+        if (recording) {
+            console.log('START RECORDING FROM AUDIO VIEW');
+
             agent.startAudio();
 
             return;
@@ -29,8 +42,21 @@
         agent.stopAudio();
     });
 
+    busPause.on(async(pause) => {
+        console.log('pause', pause);
+
+        if (pause) {
+            agent.muteAudio();
+
+            return;
+        }
+
+        agent.unmuteAudio();
+    });
+
     onUnmounted(() => {
-        bus.off();
+        busRecord.off();
+        busPause.off();
 
         agent.stopAudio();
     });
