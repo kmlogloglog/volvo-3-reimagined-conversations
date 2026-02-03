@@ -8,18 +8,24 @@
         </div>
         <NavigationBar
             @[EMITS.NAVIGATION_CHANGE]="onNavigate" />
-        <AudioCaptureWaves v-if="showWaves" />
+
         <!--
         Do not use AudioCaptureCircles together with full screen background image.
         AudioCaptureCircles breaks iOS Safari's background rendering behind browser chrome
         -->
+        <AudioCaptureWaves
+            v-if="route.name === NAVIGATION.AUDIO.name"
+            class="audio-waves"
+            :level="agentStore.audioLevel" />
         <AudioCaptureCircles v-if="showCircles" />
     </div>
 </template>
 
 <script setup>
     import { EMITS } from '@/constants/emits.js';
-    import { navigateTo } from '#app';
+    import { NAVIGATION } from '@/constants/navigation.js';
+    import { navigateTo, useRoute } from '#app';
+    import { useAgentStore } from '@/stores/agentStore.js';
     import VolvoLogo from '~/components/logo/VolvoLogo.vue';
 
     defineProps({
@@ -34,11 +40,15 @@
     });
 
     const emit = defineEmits([EMITS.NAVIGATION_CHANGE]);
+    const route = useRoute();
 
     function onNavigate(navigationName) {
         navigateTo(`/${navigationName}`);
         emit(EMITS.NAVIGATION_CHANGE, navigationName);
     }
+
+    const agentStore = useAgentStore();
+
 </script>
 
 <style scoped lang="scss">

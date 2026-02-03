@@ -1,30 +1,54 @@
 <template>
-    <div class="content-container">
-
-    </div>
+    <div class="content-container"></div>
 </template>
 
-<script setup lang="ts">
-    import { onMounted } from 'vue';
-    import { useAgentStore } from '@/stores/agentStore';
+<script setup>
+    import { useEventBus } from '@vueuse/core';
+    import { useAgent } from '@/composables/useAgent';
+    import { useAgentStore } from '@/stores/agentStore.js';
 
     const agentStore = useAgentStore();
 
-    onMounted(() => {
-        agentStore.startAudio();
+    const agent = useAgent({
+        onLevelChange: (newLevel) => {
+            agentStore.audioLevel = newLevel;
+        },
     });
+
+    // --- Event bus (preserved) ---
+    const bus = useEventBus('navigation');
+    bus.on((payload) => {
+        console.log(payload);
+
+        if(payload.recording && !payload.paused) {
+            agent.startAudio();
+
+            return;
+        }
+
+        agent.stopAudio();
+    });
+
+    onUnmounted(() => {
+        bus.off();
+
+        agent.stopAudio();
+    });
+
 </script>
 
 <style lang="scss" scoped>
     .content-container {
-        position: relative;
-        height: 100%;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
         align-items: center;
-        background-color: var(--bg-primary);
+        display: flex;
+        height: 100%;
+        justify-content: center;
         overflow: hidden;
+        width: 100%;
+
+        .audio-waves {
+            position: fixed;
+            bottom: 0;
+        }
     }
 </style>

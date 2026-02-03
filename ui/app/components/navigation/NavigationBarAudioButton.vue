@@ -3,14 +3,28 @@
         class="nav-button mic-button"
         :class="micButtonClasses"
         :style="{ fontSize: '1.3rem' }"
+        :disabled="disabled"
         @click="handleMicrophoneClick">
-        <span :class="micIconClass"></span>
+        <span
+            v-if="loading"
+            class="spinner">
+            <svg viewBox="0 0 100 100">
+                <circle
+                    cx="50" cy="50" r="40"
+                    fill="none"
+                    stroke="#ffffff"
+                    stroke-width="4"
+                    stroke-dasharray="209 251" />
+            </svg>
+        </span>
+        <span v-else :class="micIconClass"></span>
     </button>
     <button
         v-if="isRecording"
         class="nav-button pause-button"
         :class="pauseButtonClasses"
         :style="{ fontSize: '1.05rem' }"
+        :disabled="disabled"
         @click="handlePauseClick">
         <span :class="pauseIconClass"></span>
     </button>
@@ -18,28 +32,26 @@
 
 <script setup>
     import { NAVIGATION } from '@/constants/navigation.js';
-    import { useAgentStore } from '@/stores/agentStore';
 
     const props = defineProps({
         active: {
             type: Boolean,
             default: false,
         },
-    });
-
-    const emit = defineEmits(['select', 'recording-change']);
-    const agentStore = useAgentStore();
-
-    // Internal recording state
-    // We sync with agentStore.listening if active
-    const isRecording = computed({
-        get: () => agentStore.listening,
-        set: (val) => {
-            if (val) agentStore.startAudio();
-            else agentStore.stopAudio();
+        loading: {
+            type: Boolean,
+            default: false,
+        },
+        disabled : {
+            type: Boolean,
+            default: false,
         },
     });
 
+    const emit = defineEmits(['select', 'recording-change']);
+
+    // Internal recording state
+    const isRecording = ref(false);
     const isPaused = ref(false);
 
     // Computed states
@@ -53,12 +65,15 @@
     }));
 
     const micIconClass = computed(() => {
-        if (!props.active || !isRecording.value) {
+        if (!props.active) {
             return NAVIGATION.AUDIO.icon;
         }
 
-        // If recording and not paused (and active)
-        return 'icon-stop';
+        if (isRecording.value && !isPaused.value) {
+            return 'icon-stop';
+        }
+
+        return `${NAVIGATION.AUDIO.icon}-fill`;
     });
 
     // Pause button
@@ -73,39 +88,34 @@
     // Actions test
     function handleMicrophoneClick() {
         if (props.active) {
-            if (isRecording.value) {
-                // If recording (red), stop completely (disconnect)
-                agentStore.disconnect();
+            if (isPaused.value) {
+                // If paused, unpause and continue recording
+                isPaused.value = false;
+            } else if (isRecording.value) {
+                // If recording (and not paused), stop recording
+                isRecording.value = false;
             } else {
-                // If off, START (connect)
-                agentStore.startAudio();
+                // If not recording, start recording
+                isRecording.value = true;
             }
+            emit('recording-change', { isRecording: isRecording.value, isPaused: isPaused.value });
         } else {
             // Select this navigation item
             emit('select');
-
-            // Auto-start recording when navigating to Audio tab via mic button
-            setTimeout(() => {
-                agentStore.startAudio();
-            }, 100);
         }
     }
 
     function handlePauseClick() {
         if (!isRecording.value) return;
 
-        if (agentStore.isMuted) {
-            agentStore.unmuteAudio();
-        } else {
-            agentStore.muteAudio();
-        }
+        isPaused.value = !isPaused.value;
+        emit('recording-change', { isRecording: isRecording.value, isPaused: isPaused.value });
     }
 
     // Reset state when becoming inactive
     function reset() {
-        // Do nothing on verify? User wanted it persistent.
-        // But if we want to ensure cleaner state on full reset, maybe?
-        // For now leave empty or remove usage.
+        isRecording.value = false;
+        isPaused.value = false;
     }
 
     // Expose reset for parent to call when switching away
@@ -128,6 +138,11 @@
         background-color: var(--navigation-button-active-color-background);
         color: var(--navigation-button-active-color-font);
     }
+
+    &:disabled {
+        cursor: default;
+        opacity: 0.5;
+    }
 }
 
 .mic-button {
@@ -143,6 +158,11 @@
         background-color: var(--navigation-audio-button-paused-color-background);
         color: var(--navigation-audio-button-paused-color-font);
     }
+
+    &:disabled {
+        cursor: default;
+        opacity: 0.5;
+    }
 }
 
 .pause-button {
@@ -154,8 +174,28 @@
     background-color: var(--navigation-button-active-color-background);
     color: var(--navigation-button-color-font);
 
+    &:disabled {
+        cursor: default;
+        opacity: 0.5;
+    }
+
     &.paused {
         color: var(--navigation-pause-button-paused-color-font);
+    }
+}
+
+.spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+    width: 20px;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
 </style>

@@ -2,7 +2,7 @@
     <main>
         <div ref="mainInnerRef" class="main-inner" :class="{ show }">
             <ChatStream
-                :chat="chat"
+                :chat="agentStore.conversation"
                 @[EMITS.IMAGE_LOADED]="onImageLoaded"
                 @[EMITS.SPEECH_BUBBLE_EXPAND]="onSpeechBubbleExpand($event)" />
         </div>
@@ -14,34 +14,21 @@
     </footer>
 </template>
 <script setup>
-    import { computed, ref, onMounted, provide } from 'vue';
-    import { useAgentStore } from '@/stores/agentStore';
+    import { useAgentStore } from '@/stores/agent';
+
     import BaseChatTextArea from '@/components/baseComponents/uiElements/BaseChatTextArea.vue';
     import ChatStream from '@/components/chat/ChatStream.vue';
     import { EMITS } from '@/constants/emits.js';
 
     const agentStore = useAgentStore();
-    const chat = computed(() => agentStore.messages);
 
     const chatMessage = ref('');
 
-    async function handleChatSubmit(payload) {
-        const text = (typeof payload === 'string' ? payload : chatMessage.value).trim();
-
-        if (!text) return;
-
-        // Ensure connected
-        if (!agentStore.connected) {
-            try {
-                await agentStore.connect();
-            } catch (e) {
-                console.error('Failed to connect', e);
-                return;
-            }
-        }
-
-        agentStore.sendMessage(text);
+    // eslint-disable-next-line
+    async function handleChatSubmit(message) {
         chatMessage.value = '';
+
+        console.log(response);
     };
 
     const mainInnerRef = ref(null);

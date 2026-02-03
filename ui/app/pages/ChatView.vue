@@ -5,14 +5,13 @@
 </template>
 
 <script setup>
-    import { onMounted } from 'vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
-    import { useAgentStore } from '@/stores/agentStore';
+    import { useAgent } from '@/composables/useAgent';
 
-    const agentStore = useAgentStore();
+    const agent = useAgent();
 
     onMounted(() => {
-        agentStore.stopAudio();
+        agent.connect();
     });
 </script>
 
