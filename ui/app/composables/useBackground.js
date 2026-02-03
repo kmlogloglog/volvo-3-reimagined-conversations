@@ -1,6 +1,6 @@
 import { useColorMode, ref, computed, onMounted } from '#imports';
 
-export function useBackground(appStore = null) {
+export function useBackground(agentStore = null) {
     const colorMode = useColorMode();
     const isMounted = ref(false);
 
@@ -85,7 +85,7 @@ export function useBackground(appStore = null) {
 
         const combinedGradient = `${offsetGradient1}, ${offsetGradient2}, ${offsetGradient3}, ${offsetGradient4}, ${offsetGradient5}, ${offsetGradient6}, ${mainGradient}`;
 
-        const backgroundImageUrl = appStore && appStore.backgroundImageUrl;
+        const backgroundImageUrl = agentStore && agentStore.backgroundImageUrl;
 
         if (backgroundImageUrl) {
             return {

@@ -6,6 +6,7 @@ export const useAgentStore = defineStore('agentStore', {
     state: () => ({
         conversation: [],
         audioLevel: 0,
+        backgroundImageUrl: null,
     }),
     actions,
     getters,
