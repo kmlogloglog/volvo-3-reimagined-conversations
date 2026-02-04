@@ -961,3 +961,77 @@ button {
   background-color: #f8f9fa;
   border-color: #bdc1c6;
 }
+/* Filter Dropdown */
+.filter-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.filter-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  background-color: #3e3e3e;
+  color: #cccccc;
+  border: 1px solid #4e4e4e;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-btn:hover {
+  background-color: #4e4e4e;
+  border-color: #5e5e5e;
+}
+
+.filter-icon {
+  font-size: 0.6rem;
+  transition: transform 0.2s ease;
+}
+
+.filter-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #2d2d2d;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  border: 1px solid #3e3e3e;
+  border-radius: 0.25rem;
+  z-index: 1000;
+  padding: 0.5rem 0;
+  margin-top: 0.25rem;
+}
+
+.filter-content.show {
+  display: block;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: #cccccc;
+  font-size: 0.75rem;
+  transition: background-color 0.2s;
+}
+
+.filter-option:hover {
+  background-color: #3e3e3e;
+}
+
+.filter-option input[type="checkbox"] {
+  accent-color: #4285f4;
+  width: 14px;
+  height: 14px;
+}
+
+/* Event Type Classes for Filtering */
+.console-entry.hidden-by-filter {
+  display: none !important;
+}
