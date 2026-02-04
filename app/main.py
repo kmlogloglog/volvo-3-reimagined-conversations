@@ -31,7 +31,7 @@ from .volvo_agent.volvo_agent import root_agent as agent  # noqa: E402
 
 # Configure logging
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
