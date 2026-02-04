@@ -8,6 +8,8 @@ class CarModel(str, Enum):
     """
 
     EX90 = "EX90"
+    EX30 = "EX30"
+    EX60 = "EX60"
 
 
 class InteriorType(str, Enum):
