@@ -1,13 +1,6 @@
 <template>
     <div class="navigation">
         <nav class="navigation-groups">
-            <NavigationBarButton
-                :icon="NAVIGATION.CHAT.icon"
-                :active="isActive(NAVIGATION.CHAT.id)"
-                :loading="isActive(NAVIGATION.CHAT.id) && connecting"
-                :disabled="connecting || micRequesting"
-                @click="setActive(NAVIGATION.CHAT)" />
-
             <NavigationBarAudioButton
                 ref="recordingControlsRef"
                 :is-recording="isAudioRecording"
@@ -15,7 +8,12 @@
                 :loading="(isActive(NAVIGATION.UPLOAD.id) && connecting) || micRequesting"
                 :disabled="connecting || micRequesting"
                 @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
-
+            <NavigationBarButton
+                :icon="NAVIGATION.CHAT.icon"
+                :active="isActive(NAVIGATION.CHAT.id)"
+                :loading="isActive(NAVIGATION.CHAT.id) && connecting"
+                :disabled="connecting || micRequesting"
+                @click="setActive(NAVIGATION.CHAT)" />
             <NavigationBarButton
                 class="navigation-photo"
                 :icon="NAVIGATION.PHOTO.icon"
