@@ -7,6 +7,11 @@ class SaveMemoryResponse(BaseModel):
     success: bool = Field(description="Whether the memory was saved successfully.")
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 async def save_memory(
     text: str, tool_context: ToolContext, category: str | None = None
 ) -> SaveMemoryResponse:
@@ -20,6 +25,8 @@ async def save_memory(
     metadata = {}
     if category:
         metadata["category"] = category
+
+    logger.info(f"Tool save_memory called with text: '{text}', category: {category}")
 
     # Access private attributes to get to the memory service
     # This is necessary because ToolContext doesn't expose add_memory publicly
