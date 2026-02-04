@@ -19,15 +19,6 @@
         </span>
         <span v-else :class="micIconClass"></span>
     </button>
-    <button
-        v-if="isRecording"
-        class="nav-button pause-button"
-        :class="pauseButtonClasses"
-        :style="{ fontSize: '1.05rem' }"
-        :disabled="disabled"
-        @click="$emit(EMITS.PAUSE_CLICK)">
-        <span :class="pauseIconClass"></span>
-    </button>
 </template>
 
 <script setup>
@@ -51,22 +42,14 @@
             type: Boolean,
             default: false,
         },
-        isPaused: {
-            type: Boolean,
-            default: false,
-        },
     });
 
-    defineEmits([EMITS.RECORD_CLICK, EMITS.PAUSE_CLICK]);
-
-    // Computed states for styling only
-    const isIdle = computed(() => props.active && props.isPaused);
+    defineEmits([EMITS.RECORD_CLICK]);
 
     // Microphone button classes
     const micButtonClasses = computed(() => ({
         active: props.active,
         recording: props.isRecording && !props.loading,
-        paused: isIdle.value,
     }));
 
     const micIconClass = computed(() => {
@@ -74,21 +57,12 @@
             return NAVIGATION.AUDIO.icon;
         }
 
-        if (props.isRecording && !props.isPaused) {
+        if (props.isRecording) {
             return 'icon-stop';
         }
 
         return `${NAVIGATION.AUDIO.icon}-fill`;
     });
-
-    // Pause button classes
-    const pauseButtonClasses = computed(() => ({
-        paused: props.isPaused && props.isRecording,
-    }));
-
-    const pauseIconClass = computed(() =>
-        props.active ? `${NAVIGATION.PAUSE.icon}-fill` : NAVIGATION.PAUSE.icon,
-    );
 </script>
 
 <style scoped lang="scss">
@@ -123,33 +97,9 @@
         color: var(--color-white);
     }
 
-    &.paused {
-        background-color: var(--navigation-audio-button-paused-color-background);
-        color: var(--navigation-audio-button-paused-color-font);
-    }
-
     &:disabled {
         cursor: default;
         opacity: 0.5;
-    }
-}
-
-.pause-button {
-    aspect-ratio: 1 / 1;
-    flex: 0;
-    height: 100%;
-    margin-left: 0.3125rem;
-    margin-right: 0.3125rem;
-    background-color: var(--navigation-button-active-color-background);
-    color: var(--navigation-button-color-font);
-
-    &:disabled {
-        cursor: default;
-        opacity: 0.5;
-    }
-
-    &.paused {
-        color: var(--navigation-pause-button-paused-color-font);
     }
 }
 

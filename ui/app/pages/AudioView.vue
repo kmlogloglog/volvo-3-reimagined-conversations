@@ -17,7 +17,6 @@
 
     // --- Event bus (preserved) ---
     const busRecord = useEventBus('toggle-record');
-    const busPause = useEventBus('toggle-pause');
     busRecord.on(async(recording) => {
         console.log(recording);
 
@@ -32,21 +31,8 @@
         agent.stopAudio();
     });
 
-    busPause.on(async(pause) => {
-        console.log('pause', pause);
-
-        if (pause) {
-            agent.muteAudio();
-
-            return;
-        }
-
-        agent.unmuteAudio();
-    });
-
     onUnmounted(() => {
         busRecord.off();
-        busPause.off();
 
         agent.stopAudio();
     });

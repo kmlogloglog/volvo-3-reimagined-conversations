@@ -23,9 +23,6 @@ export function useAgent(options = {}) {
     const isMuted = computed(() => agentStore.isMuted);
     const audioLevel = computed(() => agentStore.audioLevel);
 
-    // Internal state - use shared variables
-    // (moved to module level as shared state)
-
     // Helper to convert Float32 to Int16 PCM
     function float32ToInt16(float32) {
         const int16 = new Int16Array(float32.length);
@@ -313,6 +310,32 @@ export function useAgent(options = {}) {
         stopAudio();
     }
 
+    function level() {
+        // Only start the draw function after everything is properly set up
+        const inputDataArray = new Uint8Array(agentStore.inputAnalyser.frequencyBinCount);
+        const outputDataArray = new Uint8Array(agentStore.analyser.frequencyBinCount);
+
+        (function draw() {
+            agentStore.animationId = requestAnimationFrame(draw);
+
+            // Get frequency data from both input and output analyzers
+            agentStore.inputAnalyser.getByteFrequencyData(inputDataArray);
+            agentStore.analyser.getByteFrequencyData(outputDataArray);
+
+            // Calculate levels for both input and output
+            const inputLevel = Math.round(
+                inputDataArray.reduce((a, b) => a + b, 0) / inputDataArray.length,
+            );
+            const outputLevel = Math.round(
+                outputDataArray.reduce((a, b) => a + b, 0) / outputDataArray.length,
+            );
+
+            // Use the highest level from either input or output
+            agentStore.audioLevel = Math.max(inputLevel, outputLevel);
+            onLevelChange?.(agentStore.audioLevel);
+        })();
+    }
+
     async function startAudio() {
         console.log('Starting audio...');
 
@@ -421,29 +444,7 @@ export function useAgent(options = {}) {
                     micSource.connect(agentStore.audioRecorderNode);
                     micSource.connect(agentStore.inputAnalyser);
 
-                    // Only start the draw function after everything is properly set up
-                    const inputDataArray = new Uint8Array(agentStore.inputAnalyser.frequencyBinCount);
-                    const outputDataArray = new Uint8Array(agentStore.analyser.frequencyBinCount);
-
-                    (function draw() {
-                        agentStore.animationId = requestAnimationFrame(draw);
-
-                        // Get frequency data from both input and output analyzers
-                        agentStore.inputAnalyser.getByteFrequencyData(inputDataArray);
-                        agentStore.analyser.getByteFrequencyData(outputDataArray);
-
-                        // Calculate levels for both input and output
-                        const inputLevel = Math.round(
-                            inputDataArray.reduce((a, b) => a + b, 0) / inputDataArray.length,
-                        );
-                        const outputLevel = Math.round(
-                            outputDataArray.reduce((a, b) => a + b, 0) / outputDataArray.length,
-                        );
-
-                        // Use the highest level from either input or output
-                        agentStore.audioLevel = Math.max(inputLevel, outputLevel);
-                        onLevelChange?.(agentStore.audioLevel);
-                    })();
+                    level();
 
                     console.log('Audio recorder set up successfully');
                     microphoneBus.emit({ requesting: false, granted: true, denied: false, ready: true });

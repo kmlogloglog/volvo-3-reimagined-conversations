@@ -9,11 +9,6 @@ export const NAVIGATION = Object.freeze({
         id: 'audio',
         icon: 'icon-microphone',
     },
-    PAUSE: {
-        name: '',
-        id: 'pause',
-        icon: 'icon-pause',
-    },
     PHOTO: {
         name: 'PhotoView',
         id: 'photo',

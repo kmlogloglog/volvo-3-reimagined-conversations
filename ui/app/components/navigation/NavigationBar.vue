@@ -11,16 +11,13 @@
             <NavigationBarAudioButton
                 ref="recordingControlsRef"
                 :is-recording="isAudioRecording"
-                :is-paused="isAudioPaused"
                 :active="isActive(NAVIGATION.AUDIO.id)"
                 :loading="(isActive(NAVIGATION.UPLOAD.id) && connecting) || micRequesting"
                 :disabled="connecting || micRequesting"
-                @[EMITS.RECORD_CLICK]="handleMicrophoneClick"
-                @[EMITS.PAUSE_CLICK]="handlePauseClick" />
+                @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
 
             <NavigationBarButton
                 class="navigation-photo"
-                :class="{ 'navigation-photo-icon-offset': (isActive(NAVIGATION.AUDIO.id) && isAudioRecording) }"
                 :icon="NAVIGATION.PHOTO.icon"
                 :active="isActive(NAVIGATION.PHOTO.id)"
                 :loading="isActive(NAVIGATION.PHOTO.id) && connecting"
@@ -46,7 +43,6 @@
     import { useEventBus } from '@vueuse/core';
 
     const busRecord = useEventBus('toggle-record');
-    const busPause = useEventBus('toggle-pause');
     const busMicrophone = useEventBus(BUS.MICROPHONE);
     const busConnection = useEventBus(BUS.AGENT_CONNECTION);
 
@@ -108,26 +104,16 @@
     }
 
     const isAudioRecording = ref(false);
-    const isAudioPaused = ref(false);
 
     function onToggleRecord(isRecording) {
         busRecord.emit(isRecording);
     }
 
-    function onTogglePause(isPaused) {
-        busPause.emit(isPaused);
-    }
-
     // Handle microphone click logic (moved from NavigationBarAudioButton)
     async function handleMicrophoneClick() {
         if (isActive(NAVIGATION.AUDIO.id)) {
-            if (isAudioPaused.value) {
-                // If paused, unpause and continue recording
-                isAudioPaused.value = false;
-                await nextTick();
-                onTogglePause(isAudioPaused.value);
-            } else if (isAudioRecording.value) {
-                // If recording (and not paused), stop recording
+            if (isAudioRecording.value) {
+                // If recording, stop recording
                 isAudioRecording.value = false;
                 await nextTick();
                 onToggleRecord(isAudioRecording.value);
@@ -143,21 +129,9 @@
         }
     }
 
-    // Handle pause click logic (moved from NavigationBarAudioButton)
-    async function handlePauseClick() {
-        if (!isAudioRecording.value) {
-            return;
-        }
-
-        isAudioPaused.value = !isAudioPaused.value;
-        await nextTick();
-        onTogglePause(isAudioPaused.value);
-    }
-
     // Reset audio state (moved from NavigationBarAudioButton)
     function resetAudioState() {
         isAudioRecording.value = false;
-        isAudioPaused.value = false;
     }
 
     // Watch route changes
@@ -193,26 +167,6 @@
         .navigation-photo {
             border: none;
         }
-
-        &:has(.pause-button) {
-            button:not(.navigation-photo):not(.pause-button),
-            :deep(.mic-button) {
-                flex: 0 0 25%;
-            }
-
-            .navigation-photo {
-                flex: 1 1 0%;
-                min-width: 0;
-            }
-
-            .pause-button {
-                flex: 0 0 auto;
-            }
-        }
-    }
-
-    :deep(.navigation-photo-icon-offset [class^=icon-]){
-        margin-right: calc(-15% - 1.15rem);
     }
 }
 </style>
