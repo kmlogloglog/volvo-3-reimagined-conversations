@@ -479,13 +479,42 @@ function connectWebsocket() {
         const sanitizedEvent = sanitizeEventForDisplay(adkEvent);
         addConsoleEntry('incoming', eventSummary, sanitizedEvent, eventEmoji, author, true);
       }
+
+      // Check for function calls
+      const hasFunctionCall = adkEvent.content.parts.some(p => p.functionCall);
+      if (hasFunctionCall) {
+        const callPart = adkEvent.content.parts.find(p => p.functionCall);
+        if (callPart && callPart.functionCall) {
+          const name = callPart.functionCall.name;
+          const args = JSON.stringify(callPart.functionCall.args);
+          const truncatedArgs = args.length > 50 ? args.substring(0, 50) + '...' : args;
+          eventSummary = `Tool Call: ${name}(${truncatedArgs})`;
+          eventEmoji = '🔧';
+        }
+      }
+
+      // Check for function responses
+      const hasFunctionResponse = adkEvent.content.parts.some(p => p.functionResponse);
+      if (hasFunctionResponse) {
+        const responsePart = adkEvent.content.parts.find(p => p.functionResponse);
+        if (responsePart && responsePart.functionResponse) {
+          const name = responsePart.functionResponse.name;
+          // output is usually a dict/object
+          const response = JSON.stringify(responsePart.functionResponse.response);
+          const truncatedResponse = response.length > 50 ? response.substring(0, 50) + '...' : response;
+          eventSummary = `Tool Response: ${name} -> ${truncatedResponse}`;
+          eventEmoji = '🔙';
+        }
+      }
     }
 
     // Create a sanitized version for console display (replace large audio data with summary)
     // Skip if already logged as audio event above
     const isAudioOnlyEvent = adkEvent.content && adkEvent.content.parts &&
       adkEvent.content.parts.some(p => p.inlineData) &&
-      !adkEvent.content.parts.some(p => p.text);
+      !adkEvent.content.parts.some(p => p.text) &&
+      !adkEvent.content.parts.some(p => p.functionCall) &&
+      !adkEvent.content.parts.some(p => p.functionResponse);
     if (!isAudioOnlyEvent) {
       const sanitizedEvent = sanitizeEventForDisplay(adkEvent);
       addConsoleEntry('incoming', eventSummary, sanitizedEvent, eventEmoji, author);
