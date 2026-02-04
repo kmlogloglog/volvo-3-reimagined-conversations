@@ -50,7 +50,7 @@ export function useAgent(options = {}) {
         agentStore.conversation.push(msg);
     }
 
-    function handleUserTranscription(text) {
+    function handleUserTranscription(text, finished) {
         if (!agentStore.currentUserMessageId) {
             agentStore.currentUserMessageId = Date.now().toString();
             addMessage({
@@ -58,8 +58,8 @@ export function useAgent(options = {}) {
                 sender: 'user',
                 content: { text: '' },
                 type: 'text',
-                isPartial: true,
                 timestamp: new Date(),
+                finished,
             });
         }
 
@@ -78,7 +78,10 @@ export function useAgent(options = {}) {
         }
     }
 
-    function handleTextResponse(text) {
+    function handleTextResponse(text, finished) {
+        console.group('handleTextResponse');
+        console.log(finished);
+        console.groupEnd();
         if (!agentStore.currentMessageId) {
             agentStore.currentMessageId = Date.now().toString();
             addMessage({
@@ -86,7 +89,7 @@ export function useAgent(options = {}) {
                 sender: 'agent',
                 content: { text: '' },
                 type: 'text',
-                isPartial: true,
+                finished,
                 timestamp: new Date(),
             });
         }
@@ -94,11 +97,12 @@ export function useAgent(options = {}) {
         const msg = agentStore.conversation.find(m => m.id === agentStore.currentMessageId);
         if (msg && msg.content) {
             const currentText = msg.content.text || '';
+            msg.finished = finished;
             if (currentText.endsWith(text) && text.length > 1) {
                 console.log('Skipping duplicate text chunk:', text);
                 return;
             }
-            msg.content.text = currentText + text;
+            msg.content.text = `${currentText}${text}`;
         }
     }
 
@@ -110,18 +114,18 @@ export function useAgent(options = {}) {
                     playAudioChunk(part.inlineData.data);
                 }
                 if (part.text) {
-                    handleTextResponse(part.text);
+                    handleTextResponse(part.text, part.finished);
                     textHandled = true;
                 }
             }
         }
 
         if (!textHandled && event.outputTranscription && event.outputTranscription.text) {
-            handleTextResponse(event.outputTranscription.text, true);
+            handleTextResponse(event.outputTranscription.text, event.outputTranscription.finished);
         }
 
         if (event.inputTranscription && event.inputTranscription.text) {
-            handleUserTranscription(event.inputTranscription.text);
+            handleUserTranscription(event.inputTranscription.text, event.outputTranscription.finished);
         }
 
         if (event.turnComplete) {

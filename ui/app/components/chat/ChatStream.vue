@@ -5,6 +5,7 @@
         <ChatSpeechBubble
             :align-bubble="message.sender"
             :text="message.content.text"
+            :finished="message.finished"
             :pending="message.pending"
             padding="small"
             @[EMITS.IMAGE_LOADED]="$emit(EMITS.IMAGE_LOADED)"
@@ -16,12 +17,21 @@
     import ChatSpeechBubble from '@/components/chat/ChatSpeechBubble.vue';
     import { EMITS } from '@/constants/emits.js';
 
-    defineProps({
+    const props = defineProps({
         chat: {
             type: Array,
             default: () => [],
         },
     });
+
+    watch(
+        () => props.chat,
+        () => {
+            console.group('ChatStream');
+            console.log(chat);
+            console.groupEnd();
+        },
+    );
 
     defineEmits([
         EMITS.SPEECH_BUBBLE_EXPAND,

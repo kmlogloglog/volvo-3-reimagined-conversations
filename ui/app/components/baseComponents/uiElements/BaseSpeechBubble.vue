@@ -29,10 +29,10 @@
             border-radius: var(--border-radius);
             color: var(--speech-bubble-color-font);
             margin: 0 auto;
+            max-width: 85%;
             padding: 0.75rem 1.25rem;
             position: relative;
             width: fit-content;
-            max-width: 85%;
 
             &[data-align="agent"] {
                 border-radius: var(--border-radius) var(--border-radius) var(--border-radius) 0;

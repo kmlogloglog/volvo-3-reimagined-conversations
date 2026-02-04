@@ -3,26 +3,30 @@
         ref="speechBubbleRef"
         :align-bubble="alignBubble"
         padding="small">
-        <!-- eslint-disable vue/no-v-html -->
-        <div
-            ref="textRef"
-            class="chat-message text-sm"
-            :class="{ 'show-all': showAllText }"
-            v-html="sanitizedText"></div>
-        <!-- eslint-enable vue/no-v-html -->
-        <button
-            v-show="showReadMoreButton"
-            class="button-reset button-read-more"
-            :class="{ 'open': showAllText}"
-            @[EMITS.CLICK]="onReadMoreClick">
-            {{  buttonLabel }}<span class="icon-chevron-right"></span>
-        </button>
+        <ChatTypeIndicator v-if="!finished" />
+        <template v-else>
+            <!-- eslint-disable vue/no-v-html -->
+            <div
+                ref="textRef"
+                class="chat-message text-sm"
+                :class="{ 'show-all': showAllText }"
+                v-html="sanitizedText"></div>
+            <!-- eslint-enable vue/no-v-html -->
+            <button
+                v-show="showReadMoreButton"
+                class="button-reset button-read-more"
+                :class="{ 'open': showAllText}"
+                @[EMITS.CLICK]="onReadMoreClick">
+                {{  buttonLabel }}<span class="icon-chevron-right"></span>
+            </button>
+        </template>
     </BaseSpeechBubble>
 </template>
 <script setup>
     import BaseSpeechBubble from '@/components/baseComponents/uiElements/BaseSpeechBubble.vue';
     import { EMITS } from '@/constants/emits.js';
     import DOMPurify from 'isomorphic-dompurify';
+    import ChatTypeIndicator from './ChatTypeIndicator.vue';
 
     const props = defineProps({
         text: {
@@ -34,7 +38,21 @@
             default: 'none',
             validator: (value) => ['user', 'agent', 'none'].includes(value),
         },
+        finished: {
+            type: Boolean,
+            default: true,
+        },
     });
+
+    watch(
+        () => props.text,
+        () => {
+            console.group('ChatSpeechBubble');
+            console.log(props.text);
+            console.log(props.finished);
+            console.groupEnd();
+        },
+    );
 
     const emit = defineEmits([EMITS.SPEECH_BUBBLE_EXPAND, EMITS.IMAGE_LOADED]);
 
