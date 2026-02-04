@@ -1,5 +1,6 @@
 <template>
     <div id="app" class="j" :style="backgroundStyle">
+
         <AppLayout
             :show-waves="$route.name === NAVIGATION.AUDIO.name"
             :show-circles="!agentStore.backgroundImageUrl">

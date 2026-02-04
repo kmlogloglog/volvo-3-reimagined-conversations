@@ -310,6 +310,7 @@ export function useAgent(options = {}) {
         stopAudio();
     }
 
+    // Audio level monitoring
     function level() {
         // Only start the draw function after everything is properly set up
         const inputDataArray = new Uint8Array(agentStore.inputAnalyser.frequencyBinCount);
@@ -444,6 +445,7 @@ export function useAgent(options = {}) {
                     micSource.connect(agentStore.audioRecorderNode);
                     micSource.connect(agentStore.inputAnalyser);
 
+                    // Audio level monitoring
                     level();
 
                     console.log('Audio recorder set up successfully');

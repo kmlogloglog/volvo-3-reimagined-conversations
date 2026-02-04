@@ -1,8 +1,9 @@
 <template>
     <div class="app-screen">
         <div class="base-view">
+            <NuxtLoadingIndicator color="var(--font-color-primary)" />
             <VolvoLogo :color="'#ffffff'" class="logo" />
-            <div class="base-view-inner">
+            <div v-show="!isLoading" class="base-view-inner">
                 <slot></slot>
             </div>
         </div>
@@ -28,10 +29,6 @@
     import { useAgentStore } from '@/stores/agent';
     import VolvoLogo from '~/components/logo/VolvoLogo.vue';
 
-    const AudioCaptureWaves = defineAsyncComponent(() =>
-        import('@/components/audioCapture/AudioCaptureWaves.vue'),
-    );
-
     defineProps({
         showWaves: {
             type: Boolean,
@@ -45,6 +42,7 @@
 
     const emit = defineEmits([EMITS.NAVIGATION_CHANGE]);
     const route = useRoute();
+    const { isLoading } = useLoadingIndicator();
 
     function onNavigate(navigationName) {
         navigateTo(`/${navigationName}`);
