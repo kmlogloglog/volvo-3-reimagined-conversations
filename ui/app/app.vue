@@ -10,7 +10,7 @@
 
 <script setup>
     import { preloadRouteComponents } from '#app';
-    import { NAVIGATION } from '@/constants/navigation.js';
+    import { NAVIGATION } from '@/constants/navigation';
     import AppLayout from '@/appLayouts/AppLayout.vue';
     import { useAgentStore } from '@/stores/agent';
 

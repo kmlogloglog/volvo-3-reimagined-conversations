@@ -19,8 +19,7 @@
     </div>
 </template>
 <script setup>
-
-    import { useId, ref, computed, watch } from 'vue';
+    import { EMITS } from '@/constants/emits.js';
 
     const id = useId();
 
@@ -29,7 +28,7 @@
         default: '',
     });
 
-    const emit = defineEmits(['submit']);
+    const emit = defineEmits([EMITS.SUBMIT]);
 
     const isListening = ref(false);
     const placeholderTxt = computed(() => isListening.value ? 'Recording' : 'Ask Volvo Vän');
@@ -39,16 +38,10 @@
             isListening.value = !isListening.value;
             return;
         }
-        
-        emit('submit', vModel.value);
+
+        emit(EMITS.SUBMIT, vModel.value);
         vModel.value = '';
     }
-
-    watch(vModel, (newVal) => {
-        if(newVal.length) {
-            isListening.value = false;
-        }
-    });
 
 </script>
 

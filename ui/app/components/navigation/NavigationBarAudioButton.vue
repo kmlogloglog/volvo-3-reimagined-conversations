@@ -4,7 +4,7 @@
         :class="micButtonClasses"
         :style="{ fontSize: '1.3rem' }"
         :disabled="disabled"
-        @click="handleMicrophoneClick">
+        @click="$emit(EMITS.RECORD_CLICK)">
         <span
             v-if="loading"
             class="spinner">
@@ -25,42 +25,47 @@
         :class="pauseButtonClasses"
         :style="{ fontSize: '1.05rem' }"
         :disabled="disabled"
-        @click="handlePauseClick">
+        @click="$emit(EMITS.PAUSE_CLICK)">
         <span :class="pauseIconClass"></span>
     </button>
 </template>
 
 <script setup>
-    import { NAVIGATION } from '@/constants/navigation.js';
+    import { EMITS } from '@/constants/emits';
+    import { NAVIGATION } from '@/constants/navigation';
 
     const props = defineProps({
         active: {
             type: Boolean,
             default: false,
         },
-        co: {
+        loading: {
             type: Boolean,
             default: false,
         },
-        disabled : {
+        disabled: {
+            type: Boolean,
+            default: false,
+        },
+        isRecording: {
+            type: Boolean,
+            default: false,
+        },
+        isPaused: {
             type: Boolean,
             default: false,
         },
     });
 
-    const emit = defineEmits(['select', 'toggle-record', 'toggle-pause']);
+    defineEmits([EMITS.RECORD_CLICK, EMITS.PAUSE_CLICK]);
 
-    // V-model refs using defineModel
-    const isRecording = defineModel('isRecording', { type: Boolean, default: false });
-    const isPaused = defineModel('isPaused', { type: Boolean, default: false });
+    // Computed states for styling only
+    const isIdle = computed(() => props.active && props.isPaused);
 
-    // Computed states
-    const isIdle = computed(() => props.active && isPaused.value);
-
-    // Microphone button
+    // Microphone button classes
     const micButtonClasses = computed(() => ({
         active: props.active,
-        recording: isRecording.value && !props.loading,
+        recording: props.isRecording && !props.loading,
         paused: isIdle.value,
     }));
 
@@ -69,65 +74,21 @@
             return NAVIGATION.AUDIO.icon;
         }
 
-        if (isRecording.value && !isPaused.value) {
+        if (props.isRecording && !props.isPaused) {
             return 'icon-stop';
         }
 
         return `${NAVIGATION.AUDIO.icon}-fill`;
     });
 
-    // Pause button
+    // Pause button classes
     const pauseButtonClasses = computed(() => ({
-        paused: isPaused.value && isRecording.value,
+        paused: props.isPaused && props.isRecording,
     }));
 
     const pauseIconClass = computed(() =>
         props.active ? `${NAVIGATION.PAUSE.icon}-fill` : NAVIGATION.PAUSE.icon,
     );
-
-    // Actions test
-    async function handleMicrophoneClick() {
-        if (props.active) {
-            if (isPaused.value) {
-                // If paused, unpause and continue recording
-                isPaused.value = false;
-                await nextTick();
-                emit('toggle-pause', isPaused.value);
-            } else if (isRecording.value) {
-                // If recording (and not paused), stop recording
-                isRecording.value = false;
-                await nextTick();
-                emit('toggle-record', isRecording.value);
-            } else {
-                // If not recording, start recording
-                isRecording.value = true;
-                await nextTick();
-                emit('toggle-record', isRecording.value);
-            }
-        } else {
-            // Select this navigation item
-            emit('select');
-        }
-    }
-
-    async function handlePauseClick() {
-        if (!isRecording.value) {
-            return;
-        }
-
-        isPaused.value = !isPaused.value;
-        await nextTick();
-        emit('toggle-pause', isPaused.value);
-    }
-
-    // Reset state when becoming inactive
-    function reset() {
-        isRecording.value = false;
-        isPaused.value = false;
-    }
-
-    // Expose reset for parent to call when switching away
-    defineExpose({ reset });
 </script>
 
 <style scoped lang="scss">

@@ -9,16 +9,6 @@
 
     const agentStore = useAgentStore();
 
-    watch(
-        () => agentStore.conversation,
-        () => {
-            console.group('ChatPanel.vue - Conversation Updated');
-            console.log(agentStore.conversation);
-            console.groupEnd();
-        },
-        { deep: true, immediate: true },
-    );
-
     const agent = useAgent({
         onLevelChange: (newLevel) => {
             agentStore.audioLevel = newLevel;

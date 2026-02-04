@@ -23,10 +23,14 @@
 
 <script setup>
     import { EMITS } from '@/constants/emits.js';
-    import { NAVIGATION } from '@/constants/navigation.js';
+    import { NAVIGATION } from '@/constants/navigation';
     import { navigateTo, useRoute } from '#app';
     import { useAgentStore } from '@/stores/agent';
     import VolvoLogo from '~/components/logo/VolvoLogo.vue';
+
+    const AudioCaptureWaves = defineAsyncComponent(() =>
+        import('@/components/audioCapture/AudioCaptureWaves.vue'),
+    );
 
     defineProps({
         showWaves: {

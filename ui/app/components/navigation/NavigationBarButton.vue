@@ -24,6 +24,7 @@
 </template>
 
 <script setup>
+    import { EMITS } from '@/constants/emits';
     const props = defineProps({
         icon: {
             type: String,
@@ -47,7 +48,7 @@
         },
     });
 
-    defineEmits(['click']);
+    defineEmits([EMITS.CLICK]);
 
     const iconClass = computed(() => props.active ? `${props.icon}-fill` : props.icon);
 </script>
