@@ -3,11 +3,13 @@
         ref="speechBubbleRef"
         :align-bubble="alignBubble"
         padding="small">
+        <!-- eslint-disable vue/no-v-html -->
         <div
             ref="textRef"
             class="chat-message text-sm"
             :class="{ 'show-all': showAllText }"
             v-html="sanitizedText"></div>
+        <!-- eslint-enable vue/no-v-html -->
         <button
             v-show="showReadMoreButton"
             class="button-reset button-read-more"
@@ -30,7 +32,7 @@
         alignBubble: {
             type: String,
             default: 'none',
-            validator: (value) => ['left', 'right', 'none'].includes(value),
+            validator: (value) => ['user', 'agent', 'none'].includes(value),
         },
     });
 

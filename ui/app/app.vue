@@ -1,8 +1,9 @@
 <template>
     <div id="app" class="j" :style="backgroundStyle">
+
         <AppLayout
             :show-waves="$route.name === NAVIGATION.AUDIO.name"
-            :show-circles="!appStore.backgroundImageUrl">
+            :show-circles="!agentStore.backgroundImageUrl">
             <NuxtPage />
         </AppLayout>
     </div>
@@ -10,18 +11,20 @@
 
 <script setup>
     import { preloadRouteComponents } from '#app';
-    import { NAVIGATION } from '@/constants/navigation.js';
+    import { NAVIGATION } from '@/constants/navigation';
     import AppLayout from '@/appLayouts/AppLayout.vue';
-    import { useAppStore } from '@/stores/app';
+    import { useAgentStore } from '@/stores/agent';
 
     preloadRouteComponents('/');
     preloadRouteComponents('/ChatView');
     preloadRouteComponents('/AudioView');
+    preloadRouteComponents('/PhotoView');
+    preloadRouteComponents('/UploadView');
 
-    const appStore = useAppStore();
-    const { backgroundStyle } = useBackground(appStore);
+    const agentStore = useAgentStore();
+    const { backgroundStyle } = useBackground(agentStore);
 
-    // appStore.backgroundImageUrl = './assets/images/backgrounds/placeholder-volvo-ex60-front.jpg';
+    // agentStore.backgroundImageUrl = './assets/images/backgrounds/placeholder-volvo-ex60-front.jpg';
 </script>
 
 <style scoped lang="scss">

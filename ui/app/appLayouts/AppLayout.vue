@@ -1,25 +1,32 @@
 <template>
     <div class="app-screen">
         <div class="base-view">
+            <NuxtLoadingIndicator color="var(--font-color-primary)" />
             <VolvoLogo :color="'#ffffff'" class="logo" />
-            <div class="base-view-inner">
+            <div v-show="!isLoading" class="base-view-inner">
                 <slot></slot>
             </div>
         </div>
         <NavigationBar
             @[EMITS.NAVIGATION_CHANGE]="onNavigate" />
-        <AudioCaptureWaves v-if="showWaves" />
+
         <!--
         Do not use AudioCaptureCircles together with full screen background image.
         AudioCaptureCircles breaks iOS Safari's background rendering behind browser chrome
         -->
+        <AudioCaptureWaves
+            v-if="route.name === NAVIGATION.AUDIO.name"
+            class="audio-waves"
+            :level="agentStore.audioLevel" />
         <AudioCaptureCircles v-if="showCircles" />
     </div>
 </template>
 
 <script setup>
     import { EMITS } from '@/constants/emits.js';
-    import { navigateTo } from '#app';
+    import { NAVIGATION } from '@/constants/navigation';
+    import { navigateTo, useRoute } from '#app';
+    import { useAgentStore } from '@/stores/agent';
     import VolvoLogo from '~/components/logo/VolvoLogo.vue';
 
     defineProps({
@@ -34,11 +41,16 @@
     });
 
     const emit = defineEmits([EMITS.NAVIGATION_CHANGE]);
+    const route = useRoute();
+    const { isLoading } = useLoadingIndicator();
 
     function onNavigate(navigationName) {
         navigateTo(`/${navigationName}`);
         emit(EMITS.NAVIGATION_CHANGE, navigationName);
     }
+
+    const agentStore = useAgentStore();
+
 </script>
 
 <style scoped lang="scss">

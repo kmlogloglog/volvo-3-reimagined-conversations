@@ -3,12 +3,28 @@
         class="button-reset"
         :class="{ active }"
         :style="{ fontSize }"
+        :disabled="disabled"
         @click="$emit('click')">
-        <span :class="iconClass"></span>
+        <span
+            v-if="loading"
+            class="spinner">
+            <svg viewBox="0 0 100 100">
+                <circle
+                    cx="50" cy="50" r="40"
+                    fill="none"
+                    stroke="#ffffff"
+                    stroke-width="4"
+                    stroke-dasharray="209 251" />
+            </svg>
+        </span>
+        <span
+            v-else
+            :class="iconClass"></span>
     </button>
 </template>
 
 <script setup>
+    import { EMITS } from '@/constants/emits';
     const props = defineProps({
         icon: {
             type: String,
@@ -22,9 +38,17 @@
             type: String,
             default: '1.15rem',
         },
+        loading: {
+            type: Boolean,
+            default: false,
+        },
+        disabled : {
+            type: Boolean,
+            default: false,
+        },
     });
 
-    defineEmits(['click']);
+    defineEmits([EMITS.CLICK]);
 
     const iconClass = computed(() => props.active ? `${props.icon}-fill` : props.icon);
 </script>
@@ -45,6 +69,26 @@ button {
     &.active {
         background-color: var(--navigation-button-active-color-background);
         color: var(--navigation-button-active-color-font);
+    }
+
+    &:disabled {
+        cursor: default;
+        opacity: 0.5;
+    }
+}
+
+.spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+    width: 20px;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
 </style>

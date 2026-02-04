@@ -6,6 +6,7 @@
             type="text"
             class="chat-text-input"
             :placeholder="placeholderTxt"
+            @keydown.enter.prevent="onSubmit"
         ></textarea>
         <button
             type="button"
@@ -18,8 +19,7 @@
     </div>
 </template>
 <script setup>
-
-    import { useId, ref, computed, watch } from 'vue';
+    import { EMITS } from '@/constants/emits.js';
 
     const id = useId();
 
@@ -28,23 +28,20 @@
         default: '',
     });
 
+    const emit = defineEmits([EMITS.SUBMIT]);
+
     const isListening = ref(false);
-    const placeholderTxt = computed(() => isListening.value ? 'Recording' : 'Ask Gemini');
+    const placeholderTxt = computed(() => isListening.value ? 'Recording' : 'Ask Volvo Vän');
 
     function onSubmit() {
         if(vModel.value === '') {
             isListening.value = !isListening.value;
-
             return;
         }
+
+        emit(EMITS.SUBMIT, vModel.value);
         vModel.value = '';
     }
-
-    watch(vModel, (newVal) => {
-        if(newVal.length) {
-            isListening.value = false;
-        }
-    });
 
 </script>
 

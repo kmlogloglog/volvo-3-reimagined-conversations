@@ -1,25 +1,31 @@
 <template>
     <div class="navigation">
         <nav class="navigation-groups">
+            <NavigationBarAudioButton
+                ref="recordingControlsRef"
+                :is-recording="isAudioRecording"
+                :active="isActive(NAVIGATION.AUDIO.id)"
+                :loading="(isActive(NAVIGATION.UPLOAD.id) && connecting) || micRequesting"
+                :disabled="connecting || micRequesting"
+                @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
             <NavigationBarButton
                 :icon="NAVIGATION.CHAT.icon"
                 :active="isActive(NAVIGATION.CHAT.id)"
+                :loading="isActive(NAVIGATION.CHAT.id) && connecting"
+                :disabled="connecting || micRequesting"
                 @click="setActive(NAVIGATION.CHAT)" />
-            <NavigationBarAudioButton
-                ref="recordingControlsRef"
-                :active="isActive(NAVIGATION.AUDIO.id)"
-                @select="setActive(NAVIGATION.AUDIO)"
-                @recording-change="onRecordingChange" />
-
             <NavigationBarButton
                 class="navigation-photo"
-                :class="{ 'navigation-photo-icon-offset': (isActive(NAVIGATION.AUDIO.id) && isAudioRecording) }"
                 :icon="NAVIGATION.PHOTO.icon"
                 :active="isActive(NAVIGATION.PHOTO.id)"
+                :loading="isActive(NAVIGATION.PHOTO.id) && connecting"
+                :disabled="connecting || micRequesting"
                 @click="setActive(NAVIGATION.PHOTO)" />
             <NavigationBarButton
                 :icon="NAVIGATION.UPLOAD.icon"
                 :active="isActive(NAVIGATION.UPLOAD.id)"
+                :loading="isActive(NAVIGATION.UPLOAD.id) && connecting"
+                :disabled="connecting || micRequesting"
                 @click="setActive(NAVIGATION.UPLOAD)" />
         </nav>
     </div>
@@ -28,8 +34,15 @@
 <script setup>
     import NavigationBarButton from './NavigationBarButton.vue';
     import NavigationBarAudioButton from './NavigationBarAudioButton.vue';
-    import { NAVIGATION } from '@/constants/navigation.js';
+    import { NAVIGATION } from '@/constants/navigation';
     import { EMITS } from '@/constants/emits.js';
+    import { BUS } from '@/constants/bus.js';
+
+    import { useEventBus } from '@vueuse/core';
+
+    const busRecord = useEventBus('toggle-record');
+    const busMicrophone = useEventBus(BUS.MICROPHONE);
+    const busConnection = useEventBus(BUS.AGENT_CONNECTION);
 
     const props = defineProps({
         forceActive: {
@@ -38,17 +51,27 @@
         },
     });
 
+    const connected = ref(false);
+    const connecting = ref(false);
+    const micRequesting = ref(false);
+
+    busConnection.on((payload) => {
+        connected.value = payload.connected ?? connected.value;
+        connecting.value = payload.connecting ?? connecting.value;
+    });
+
+    busMicrophone.on((payload) => {
+        micRequesting.value = payload.requesting ?? micRequesting.value;
+    });
+
     const route = useRoute();
 
     const emit = defineEmits([EMITS.NAVIGATION_CHANGE]);
 
-    // Refs
     const recordingControlsRef = ref(props.forceActive ? props.forceActive : null);
 
-    // State
     const activeId = ref(null);
 
-    // Helpers
     const isActive = (id) => activeId.value === id;
 
     function getNavItemByRouteName(name) {
@@ -62,7 +85,11 @@
         } else {
             // Unknown route (404, etc.) - reset navigation
             activeId.value = null;
-            recordingControlsRef.value?.reset();
+            resetAudioState();
+        }
+
+        if(navItem?.id !== NAVIGATION.AUDIO.id) {
+            resetAudioState();
         }
     }
 
@@ -70,23 +97,39 @@
     function setActive(navItem) {
         const { id, name } = navItem;
 
-        // Reset recording state when navigating away from audio
-        if (activeId.value === NAVIGATION.AUDIO.id && id !== NAVIGATION.AUDIO.id) {
-            recordingControlsRef.value?.reset();
-        }
-
         activeId.value = id;
         emit(EMITS.NAVIGATION_CHANGE, name);
     }
 
     const isAudioRecording = ref(false);
 
-    // eslint-disable-next-line
-    function onRecordingChange({ isRecording, isPaused }) {
-        console.log(isRecording);
+    function onToggleRecord(isRecording) {
+        busRecord.emit(isRecording);
+    }
 
-        isAudioRecording.value = isRecording;
-        // Handle recording state changes if needed by parent
+    // Handle microphone click logic (moved from NavigationBarAudioButton)
+    async function handleMicrophoneClick() {
+        if (isActive(NAVIGATION.AUDIO.id)) {
+            if (isAudioRecording.value) {
+                // If recording, stop recording
+                isAudioRecording.value = false;
+                await nextTick();
+                onToggleRecord(isAudioRecording.value);
+            } else {
+                // If not recording, start recording
+                isAudioRecording.value = true;
+                await nextTick();
+                onToggleRecord(isAudioRecording.value);
+            }
+        } else {
+            // Select this navigation item
+            setActive(NAVIGATION.AUDIO);
+        }
+    }
+
+    // Reset audio state (moved from NavigationBarAudioButton)
+    function resetAudioState() {
+        isAudioRecording.value = false;
     }
 
     // Watch route changes
@@ -122,26 +165,6 @@
         .navigation-photo {
             border: none;
         }
-
-        &:has(.pause-button) {
-            button:not(.navigation-photo):not(.pause-button),
-            :deep(.mic-button) {
-                flex: 0 0 25%;
-            }
-
-            .navigation-photo {
-                flex: 1 1 0%;
-                min-width: 0;
-            }
-
-            .pause-button {
-                flex: 0 0 auto;
-            }
-        }
-    }
-
-    :deep(.navigation-photo-icon-offset [class^=icon-]){
-        margin-right: calc(-15% - 1.15rem);
     }
 }
 </style>

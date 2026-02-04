@@ -1,121 +1,53 @@
-# Nuxt Minimal Starter
+# Volvo Vän - Frontend
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+This directory contains the Nuxt.js frontend for the Volvo Vän project.
 
-## Setup
+## Project Structure
 
-Make sure to install dependencies:
+- `app/` - Application source code
+  - `pages/` - Application routes (AudioView, ChatView, etc.)
+  - `components/` - Vue components
+  - `stores/` - Pinia state management (`agentStore.ts`)
+  - `api/` - API integration helpers
+- `public/` - Static assets and Audio Worklet scripts (`js/audio-modules/`)
+- `nuxt.config.ts` - Nuxt configuration
+
+## Development
+
+You can run the frontend in isolation for UI development:
 
 ```bash
-# npm
+# Install dependencies
 npm install
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
+# Run development server
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+The UI will be available at `http://localhost:3000`.
 
-Build the application for production:
+> **Note**: In isolated mode, the agent connection might fail if the backend is not running on port 8080 or if the proxy configuration implies a specific setup. For full end-to-end testing, use the root Makefile commands.
+
+## Production Build
+
+The frontend is built as a static site (SPA mode) to be served by the Python backend.
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+# Build for production
+npm run generate
 ```
 
-Locally preview production build:
+This generates the static files in `.output/public`, which are then served by FastAPI in the parent directory.
 
-```bash
-# npm
-npm run preview
+## Integration with Backend
 
-# pnpm
-pnpm preview
+The root `Makefile` handles the integration:
 
-# yarn
-yarn preview
+- `make build-ui`: Runs `npm run generate` inside this directory.
+- `make run-agent`: Serves the built UI via FastAPI on `http://localhost:8080`.
 
-# bun
-bun run preview
-```
+## Audio Worklets
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
-
-## Google Cloud Deployment
-
-This project is configured for automatic deployment to Google Cloud Run when commits are pushed to the main branch.
-
-### Prerequisites
-
-1. Google Cloud project with Cloud Run and Cloud Build APIs enabled
-2. Google Cloud SDK installed and authenticated
-3. GitHub repository connected to Google Cloud Build
-
-### Deployment Setup
-
-1. **Connect your GitHub repository** to Google Cloud Build:
-   - Go to Google Cloud Console > Cloud Build > Triggers
-   - Create a new trigger connected to your GitHub repository
-   - Select the main branch
-   - Use the `cloudbuild.yaml` configuration file
-
-2. **Environment variables** (if needed):
-   - Set any required environment variables in Cloud Run configuration
-
-3. **Custom domain** (optional):
-   - You can map a custom domain to your Cloud Run service
-
-### Manual Deployment
-
-If you need to deploy manually:
-
-```bash
-# Build and push the Docker image
-gcloud builds submit --config cloudbuild.yaml
-
-# Or deploy directly
-gcloud run deploy volvo-vaen --image gcr.io/YOUR_PROJECT_ID/volvo-vaen:latest --platform managed --region us-central1 --allow-unauthenticated --port 8080
-```
-
-### Cloud Build Configuration
-
-The `cloudbuild.yaml` file defines the build pipeline:
-- Installs dependencies
-- Builds the Nuxt.js application
-- Creates a Docker image
-- Deploys to Cloud Run
-
-The service will be available at: `https://volvo-vaen-xyz.a.run.app` (replace xyz with your actual URL)
+The audio processing relies on Audio Worklets located in `public/js/audio-modules/`.
+- `pcm-player-processor.js`: Handles 24kHz audio playback (from backend).
+- `pcm-recorder-processor.js`: Handles 16kHz audio recording (to backend).
