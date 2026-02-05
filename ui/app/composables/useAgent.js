@@ -53,14 +53,17 @@ export function useAgent(options = {}) {
     function handleUserTranscription(text, finished) {
         if (!agentStore.currentUserMessageId) {
             agentStore.currentUserMessageId = Date.now().toString();
-            addMessage({
+            const newMsg = {
                 id: agentStore.currentUserMessageId,
                 sender: AGENT.USER,
                 content: { text: '' },
-                type: 'text',
                 timestamp: new Date(),
                 finished,
-            });
+            };
+            if (finished != null) {
+                newMsg.finished = finished;
+            }
+            addMessage(newMsg);
         }
 
         const msg = agentStore.conversation.find(m => m.id === agentStore.currentUserMessageId);
@@ -85,7 +88,6 @@ export function useAgent(options = {}) {
                 id: agentStore.currentMessageId,
                 sender: AGENT.AGENT,
                 content: { text: '' },
-                type: 'text',
                 timestamp: new Date(),
             };
             if (finished != null) {
@@ -238,7 +240,7 @@ export function useAgent(options = {}) {
         agentStore.connecting = true;
         connectionBus.emit({ connecting: true, connected: false });
 
-        console.info('connecting to agent...');
+        console.log('connecting to agent...');
 
         agentStore.connectionPromise = new Promise((resolve, reject) => {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -487,19 +489,16 @@ export function useAgent(options = {}) {
             id: `${Date.now().toString()}_${AGENT.USER}`,
             sender: AGENT.USER,
             content: { text },
-            type: 'text',
             timestamp: new Date(),
         });
 
         agentStore.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
 
-        // adding a pending message from agent
-        // agentStore.conversation.push({pending: true, finished: false, sender: AGENT.AGENT, content: { text: '' }});
+        // Add a pending agent message with empty text
         addMessage({
             id: agentStore.currentMessageId,
             sender: AGENT.AGENT,
-            content: { text },
-            type: 'text',
+            content: { text: '' },
             timestamp: new Date(),
             finished: false,
         });

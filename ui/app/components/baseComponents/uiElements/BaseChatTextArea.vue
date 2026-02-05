@@ -5,13 +5,13 @@
             v-model="vModel"
             type="text"
             class="chat-text-input"
-            :disabled="true"
+            :disabled="disabled"
             :placeholder="placeholderTxt"
             @keydown.enter.prevent="onSubmit"></textarea>
         <button
             type="button"
             class="button-reset chat-text-button"
-            :disabled="true"
+            :disabled="disabled"
             @click="onSubmit">
             <span
                 class="chat-text-button-icon"

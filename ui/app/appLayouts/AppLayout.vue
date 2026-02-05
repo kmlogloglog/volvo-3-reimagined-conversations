@@ -42,21 +42,16 @@
     });
 
     const emit = defineEmits([EMITS.NAVIGATION_CHANGE]);
+
+    const agentStore = useAgentStore();
     const route = useRoute();
+
     const { isLoading } = useLoadingIndicator();
 
     function onNavigate(navigationName) {
         navigateTo(`/${navigationName}`);
         emit(EMITS.NAVIGATION_CHANGE, navigationName);
     }
-
-    const agentStore = useAgentStore();
-
-    watch(isLoading, (newVal) => {
-        // Add your logic here if you want to react to isLoading changes
-        // Example: console.log('isLoading changed:', newVal);
-        console.log('loading: ', newVal);
-    }, { immediate: true });
 
 </script>
 

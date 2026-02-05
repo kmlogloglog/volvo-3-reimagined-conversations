@@ -11,18 +11,18 @@
             <NavigationBarButton
                 :icon="NAVIGATION.CHAT.icon"
                 :active="isActive(NAVIGATION.CHAT.id)"
-                :disabled="(isActive(NAVIGATION.CHAT.id) && isPageLoading) || micRequesting"
+                :disabled="micRequesting"
                 @click="setActive(NAVIGATION.CHAT)" />
             <NavigationBarButton
                 class="navigation-photo"
                 :icon="NAVIGATION.PHOTO.icon"
                 :active="isActive(NAVIGATION.PHOTO.id)"
-                :disabled="(isActive(NAVIGATION.PHOTO.id) && isPageLoading) || micRequesting"
+                :disabled="micRequesting"
                 @click="setActive(NAVIGATION.PHOTO)" />
             <NavigationBarButton
                 :icon="NAVIGATION.UPLOAD.icon"
                 :active="isActive(NAVIGATION.UPLOAD.id)"
-                :disabled="(isActive(NAVIGATION.UPLOAD.id) && isPageLoading) || micRequesting"
+                :disabled="micRequesting"
                 @click="setActive(NAVIGATION.UPLOAD)" />
         </nav>
     </div>
