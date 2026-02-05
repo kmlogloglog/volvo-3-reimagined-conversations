@@ -58,7 +58,6 @@ export function useAgent(options = {}) {
                 sender: AGENT.USER,
                 content: { text: '' },
                 timestamp: new Date(),
-                finished,
             };
             if (finished != null) {
                 newMsg.finished = finished;
@@ -68,7 +67,6 @@ export function useAgent(options = {}) {
 
         const msg = agentStore.conversation.find(m => m.id === agentStore.currentUserMessageId);
         if (msg && msg.content) {
-            console.log(msg);
             msg.content.text = text;
         }
     }

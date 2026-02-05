@@ -121,6 +121,14 @@
             type: Boolean,
             default: null,
         },
+        lightModeGlowColor: {
+            type: Object,
+            default: () => ({ r: 0, g: 0, b: 0 }),
+        },
+        darkModeGlowColor: {
+            type: Object,
+            default: () => ({ r: 255, g: 255, b: 255 }),
+        },
     });
 
     // ============================================
@@ -138,11 +146,41 @@
     });
 
     const baseGlowColor = computed(() => {
-        if (!isMounted.value) return { r: 128, g: 128, b: 128 };
-        return colorMode.value === 'dark'
-            ? { r: 255, g: 255, b: 255 }
-            : { r: 0, g: 0, b: 0 };
+        if (!isMounted.value) return props.lightModeGlowColor;
+        return colorMode.value === 'dark' ? props.darkModeGlowColor : props.lightModeGlowColor;
     });
+
+    // COLOR_TRANSITION: Transition duration in milliseconds
+    const COLOR_TRANSITION_DURATION = 1000;
+
+    // Color transition state
+    const isTransitioning = ref(false);
+    const transitionStartTime = ref(0);
+    const fromGlowColor = ref(null);
+    const toGlowColor = ref(null);
+    const currentGlowColor = ref(null);
+
+    function interpolateColor(from, to, progress) {
+        return {
+            r: Math.round(from.r + (to.r - from.r) * progress),
+            g: Math.round(from.g + (to.g - from.g) * progress),
+            b: Math.round(from.b + (to.b - from.b) * progress),
+        };
+    }
+
+    // Watch for color changes and trigger transitions
+    watch(baseGlowColor, (newColor, oldColor) => {
+        if (!isMounted.value || !oldColor || !currentGlowColor.value) {
+            currentGlowColor.value = newColor;
+            return;
+        }
+
+        // Start transition
+        fromGlowColor.value = { ...currentGlowColor.value };
+        toGlowColor.value = { ...newColor };
+        isTransitioning.value = true;
+        transitionStartTime.value = import.meta.client ? performance.now() : 0;
+    }, { immediate: true });
 
     // ============================================
     // COMPONENT LOGIC
@@ -455,6 +493,23 @@
         time += 1;
         updateWaveformData(time);
 
+        // Update color transition if active
+        if (isTransitioning.value && fromGlowColor.value && toGlowColor.value) {
+            const transitionElapsed = now - transitionStartTime.value;
+            const transitionProgress = Math.min(transitionElapsed / COLOR_TRANSITION_DURATION, 1);
+
+            // Use easing function for smooth transition
+            const easedProgress = transitionProgress * transitionProgress * (3 - 2 * transitionProgress);
+
+            currentGlowColor.value = interpolateColor(fromGlowColor.value, toGlowColor.value, easedProgress);
+
+            if (transitionProgress >= 1) {
+                isTransitioning.value = false;
+                fromGlowColor.value = null;
+                toGlowColor.value = null;
+            }
+        }
+
         const sliceWidth = width / (BUFFER_LENGTH - 1);
 
         for (let waveIndex = 0; waveIndex < waveConfigs.length; waveIndex++) {
@@ -477,7 +532,7 @@
             const intensity = isActiveMode ? Math.min(maxVal / MAX_AMPLITUDE, 1) : 0;
             const colorBlend = intensity * activeGlow.amount;
 
-            const base = baseGlowColor.value;
+            const base = currentGlowColor.value || baseGlowColor.value;
             const glowR = Math.round(lerp(base.r, activeGlow.color.r, colorBlend));
             const glowG = Math.round(lerp(base.g, activeGlow.color.g, colorBlend));
             const glowB = Math.round(lerp(base.b, activeGlow.color.b, colorBlend));
@@ -551,6 +606,7 @@
 
     onMounted(() => {
         isMounted.value = true;
+        currentGlowColor.value = baseGlowColor.value;
         initializeBuffers();
         resizeCanvas();
         draw();

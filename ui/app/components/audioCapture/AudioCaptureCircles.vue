@@ -7,47 +7,53 @@
 </template>
 
 <script setup>
-    import { ref, computed, onMounted, onUnmounted } from 'vue';
+    import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 
-    const COLORS_LIGHT_MODE = [
-        {
-            start: { r: 191, g: 154, b: 103, a: .75 },
-            end: { r: 159, g: 110, b: 75, a: .75 },
+    const props = defineProps({
+        lightModeColor: {
+            type: Object,
+            default: () => ({ r: 191, g: 154, b: 103, a: .75 }),
         },
-        {
-            start: { r: 191, g: 154, b: 103, a: 1 },
-            end: { r: 159, g: 110, b: 75, a: 1 },
+        darkModeColor: {
+            type: Object,
+            default: () => ({ r: 191, g: 154, b: 103, a: .75 }),
         },
-        {
-            start: { r: 191, g: 154, b: 103, a: 1 },
-            end: { r: 159, g: 110, b: 75, a: 1 },
-        },
-    ];
-    const COLORS_DARK_MODE = [
-        {
-            start: { r: 191, g: 154, b: 103, a: .75 },
-            end: { r: 159, g: 110, b: 75, a: .75 },
-        },
-        {
-            start: { r: 191, g: 154, b: 103, a: .75 },
-            end: { r: 159, g: 110, b: 75, a: .75 },
-        },
-        {
-            start: { r: 191, g: 154, b: 103, a: .75 },
-            end: { r: 159, g: 110, b: 75, a: .75 },
-        },
-    ];
-
-    const colorMode = useColorMode();
-    const isMounted = ref(false);
-
-    const colors = computed(() => {
-        if (!isMounted.value) return COLORS_LIGHT_MODE;
-        return colorMode.value === 'dark' ? COLORS_DARK_MODE : COLORS_LIGHT_MODE;
     });
 
+    const colorMode = import.meta.client ? useColorMode() : { value: 'light' };
+    const isMounted = ref(false);
+
+    const color = computed(() => {
+        if (!isMounted.value) return props.lightModeColor;
+        return colorMode.value === 'dark' ? props.darkModeColor : props.lightModeColor;
+    });
+
+    // COLOR_TRANSITION: Transition duration in milliseconds
+    const COLOR_TRANSITION_DURATION = 1000;
+
+    // Color transition state
+    const isTransitioning = ref(false);
+    const transitionStartTime = ref(0);
+    const fromColor = ref(null);
+    const toColor = ref(null);
+    const currentColor = ref(null);
+
+    // Watch for color changes and trigger transitions
+    watch(color, (newColor, oldColor) => {
+        if (!isMounted.value || !oldColor || !currentColor.value) {
+            currentColor.value = newColor;
+            return;
+        }
+
+        // Start transition
+        fromColor.value = { ...currentColor.value };
+        toColor.value = { ...newColor };
+        isTransitioning.value = true;
+        transitionStartTime.value = import.meta.client ? performance.now() : 0;
+    }, { immediate: true });
+
     // CIRCLE_COUNT: Number of circles (integer)
-    const CIRCLE_COUNT = 4;
+    const CIRCLE_COUNT = 3;
 
     // DURATION: Animation cycle length in milliseconds
     const MIN_DURATION = 5000;
@@ -76,11 +82,20 @@
     let animationId = null;
     let circles = [];
     let lastFrameTime = 0;
-    const TARGET_FPS = 30;
+    const TARGET_FPS = 15;
     const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
     function randomBetween(min, max) {
         return Math.random() * (max - min) + min;
+    }
+
+    function interpolateColor(from, to, progress) {
+        return {
+            r: Math.round(from.r + (to.r - from.r) * progress),
+            g: Math.round(from.g + (to.g - from.g) * progress),
+            b: Math.round(from.b + (to.b - from.b) * progress),
+            a: from.a + (to.a - from.a) * progress,
+        };
     }
 
     function randomizeCircle(circle) {
@@ -88,7 +103,7 @@
         circle.y = randomBetween(SPAWN_Y_MIN, SPAWN_Y_MAX);
         circle.size = randomBetween(MIN_SIZE, MAX_SIZE);
         circle.duration = randomBetween(MIN_DURATION, MAX_DURATION);
-        circle.startTime = performance.now();
+        circle.startTime = import.meta.client ? performance.now() : 0;
     }
 
     function generateCircle(index) {
@@ -96,13 +111,12 @@
             x: 0,
             y: 0,
             size: 0,
-            colorIndex: index % COLORS_LIGHT_MODE.length,
             duration: 0,
             startTime: 0,
             initialDelay: (index / CIRCLE_COUNT) * MAX_DURATION,
         };
         randomizeCircle(circle);
-        circle.startTime = performance.now() - circle.initialDelay;
+        circle.startTime = (import.meta.client ? performance.now() : 0) - circle.initialDelay;
         return circle;
     }
 
@@ -122,13 +136,30 @@
         const x = circle.x * width;
         const y = circle.y * height;
 
-        const { start, end } = colors.value[circle.colorIndex];
+        // Update color transition if active
+        if (isTransitioning.value && fromColor.value && toColor.value) {
+            const transitionElapsed = time - transitionStartTime.value;
+            const transitionProgress = Math.min(transitionElapsed / COLOR_TRANSITION_DURATION, 1);
+
+            // Use easing function for smooth transition
+            const easedProgress = transitionProgress * transitionProgress * (3 - 2 * transitionProgress);
+
+            currentColor.value = interpolateColor(fromColor.value, toColor.value, easedProgress);
+
+            if (transitionProgress >= 1) {
+                isTransitioning.value = false;
+                fromColor.value = null;
+                toColor.value = null;
+            }
+        }
+
+        const { r, g, b, a } = currentColor.value || color.value;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, sizePixels / 2);
 
-        gradient.addColorStop(0, `rgba(${start.r}, ${start.g}, ${start.b}, ${start.a * pulseOpacity})`);
-        gradient.addColorStop(0.3, `rgba(${start.r}, ${start.g}, ${start.b}, ${start.a * pulseOpacity * 0.6})`);
-        gradient.addColorStop(0.6, `rgba(${end.r}, ${end.g}, ${end.b}, ${end.a * pulseOpacity * 0.2})`);
-        gradient.addColorStop(1, `rgba(${end.r}, ${end.g}, ${end.b}, 0)`);
+        gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${a * pulseOpacity})`);
+        gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${a * pulseOpacity * 0.6})`);
+        gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${a * pulseOpacity * 0.2})`);
+        gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -151,6 +182,7 @@
     }
 
     function resizeCanvas() {
+        if (!import.meta.client) return;
         const canvas = canvasRef.value;
         if (!canvas) return;
 
@@ -165,6 +197,7 @@
     }
 
     function animate(timestamp) {
+        if (!import.meta.client) return;
         animationId = requestAnimationFrame(animate);
 
         const delta = timestamp - lastFrameTime;
@@ -187,7 +220,9 @@
     }
 
     onMounted(() => {
+        if (!import.meta.client) return;
         isMounted.value = true;
+        currentColor.value = color.value;
         circles = Array.from({ length: CIRCLE_COUNT }, (_, i) => generateCircle(i));
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
@@ -195,6 +230,7 @@
     });
 
     onUnmounted(() => {
+        if (!import.meta.client) return;
         window.removeEventListener('resize', resizeCanvas);
         if (animationId) {
             cancelAnimationFrame(animationId);
