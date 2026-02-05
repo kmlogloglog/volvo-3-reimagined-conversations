@@ -3,6 +3,8 @@
         <div ref="mainInnerRef" class="main-inner" :class="{ show }">
             <ChatStream
                 :chat="agentStore.conversation"
+                :filter-last-agent="true"
+                :filter-last-user="true"
                 @[EMITS.IMAGE_LOADED]="onImageLoaded"
                 @[EMITS.SPEECH_BUBBLE_EXPAND]="onSpeechBubbleExpand($event)" />
         </div>
@@ -10,6 +12,7 @@
     <footer>
         <BaseChatTextArea
             v-model="chatMessage"
+            :disabled="!agentStore.connected"
             @submit="handleChatSubmit" />
     </footer>
 </template>
@@ -20,8 +23,6 @@
     import { useAgentStore } from '@/stores/agent';
     import { useAgent } from '@/composables/useAgent';
 
-    import { ref, provide, onMounted, watch } from 'vue';
-
     const agentStore = useAgentStore();
 
     const agent = useAgent();
@@ -30,6 +31,11 @@
 
     async function handleChatSubmit(message) {
         chatMessage.value = '';
+
+        if (!agentStore.connected) {
+            console.info('Connection dropped! Reconnecting...');
+            await agent.connect();
+        }
 
         agent.sendMessage(message);
     };

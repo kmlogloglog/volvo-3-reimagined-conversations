@@ -1,6 +1,7 @@
 import { BUS } from '@/constants/bus.js';
 import { useEventBus } from '@vueuse/core';
 import { useAgentStore } from '@/stores/agent';
+import { AGENT } from '@/constants/agent';
 
 export function useAgent(options = {}) {
     const { onLevelChange } = options;
@@ -46,7 +47,6 @@ export function useAgent(options = {}) {
     }
 
     function addMessage(msg) {
-        console.log('Adding message to store:', msg);
         agentStore.conversation.push(msg);
     }
 
@@ -55,7 +55,7 @@ export function useAgent(options = {}) {
             agentStore.currentUserMessageId = Date.now().toString();
             addMessage({
                 id: agentStore.currentUserMessageId,
-                sender: 'user',
+                sender: AGENT.USER,
                 content: { text: '' },
                 type: 'text',
                 timestamp: new Date(),
@@ -79,27 +79,31 @@ export function useAgent(options = {}) {
     }
 
     function handleTextResponse(text, finished) {
-        console.group('handleTextResponse');
-        console.log(finished);
-        console.groupEnd();
         if (!agentStore.currentMessageId) {
             agentStore.currentMessageId = Date.now().toString();
-            addMessage({
+            const newMsg = {
                 id: agentStore.currentMessageId,
-                sender: 'agent',
+                sender: AGENT.AGENT,
                 content: { text: '' },
                 type: 'text',
-                finished,
                 timestamp: new Date(),
-            });
+            };
+            if (finished != null) {
+                newMsg.finished = finished;
+            }
+            addMessage(newMsg);
         }
 
         const msg = agentStore.conversation.find(m => m.id === agentStore.currentMessageId);
+
         if (msg && msg.content) {
             const currentText = msg.content.text || '';
-            msg.finished = finished;
+            if (finished != null) {
+                msg.finished = finished;
+            }
+
+            // Prevent duplicate text appending if the same text is received again
             if (currentText.endsWith(text) && text.length > 1) {
-                console.log('Skipping duplicate text chunk:', text);
                 return;
             }
             msg.content.text = `${currentText}${text}`;
@@ -121,11 +125,11 @@ export function useAgent(options = {}) {
         }
 
         if (!textHandled && event.outputTranscription && event.outputTranscription.text) {
-            handleTextResponse(event.outputTranscription.text, event.outputTranscription.finished);
+            handleTextResponse(event.outputTranscription.text, event.outputTranscription?.finished);
         }
 
         if (event.inputTranscription && event.inputTranscription.text) {
-            handleUserTranscription(event.inputTranscription.text, event.outputTranscription.finished);
+            handleUserTranscription(event.inputTranscription.text, event.outputTranscription?.finished);
         }
 
         if (event.turnComplete) {
@@ -234,7 +238,7 @@ export function useAgent(options = {}) {
         agentStore.connecting = true;
         connectionBus.emit({ connecting: true, connected: false });
 
-        console.log('connecting to agent...', agentStore.connecting);
+        console.info('connecting to agent...');
 
         agentStore.connectionPromise = new Promise((resolve, reject) => {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -480,11 +484,24 @@ export function useAgent(options = {}) {
 
     function sendMessage(text) {
         addMessage({
-            id: Date.now().toString(),
-            sender: 'user',
+            id: `${Date.now().toString()}_${AGENT.USER}`,
+            sender: AGENT.USER,
             content: { text },
             type: 'text',
             timestamp: new Date(),
+        });
+
+        agentStore.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
+
+        // adding a pending message from agent
+        // agentStore.conversation.push({pending: true, finished: false, sender: AGENT.AGENT, content: { text: '' }});
+        addMessage({
+            id: agentStore.currentMessageId,
+            sender: AGENT.AGENT,
+            content: { text },
+            type: 'text',
+            timestamp: new Date(),
+            finished: false,
         });
 
         if (!agentStore.websocket || agentStore.websocket.readyState !== WebSocket.OPEN) {

@@ -8,12 +8,14 @@
 </template>
 
 <script setup>
+    import { AGENT } from '@/constants/agent';
+
     defineProps({
         fullWidth: { type: Boolean, default: false },
         alignBubble: {
             type: String,
             default: 'none',
-            validator: (value) => ['user', 'agent', 'none'].includes(value),
+            validator: (value) => [AGENT.USER, AGENT.AGENT, 'none'].includes(value),
         },
         padding: {
             type: String,
@@ -42,7 +44,7 @@
             &[data-align="user"] {
                 border-radius: var(--border-radius) var(--border-radius) 0 var(--border-radius);
                 margin-right: 0;
-                background-color: var(--color-grey-900);
+                background-color: var(--color-grey-1000);
                 color: var(--color-black);
 
                 // Dark mode override if needed, or rely on variables

@@ -73,7 +73,8 @@ button {
 
     &:disabled {
         cursor: default;
-        opacity: 0.5;
+        color: var(--navigation-button-disabled-color-font);
+        background-color: var(--navigation-button-disabled-color-background);
     }
 }
 

@@ -24,7 +24,8 @@
 </template>
 <script setup>
     import BaseSpeechBubble from '@/components/baseComponents/uiElements/BaseSpeechBubble.vue';
-    import { EMITS } from '@/constants/emits.js';
+    import { EMITS } from '@/constants/emits';
+    import { AGENT } from '@/constants/agent';
     import DOMPurify from 'isomorphic-dompurify';
     import ChatTypeIndicator from './ChatTypeIndicator.vue';
 
@@ -36,23 +37,13 @@
         alignBubble: {
             type: String,
             default: 'none',
-            validator: (value) => ['user', 'agent', 'none'].includes(value),
+            validator: (value) => [AGENT.USER, AGENT.AGENT, 'none'].includes(value),
         },
         finished: {
             type: Boolean,
             default: true,
         },
     });
-
-    watch(
-        () => props.text,
-        () => {
-            console.group('ChatSpeechBubble');
-            console.log(props.text);
-            console.log(props.finished);
-            console.groupEnd();
-        },
-    );
 
     const emit = defineEmits([EMITS.SPEECH_BUBBLE_EXPAND, EMITS.IMAGE_LOADED]);
 

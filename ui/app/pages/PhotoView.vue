@@ -1,7 +1,6 @@
 <template>
     <div class="view-container">
         <h1>Photo View</h1>
-        <p>Coming Soon</p>
     </div>
 </template>
 

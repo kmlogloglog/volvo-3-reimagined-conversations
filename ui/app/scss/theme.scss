@@ -21,6 +21,7 @@
     --input-color-background: var(--color-white);
     --input-color-font: var(--color-black);
     --input-color-font-placeholder: var(--color-grey-700);
+    --input-color-font-placeholder-disabled: var(--color-grey-900);
 
     // Speech bubbles
     --speech-bubble-color-background: var(--color-white);
@@ -35,6 +36,8 @@
     --navigation-button-color-font: var(--color-grey-600);
     --navigation-button-active-color-background: var(--color-grey-700);
     --navigation-button-active-color-font: var(--color-white);
+    --navigation-button-disabled-color-font: var(--color-grey-900);
+    --navigation-button-disabled-color-background: var(--color-grey-800)
 }
 
 // ========================================
@@ -60,6 +63,7 @@
     --input-color-background: var(--color-black);
     --input-color-font: var(--color-white);
     --input-color-font-placeholder: var(--color-grey-700);
+    --input-color-font-placeholder-disabled: var(--color-grey-300);
 
     // Speech bubbles
     --speech-bubble-color-background: var(--color-black);
@@ -74,4 +78,6 @@
     --navigation-button-color-font: var(--color-grey-600);
     --navigation-button-active-color-background: var(--color-grey-200);
     --navigation-button-active-color-font: var(--color-white);
+    --navigation-button-disabled-color-font: var(--color-grey-300);
+    --navigation-button-disabled-color-background: var(--color-grey-100)
 }

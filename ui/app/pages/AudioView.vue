@@ -6,6 +6,7 @@
     import { useEventBus } from '@vueuse/core';
     import { useAgent } from '@/composables/useAgent';
     import { useAgentStore } from '@/stores/agent';
+    import { BUS } from '@/constants/bus.js';
 
     const agentStore = useAgentStore();
 
@@ -15,14 +16,10 @@
         },
     });
 
-    // --- Event bus (preserved) ---
-    const busRecord = useEventBus('toggle-record');
-    busRecord.on(async(recording) => {
-        console.log(recording);
+    const busRecord = useEventBus(BUS.TOGGLE_RECORD);
 
+    busRecord.on((recording) => {
         if (recording) {
-            console.log('START RECORDING FROM AUDIO VIEW');
-
             agent.startAudio();
 
             return;

@@ -8,6 +8,7 @@
             </div>
         </div>
         <NavigationBar
+            :is-page-loading="isLoading"
             @[EMITS.NAVIGATION_CHANGE]="onNavigate" />
 
         <!--
@@ -50,6 +51,12 @@
     }
 
     const agentStore = useAgentStore();
+
+    watch(isLoading, (newVal) => {
+        // Add your logic here if you want to react to isLoading changes
+        // Example: console.log('isLoading changed:', newVal);
+        console.log('loading: ', newVal);
+    }, { immediate: true });
 
 </script>
 
