@@ -1,8 +1,8 @@
 <template>
     <div class="app-screen">
         <div class="base-view">
-            <NuxtLoadingIndicator color="var(--font-color-primary)" />
-            <VolvoLogo :color="'#ffffff'" class="logo" />
+            <NuxtLoadingIndicator color="var(--color-white)" />
+            <VolvoLogo color="var(--color-white)" class="logo" />
             <div v-show="!isLoading" class="base-view-inner">
                 <slot></slot>
             </div>
@@ -23,7 +23,6 @@
                 :light-mode-glow-color="circleColors.light"
                 :dark-mode-glow-color="circleColors.dark" />
             <AudioCaptureCircles
-                v-if="showCircles"
                 :light-mode-color="circleColors.light"
                 :dark-mode-color="circleColors.dark" />
         </ClientOnly>
@@ -37,17 +36,6 @@
     import { useAgentStore } from '@/stores/agent';
     import VolvoLogo from '@/components/logo/VolvoLogo.vue';
     import { useColorTesting } from '@/composables/useColorTesting.js';
-
-    defineProps({
-        showWaves: {
-            type: Boolean,
-            default: false,
-        },
-        showCircles: {
-            type: Boolean,
-            default: true,
-        },
-    });
 
     const emit = defineEmits([EMITS.NAVIGATION_CHANGE]);
 
