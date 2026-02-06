@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-    import { useResizeObserver, useRafFn, useThrottleFn, useIntersectionObserver } from '@vueuse/core';
+    import { useResizeObserver, useRafFn, useIntersectionObserver } from '@vueuse/core';
 
     // ============================================
     // PROPS
@@ -146,7 +146,6 @@
     const hasStartedAudio = ref(false);
     const isInitialRender = ref(true);
     const shouldAnimate = computed(() => isVisible.value);
-    const isLowPowerMode = ref(false); // For battery/performance considerations
 
     const lineColor = computed(() => {
         if (!isMounted.value) return `rgba(128, 128, 128, ${lightModeLineOpacity})`;
@@ -515,10 +514,7 @@
             smoothedEnergy = lerp(smoothedEnergy, rawEnergy, active.decaySpeed);
         }
 
-        // Reduce calculations in low power mode
-        const processingPasses = isLowPowerMode.value ? Math.max(1, Math.floor(waveConfigs.length / 2)) : waveConfigs.length;
-
-        for (let waveIndex = 0; waveIndex < processingPasses; waveIndex++) {
+        for (let waveIndex = 0; waveIndex < waveConfigs.length; waveIndex++) {
             const config = waveConfigs[waveIndex];
             const smoothedData = smoothedWaveData[waveIndex];
             if (!smoothedData) continue;
@@ -527,8 +523,7 @@
 
             if (isActiveMode) {
                 const activeData = generateActiveData(waveIndex, smoothedEnergy, t);
-                const passes = isLowPowerMode.value ? Math.max(2, Math.floor(config.activeSmoothingPasses / 2)) : config.activeSmoothingPasses;
-                targetData = smoothArray(activeData, passes);
+                targetData = smoothArray(activeData, config.activeSmoothingPasses);
 
                 for (let i = 0; i < BUFFER_LENGTH; i++) {
                     targetData[i] *= config.activeAmplitudeScale;
@@ -536,8 +531,7 @@
                 }
             } else {
                 const idleData = generateIdleData(waveIndex, t);
-                const passes = isLowPowerMode.value ? Math.max(2, Math.floor(idle.smoothingPasses / 2)) : idle.smoothingPasses;
-                targetData = smoothArray(idleData, passes);
+                targetData = smoothArray(idleData, idle.smoothingPasses);
             }
 
             const transitionRate = isActiveMode ? active.attackSpeed : active.decaySpeed;
@@ -587,10 +581,7 @@
 
         const sliceWidth = width / (BUFFER_LENGTH - 1);
 
-        // Render fewer waves in low power mode
-        const renderPasses = isLowPowerMode.value ? Math.max(1, Math.floor(waveConfigs.length / 2)) : waveConfigs.length;
-
-        for (let waveIndex = 0; waveIndex < renderPasses; waveIndex++) {
+        for (let waveIndex = 0; waveIndex < waveConfigs.length; waveIndex++) {
             const config = waveConfigs[waveIndex];
             const waveData = smoothedWaveData[waveIndex];
             if (!waveData) continue;
@@ -683,11 +674,10 @@
 
         const now = performance.now();
 
-        // Adaptive frame rate based on performance and power mode
+        // Fixed frame rate for consistent performance
         const baseInterval = isActiveMode ? ACTIVE_FRAME_INTERVAL : IDLE_FRAME_INTERVAL;
-        const frameInterval = isLowPowerMode.value ? baseInterval * 2 : baseInterval;
 
-        if (now - lastDrawTime < frameInterval) {
+        if (now - lastDrawTime < baseInterval) {
             return;
         }
         lastDrawTime = now;
@@ -709,36 +699,6 @@
         { threshold: 0.1 },
     );
 
-    // Performance detection based on frame drops
-    const setupPerformanceDetection = () => {
-        // Monitor frame drops for performance adaptation
-        let frameDropCount = 0;
-        let lastFrameTime = performance.now();
-        const monitorPerformance = () => {
-            const now = performance.now();
-            const frameDelta = now - lastFrameTime;
-
-            if (frameDelta > 50) { // Frame drop detected
-                frameDropCount++;
-                if (frameDropCount > 5) {
-                    isLowPowerMode.value = true;
-                }
-            } else {
-                frameDropCount = Math.max(0, frameDropCount - 0.1);
-                if (frameDropCount === 0) {
-                    isLowPowerMode.value = false;
-                }
-            }
-
-            lastFrameTime = now;
-        };
-
-        // Throttle performance monitoring
-        const throttledMonitor = useThrottleFn(monitorPerformance, 1000);
-
-        return throttledMonitor;
-    };
-
     useResizeObserver(containerRef, () => {
         resizeCanvas();
     });
@@ -750,13 +710,9 @@
         initializeBuffers();
         resizeCanvas();
 
-        const performanceMonitor = setupPerformanceDetection();
-
         // Start animation with a small delay for LCP optimization
         nextTick(() => {
             resumeAnimation();
-            // Start performance monitoring after initial render
-            setTimeout(performanceMonitor, 100);
         });
     });
 
