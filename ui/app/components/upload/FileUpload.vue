@@ -5,7 +5,7 @@
         type="file"
         multiple
         accept="image/*,.pdf,.txt"
-        style="display: none;"
+        class="hidden-file-input"
         @change="onFileSelected" />
 
     <!-- Upload progress modal -->
@@ -151,6 +151,10 @@
 </script>
 
 <style scoped lang="scss">
+.hidden-file-input {
+    display: none;
+}
+
 // Upload modal styles
 .upload-content {
     position: fixed;
