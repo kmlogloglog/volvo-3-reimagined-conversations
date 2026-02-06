@@ -75,6 +75,31 @@ This file contains instructions for GitHub Copilot to help maintain consistency 
 - **CSS/SCSS**: Use modern CSS features
 - **Vue 3**: Use Composition API, follow Vue 3 patterns and conventions, use `<script setup>` syntax
 
+### VueUse Integration
+- **Always prefer VueUse** when it provides a relevant utility for the task
+- **Available Utilities**: VueUse is included in the project - leverage its extensive collection of composables
+- **Common Use Cases**:
+  - `useResizeObserver` instead of manual ResizeObserver setup
+  - `useIntersectionObserver` instead of manual IntersectionObserver
+  - `useRafFn` for requestAnimationFrame management with pause/resume
+  - `useThrottleFn` and `useDebounceFn` instead of manual throttling/debouncing
+  - `useEventListener` for DOM event handling
+  - `useMouse`, `useKeyboard`, `useWindowSize` for browser API interactions
+  - `useLocalStorage`, `useSessionStorage` for persistent storage
+  - `useMediaQuery` for responsive design
+  - `useTitle`, `useFavicon` for document head management
+- **Benefits**: 
+  - Automatic cleanup on component unmount
+  - Better TypeScript support
+  - Consistent API patterns across utilities
+  - Performance optimizations built-in
+  - Reactive by default
+- **When NOT to use VueUse**:
+  - For very simple one-off implementations where the overhead isn't justified
+  - When the VueUse implementation doesn't match specific requirements
+  - When you need fine-grained control over the underlying browser APIs
+- **Import Pattern**: Import specific utilities from `@vueuse/core` - avoid importing the entire library
+
 ### CSS Color Variables
 - **Prefer root CSS variables** for colors when they exist in the design system
 - **Reference**: See `app/scss/colors.scss` for all available color variables in the `:root` selector
