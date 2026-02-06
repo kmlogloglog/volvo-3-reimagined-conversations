@@ -8,7 +8,6 @@
 </template>
 
 <script setup>
-    import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
     import { useResizeObserver } from '@vueuse/core';
 
     // ============================================
@@ -58,7 +57,8 @@
     // PERFORMANCE CONFIGURATION
     // ============================================
 
-    const IDLE_FRAME_INTERVAL = 33; // ~30fps when idle
+    const IDLE_FRAME_INTERVAL = 50; // ~20fps when idle
+    const ACTIVE_FRAME_INTERVAL = 33; // ~30fps when active
     const SMOOTHING_WEIGHTS = new Float32Array([0.01, 0.03, 0.07, 0.12, 0.18, 0.18, 0.18, 0.12, 0.07, 0.03, 0.01]);
 
     // ============================================
@@ -140,6 +140,10 @@
 
     const colorMode = useColorMode();
     const isMounted = ref(false);
+    const isVisible = ref(true); // Start as visible, intersection observer will update
+    const hasStartedAudio = ref(false);
+    const isInitialRender = ref(true);
+    const shouldAnimate = computed(() => isVisible.value);
 
     const lineColor = computed(() => {
         if (!isMounted.value) return `rgba(128, 128, 128, ${lightModeLineOpacity})`;
@@ -223,6 +227,8 @@
     let animationId = null;
     let time = 0;
     let lastDrawTime = 0;
+    let intersectionObserver = null;
+    let visibilityChangeHandler = null;
 
     // Cached dimensions for performance
     const cachedWidth = ref(0);
@@ -275,7 +281,8 @@
 
         const container = containerRef.value;
         const canvas = canvasRef.value;
-        const dpr = window.devicePixelRatio || 1;
+        // Use lower DPI for initial render, upgrade after LCP
+        const dpr = isInitialRender.value ? 1 : (window.devicePixelRatio || 1);
         const width = container.offsetWidth;
         const height = container.offsetHeight;
 
@@ -477,6 +484,16 @@
             isActiveMode = hasAudioSource;
         }
 
+        // Track if audio has started for deferred animation
+        if ((rawEnergy > 0.01 || props.level > 0 || props.isActive) && !hasStartedAudio.value) {
+            hasStartedAudio.value = true;
+            // Upgrade to full DPI after first audio activity
+            if (isInitialRender.value) {
+                isInitialRender.value = false;
+                nextTick(() => resizeCanvas());
+            }
+        }
+
         if (rawEnergy > smoothedEnergy) {
             smoothedEnergy = lerp(smoothedEnergy, rawEnergy, active.attackSpeed);
         } else {
@@ -631,10 +648,16 @@
     };
 
     const draw = () => {
+        if (!shouldAnimate.value) {
+            animationId = requestAnimationFrame(draw);
+            return;
+        }
+
         const now = performance.now();
 
-        // Throttle to ~30fps when idle to save CPU
-        if (!isActiveMode && now - lastDrawTime < IDLE_FRAME_INTERVAL) {
+        // Throttle framerate for performance
+        const frameInterval = isActiveMode ? ACTIVE_FRAME_INTERVAL : IDLE_FRAME_INTERVAL;
+        if (now - lastDrawTime < frameInterval) {
             animationId = requestAnimationFrame(draw);
             return;
         }
@@ -642,6 +665,33 @@
 
         drawInternal();
         animationId = requestAnimationFrame(draw);
+    };
+
+    const setupVisibilityObserver = () => {
+        if (!containerRef.value) return;
+
+        // Intersection Observer for visibility
+        intersectionObserver = new IntersectionObserver(
+            (entries) => {
+                isVisible.value = entries[0].isIntersecting;
+            },
+            { threshold: 0.1 },
+        );
+        intersectionObserver.observe(containerRef.value);
+
+        // Page visibility API
+        visibilityChangeHandler = () => {
+            if (document.visibilityState === 'hidden') {
+                isVisible.value = false;
+            } else if (intersectionObserver) {
+                // Re-check intersection when tab becomes visible
+                const entries = intersectionObserver.takeRecords();
+                if (entries.length > 0) {
+                    isVisible.value = entries[0].isIntersecting;
+                }
+            }
+        };
+        document.addEventListener('visibilitychange', visibilityChangeHandler);
     };
 
     useResizeObserver(containerRef, () => {
@@ -653,11 +703,20 @@
         currentGlowColor.value = baseGlowColor.value;
         initializeBuffers();
         resizeCanvas();
+        setupVisibilityObserver();
         draw();
     });
 
     onUnmounted(() => {
         if (animationId) cancelAnimationFrame(animationId);
+        if (intersectionObserver) {
+            intersectionObserver.disconnect();
+            intersectionObserver = null;
+        }
+        if (visibilityChangeHandler) {
+            document.removeEventListener('visibilitychange', visibilityChangeHandler);
+            visibilityChangeHandler = null;
+        }
     });
 </script>
 

@@ -1,5 +1,3 @@
-import { ref, onMounted, onUnmounted } from 'vue';
-
 /**
  * Composable for testing different audio capture circle colors
  * This is temporary testing functionality that can be easily removed
