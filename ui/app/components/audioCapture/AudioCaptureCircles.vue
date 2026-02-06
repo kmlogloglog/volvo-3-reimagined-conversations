@@ -12,11 +12,15 @@
     const props = defineProps({
         lightModeColor: {
             type: Object,
-            default: () => ({ r: 191, g: 154, b: 103, a: .75 }),
+            default: () => ({ r: 191, g: 154, b: 103 }),
         },
         darkModeColor: {
             type: Object,
-            default: () => ({ r: 191, g: 154, b: 103, a: .75 }),
+            default: () => ({ r: 191, g: 154, b: 103 }),
+        },
+        alpha: {
+            type: Number,
+            default: 0.75,
         },
     });
 
@@ -94,7 +98,6 @@
             r: Math.round(from.r + (to.r - from.r) * progress),
             g: Math.round(from.g + (to.g - from.g) * progress),
             b: Math.round(from.b + (to.b - from.b) * progress),
-            a: from.a + (to.a - from.a) * progress,
         };
     }
 
@@ -153,12 +156,13 @@
             }
         }
 
-        const { r, g, b, a } = currentColor.value || color.value;
+        const { r, g, b } = currentColor.value || color.value;
+        const alpha = props.alpha;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, sizePixels / 2);
 
-        gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${a * pulseOpacity})`);
-        gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${a * pulseOpacity * 0.6})`);
-        gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${a * pulseOpacity * 0.2})`);
+        gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${alpha * pulseOpacity})`);
+        gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${alpha * pulseOpacity * 0.6})`);
+        gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${alpha * pulseOpacity * 0.2})`);
         gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
 
         ctx.fillStyle = gradient;

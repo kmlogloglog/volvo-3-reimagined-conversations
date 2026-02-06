@@ -8,8 +8,35 @@
 </template>
 
 <script setup>
-    import { ref, computed, onMounted, onUnmounted } from 'vue';
+    import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
     import { useResizeObserver } from '@vueuse/core';
+
+    // ============================================
+    // PROPS
+    // ============================================
+
+    const props = defineProps({
+        analyser: {
+            type: Object,
+            default: null,
+        },
+        level: {
+            type: Number,
+            default: 0,
+        },
+        isActive: {
+            type: Boolean,
+            default: null,
+        },
+        lightModeGlowColor: {
+            type: Object,
+            default: () => ({ r: 0, g: 0, b: 0 }),
+        },
+        darkModeGlowColor: {
+            type: Object,
+            default: () => ({ r: 255, g: 255, b: 255 }),
+        },
+    });
 
     // ============================================
     // CANVAS CONFIGURATION
@@ -17,8 +44,11 @@
 
     const canvasHeight = 400;
     const lineWidth = 1.0;
-    const lineOpacity = 0.05;
-    const glowOpacity = 0.15;
+    // Opacity values - different for light and dark modes
+    const lightModeLineOpacity = 0.05;
+    const lightModeGlowOpacity = 0.25;
+    const darkModeLineOpacity = 0.08;
+    const darkModeGlowOpacity = 0.15;
     const glowFadeStop = 0.7;
     const BUFFER_LENGTH = 80;
     const EDGE_FADE = 0.15;
@@ -105,33 +135,6 @@
     ];
 
     // ============================================
-    // PROPS
-    // ============================================
-
-    const props = defineProps({
-        analyser: {
-            type: Object,
-            default: null,
-        },
-        level: {
-            type: Number,
-            default: 0,
-        },
-        isActive: {
-            type: Boolean,
-            default: null,
-        },
-        lightModeGlowColor: {
-            type: Object,
-            default: () => ({ r: 0, g: 0, b: 0 }),
-        },
-        darkModeGlowColor: {
-            type: Object,
-            default: () => ({ r: 255, g: 255, b: 255 }),
-        },
-    });
-
-    // ============================================
     // COLOR HANDLING
     // ============================================
 
@@ -139,10 +142,32 @@
     const isMounted = ref(false);
 
     const lineColor = computed(() => {
-        if (!isMounted.value) return `rgba(128, 128, 128, ${lineOpacity})`;
+        if (!isMounted.value) return `rgba(128, 128, 128, ${lightModeLineOpacity})`;
+        const opacity = colorMode.value === 'dark' ? darkModeLineOpacity : lightModeLineOpacity;
         return colorMode.value === 'dark'
-            ? `rgba(255, 255, 255, ${lineOpacity})`
-            : `rgba(0, 0, 0, ${lineOpacity})`;
+            ? `rgba(255, 255, 255, ${opacity})`
+            : `rgba(0, 0, 0, ${opacity})`;
+    });
+
+    const baseGlowOpacity = computed(() => {
+        if (!isMounted.value) return lightModeGlowOpacity;
+
+        if (colorMode.value === 'dark') {
+            return darkModeGlowOpacity;
+        } else {
+            // Light mode: adjust opacity based on color brightness
+            const color = baseGlowColor.value;
+            const brightness = getColorBrightness(color);
+
+            if (brightness > 0.5) {
+                // For lighter colors, reduce opacity more (make less transparent)
+                // const reductionFactor = (brightness - 0.5) * 1.5; // Up to 50% reduction for white
+                return lightModeGlowOpacity * 2;
+            } else {
+                // For darker colors, use configured glow opacity
+                return lightModeGlowOpacity;
+            }
+        }
     });
 
     const baseGlowColor = computed(() => {
@@ -166,6 +191,12 @@
             g: Math.round(from.g + (to.g - from.g) * progress),
             b: Math.round(from.b + (to.b - from.b) * progress),
         };
+    }
+
+    // Calculate color brightness (0-1 scale)
+    function getColorBrightness(color) {
+        // Use standard luminance formula
+        return (0.299 * color.r + 0.587 * color.g + 0.114 * color.b) / 255;
     }
 
     // Watch for color changes and trigger transitions
@@ -192,6 +223,10 @@
     let animationId = null;
     let time = 0;
     let lastDrawTime = 0;
+
+    // Cached dimensions for performance
+    const cachedWidth = ref(0);
+    const cachedHeight = ref(0);
 
     let frequencyData = null;
     let smoothedWaveData = [];
@@ -243,6 +278,10 @@
         const dpr = window.devicePixelRatio || 1;
         const width = container.offsetWidth;
         const height = container.offsetHeight;
+
+        // Cache dimensions for performance
+        cachedWidth.value = width;
+        cachedHeight.value = height;
 
         canvas.width = width * dpr;
         canvas.height = height * dpr;
@@ -472,21 +511,13 @@
         }
     };
 
-    const draw = () => {
-        if (!ctx || !canvasRef.value || !containerRef.value) return;
+    const drawInternal = () => {
+        if (!ctx || !canvasRef.value || !containerRef.value || !cachedWidth.value || !cachedHeight.value) return;
 
-        const now = performance.now();
-
-        // Throttle to ~30fps when idle to save CPU
-        if (!isActiveMode && now - lastDrawTime < IDLE_FRAME_INTERVAL) {
-            animationId = requestAnimationFrame(draw);
-            return;
-        }
-        lastDrawTime = now;
-
-        const width = containerRef.value.offsetWidth;
-        const height = containerRef.value.offsetHeight;
+        const width = cachedWidth.value;
+        const height = cachedHeight.value;
         const centerY = height * 0.5;
+        const now = performance.now();
 
         ctx.clearRect(0, 0, width, height);
 
@@ -538,7 +569,8 @@
             const glowB = Math.round(lerp(base.b, activeGlow.color.b, colorBlend));
 
             // Boost opacity based on intensity
-            const topOpacity = lerp(glowOpacity, activeGlow.maxOpacity, colorBlend);
+            const currentGlowOpacity = baseGlowOpacity.value;
+            const topOpacity = lerp(currentGlowOpacity, activeGlow.maxOpacity, colorBlend);
 
             // Create gradient with proper fade-out at bottom
             const minY = getMinY(pointsPool, BUFFER_LENGTH);
@@ -596,7 +628,19 @@
 
             ctx.stroke();
         }
+    };
 
+    const draw = () => {
+        const now = performance.now();
+
+        // Throttle to ~30fps when idle to save CPU
+        if (!isActiveMode && now - lastDrawTime < IDLE_FRAME_INTERVAL) {
+            animationId = requestAnimationFrame(draw);
+            return;
+        }
+        lastDrawTime = now;
+
+        drawInternal();
         animationId = requestAnimationFrame(draw);
     };
 

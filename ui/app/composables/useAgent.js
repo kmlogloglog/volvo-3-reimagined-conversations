@@ -145,7 +145,7 @@ export function useAgent(options = {}) {
     }
 
     function stopAudio() {
-        console.log('Stopping audio...');
+        console.log('%cAUDIO STOP', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Stopping audio...');
 
         agentStore.listening = false;
         agentStore.speaking = false;
@@ -153,7 +153,7 @@ export function useAgent(options = {}) {
         // Stop and cleanup media stream
         if (agentStore.mediaStream) {
             agentStore.mediaStream.getTracks().forEach(track => {
-                console.log('Stopping track:', track.kind);
+                console.log('%cAUDIO TRACK', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Stopping track:', track.kind);
                 track.stop();
             });
             agentStore.mediaStream = null;
@@ -165,7 +165,7 @@ export function useAgent(options = {}) {
                 agentStore.audioRecorderNode.disconnect();
                 agentStore.audioRecorderNode.port.onmessage = null;
             } catch (e) {
-                console.warn('Error disconnecting audio recorder node:', e);
+                console.warn('%cAUDIO WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Error disconnecting audio recorder node:', e);
             }
             agentStore.audioRecorderNode = null;
         }
@@ -176,7 +176,7 @@ export function useAgent(options = {}) {
                 agentStore.audioPlayerNode.disconnect();
                 agentStore.audioPlayerNode.port.postMessage({ command: 'clear' });
             } catch (e) {
-                console.warn('Error disconnecting audio player node:', e);
+                console.warn('%cAUDIO WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Error disconnecting audio player node:', e);
             }
             agentStore.audioPlayerNode = null;
         }
@@ -192,7 +192,7 @@ export function useAgent(options = {}) {
             try {
                 agentStore.audioContext.close();
             } catch (e) {
-                console.warn('Error closing audio context:', e);
+                console.warn('%cAUDIO WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Error closing audio context:', e);
             }
             agentStore.audioContext = null;
             agentStore.analyser = null;
@@ -202,7 +202,7 @@ export function useAgent(options = {}) {
             try {
                 agentStore.recorderContext.close();
             } catch (e) {
-                console.warn('Error closing recorder context:', e);
+                console.warn('%cAUDIO WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Error closing recorder context:', e);
             }
             agentStore.recorderContext = null;
             agentStore.inputAnalyser = null;
@@ -213,21 +213,21 @@ export function useAgent(options = {}) {
 
         // Reflect actual permission state - permission is still granted if user granted it
         microphoneBus.emit({ requesting: false, granted: agentStore.micPermissionGranted, denied: false, ready: false });
-        console.log('Audio stopped and cleaned up');
+        console.log('%cAUDIO STOP', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Audio stopped and cleaned up');
     }
 
     function muteAudio() {
-        console.log('mute audio');
+        console.log('%cAUDIO MUTE', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'mute audio');
         agentStore.isMuted = true;
     }
 
     function unmuteAudio() {
-        console.log('unmute audio');
+        console.log('%cAUDIO UNMUTE', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'unmute audio');
         agentStore.isMuted = false;
     }
 
     function connect() {
-        console.log('connect called');
+        console.log('%cCONNECT', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'called');
         if (agentStore.connected) {
             return Promise.resolve();
         }
@@ -238,7 +238,7 @@ export function useAgent(options = {}) {
         agentStore.connecting = true;
         connectionBus.emit({ connecting: true, connected: false });
 
-        console.log('connecting to agent...');
+        console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'connecting to agent...');
 
         agentStore.connectionPromise = new Promise((resolve, reject) => {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -248,13 +248,13 @@ export function useAgent(options = {}) {
             const sessionId = 'demo-session-' + Math.random().toString(36).substring(7);
             const url = `${protocol}//${host}/ws/${userId}/${sessionId}`;
 
-            console.log('Connecting to WebSocket:', url);
+            console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Connecting to:', url);
 
             agentStore.websocket = new WebSocket(url);
 
             const timeoutId = setTimeout(() => {
                 if (agentStore.websocket && agentStore.websocket.readyState !== WebSocket.OPEN) {
-                    console.error('WebSocket connection timed out');
+                    console.error('%cWEBSOCKET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'WebSocket connection timed out');
                     agentStore.websocket.close();
                     agentStore.connecting = false;
                     connectionBus.emit({ connecting: false, connected: false });
@@ -264,7 +264,7 @@ export function useAgent(options = {}) {
 
             agentStore.websocket.onopen = () => {
                 clearTimeout(timeoutId);
-                console.log('WebSocket Connected');
+                console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Connected');
                 agentStore.connected = true;
                 agentStore.connecting = false;
                 connectionBus.emit({ connecting: false, connected: true });
@@ -273,14 +273,14 @@ export function useAgent(options = {}) {
 
             agentStore.websocket.onerror = (err) => {
                 clearTimeout(timeoutId);
-                console.error('WebSocket Error:', err);
+                console.error('%cWEBSOCKET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', err);
                 agentStore.connecting = false;
                 connectionBus.emit({ connecting: false, connected: false });
             };
 
             agentStore.websocket.onclose = (event) => {
                 clearTimeout(timeoutId);
-                console.log('WebSocket Disconnected', event.code, event.reason);
+                console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Disconnected', event.code, event.reason);
 
                 if (!agentStore.connected) {
                     agentStore.connecting = false;
@@ -301,7 +301,7 @@ export function useAgent(options = {}) {
                     const data = JSON.parse(event.data);
                     handleAgentEvent(data);
                 } catch (e) {
-                    console.error('Error parsing WebSocket message:', e);
+                    console.error('%cWEBSOCKET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Error parsing WebSocket message:', e);
                 }
             };
         });
@@ -310,7 +310,7 @@ export function useAgent(options = {}) {
     }
 
     function disconnect() {
-        console.log('disconnect called');
+        console.log('%cDISCONNECT', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'called');
         if (agentStore.websocket) {
             agentStore.websocket.close();
             agentStore.websocket = null;
@@ -346,10 +346,10 @@ export function useAgent(options = {}) {
     }
 
     async function startAudio() {
-        console.log('Starting audio...');
+        console.log('%cAUDIO START', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Starting audio...');
 
         if (agentStore.listening || agentStore.startingAudio) {
-            console.log('Audio already starting or started, returning early');
+            console.log('%cAUDIO START', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Audio already starting or started, returning early');
             return;
         }
 
@@ -358,7 +358,7 @@ export function useAgent(options = {}) {
         try {
             // Request microphone access immediately, before connecting
             if (!agentStore.mediaStream) {
-                console.log('Requesting microphone access...');
+                console.log('%cMICROPHONE', 'background: linear-gradient(135deg, #5f27cd, #341f97); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Requesting microphone access...');
                 microphoneBus.emit({ requesting: true, granted: false, denied: false });
                 try {
                     agentStore.mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -370,11 +370,11 @@ export function useAgent(options = {}) {
                             autoGainControl: true,
                         },
                     });
-                    console.log('Microphone access granted');
+                    console.log('%cMICROPHONE', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Microphone access granted');
                     agentStore.micPermissionGranted = true;
                     microphoneBus.emit({ requesting: false, granted: true, denied: false });
                 } catch (err) {
-                    console.error('Microphone access denied or error:', err);
+                    console.error('%cMICROPHONE ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Microphone access denied or error:', err);
                     agentStore.micPermissionGranted = false;
                     microphoneBus.emit({ requesting: false, granted: false, denied: true, error: err.message });
                     throw err;
@@ -383,7 +383,7 @@ export function useAgent(options = {}) {
 
             // Initialize Player Context (24kHz) - always create fresh context
             if (!agentStore.audioContext || agentStore.audioContext.state === 'closed') {
-                console.log('Creating new audio context for playback...');
+                console.log('%cAUDIO CONTEXT', 'background: linear-gradient(135deg, #3742fa, #273bd6); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Creating new audio context for playback...');
                 const ctxClass = window.AudioContext || window.webkitAudioContext;
                 agentStore.audioContext = new ctxClass({ sampleRate: 24000 });
                 agentStore.analyser = agentStore.audioContext.createAnalyser();
@@ -391,16 +391,16 @@ export function useAgent(options = {}) {
 
                 try {
                     await agentStore.audioContext.audioWorklet.addModule('/js/audio-modules/pcm-player-processor.js');
-                    console.log('Player worklet loaded successfully');
+                    console.log('%cWORKLET', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Player worklet loaded successfully');
                 } catch (e) {
-                    console.error('Failed to load player worklet:', e);
+                    console.error('%cWORKLET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Failed to load player worklet:', e);
                     throw new Error(`Player worklet loading failed: ${e.message}`);
                 }
             }
 
             // Initialize Recorder Context (16kHz) - always create fresh context
             if (!agentStore.recorderContext || agentStore.recorderContext.state === 'closed') {
-                console.log('Creating new recorder context...');
+                console.log('%cRECORDER CONTEXT', 'background: linear-gradient(135deg, #3742fa, #273bd6); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Creating new recorder context...');
                 const ctxClass = window.AudioContext || window.webkitAudioContext;
                 agentStore.recorderContext = new ctxClass({ sampleRate: 16000 });
                 agentStore.inputAnalyser = agentStore.recorderContext.createAnalyser();
@@ -408,26 +408,26 @@ export function useAgent(options = {}) {
 
                 try {
                     await agentStore.recorderContext.audioWorklet.addModule('/js/audio-modules/pcm-recorder-processor.js');
-                    console.log('Recorder worklet loaded successfully');
+                    console.log('%cWORKLET', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Recorder worklet loaded successfully');
                 } catch (e) {
-                    console.error('Failed to load recorder worklet:', e);
+                    console.error('%cWORKLET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Failed to load recorder worklet:', e);
                     throw new Error(`Recorder worklet loading failed: ${e.message}`);
                 }
             }
 
             // Resume contexts if suspended
             if (agentStore.audioContext.state === 'suspended') {
-                console.log('Resuming audio context...');
+                console.log('%cAUDIO CONTEXT', 'background: linear-gradient(135deg, #3742fa, #273bd6); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Resuming audio context...');
                 await agentStore.audioContext.resume();
             }
             if (agentStore.recorderContext.state === 'suspended') {
-                console.log('Resuming recorder context...');
+                console.log('%cRECORDER CONTEXT', 'background: linear-gradient(135deg, #3742fa, #273bd6); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Resuming recorder context...');
                 await agentStore.recorderContext.resume();
             }
 
             // Create fresh audio player node
             if (!agentStore.audioPlayerNode) {
-                console.log('Creating audio player node...');
+                console.log('%cAUDIO PLAYER', 'background: linear-gradient(135deg, #2f3542, #222831); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Creating audio player node...');
                 agentStore.audioPlayerNode = new AudioWorkletNode(agentStore.audioContext, 'pcm-player-processor');
                 agentStore.audioPlayerNode.connect(agentStore.analyser);
                 agentStore.analyser.connect(agentStore.audioContext.destination);
@@ -435,8 +435,8 @@ export function useAgent(options = {}) {
 
             // Set up audio recorder only after mediaStream is confirmed available
             if (!agentStore.audioRecorderNode && agentStore.mediaStream) {
-                console.log('Setting up audio recorder with MediaStream...');
-                console.log('Recorder Context Sample Rate:', agentStore.recorderContext.sampleRate);
+                console.log('%cAUDIO RECORDER', 'background: linear-gradient(135deg, #2f3542, #222831); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Setting up audio recorder with MediaStream...');
+                console.log('%cSAMPLE RATE', 'background: linear-gradient(135deg, #747d8c, #57606f); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Recorder Context Sample Rate:', agentStore.recorderContext.sampleRate);
 
                 try {
                     const micSource = agentStore.recorderContext.createMediaStreamSource(agentStore.mediaStream);
@@ -456,10 +456,10 @@ export function useAgent(options = {}) {
                     // Audio level monitoring
                     level();
 
-                    console.log('Audio recorder set up successfully');
+                    console.log('%cAUDIO RECORDER', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Audio recorder set up successfully');
                     microphoneBus.emit({ requesting: false, granted: true, denied: false, ready: true });
                 } catch (err) {
-                    console.error('Failed to set up audio recorder:', err);
+                    console.error('%cAUDIO RECORDER ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Failed to set up audio recorder:', err);
                     microphoneBus.emit({ requesting: false, granted: false, denied: true, error: err.message, ready: false });
                     throw err;
                 }
@@ -472,7 +472,7 @@ export function useAgent(options = {}) {
                 await connect();
             }
         } catch (error) {
-            console.error('Failed to start audio:', error);
+            console.error('%cAUDIO START ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Failed to start audio:', error);
             agentStore.listening = false;
             agentStore.connecting = false;
             connectionBus.emit({ connecting: false, connected: false });
@@ -502,7 +502,7 @@ export function useAgent(options = {}) {
         });
 
         if (!agentStore.websocket || agentStore.websocket.readyState !== WebSocket.OPEN) {
-            console.warn('WebSocket not open, message added to UI but not sent.');
+            console.warn('%cWEBSOCKET WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'WebSocket not open, message added to UI but not sent.');
             return;
         }
 
