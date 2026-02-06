@@ -19,12 +19,8 @@
             <AudioCaptureWaves
                 v-if="route.name === NAVIGATION.AUDIO.name"
                 class="audio-waves"
-                :level="agentStore.audioLevel"
-                :light-mode-glow-color="circleColors.light"
-                :dark-mode-glow-color="circleColors.dark" />
-            <AudioCaptureCircles
-                :light-mode-color="circleColors.light"
-                :dark-mode-color="circleColors.dark" />
+                :level="agentStore.audioLevel" />
+            <AudioCaptureCircles />
         </ClientOnly>
     </div>
 </template>
@@ -35,15 +31,11 @@
     import { navigateTo, useRoute } from '#app';
     import { useAgentStore } from '@/stores/agent';
     import VolvoLogo from '@/components/logo/VolvoLogo.vue';
-    import { useColorTesting } from '@/composables/useColorTesting.js';
 
     const emit = defineEmits([EMITS.NAVIGATION_CHANGE]);
 
     const agentStore = useAgentStore();
     const route = useRoute();
-
-    // Color testing for AudioCaptureCircles (temporary - can be removed easily)
-    const { circleColors } = useColorTesting();
 
     const { isLoading } = useLoadingIndicator();
 
