@@ -1,18 +1,17 @@
 <template>
-    <div id="app" class="j" :style="backgroundStyle">
-
-        <AppLayout
+    <div id="app" :style="backgroundStyle">
+        <CaptureView
             :show-waves="$route.name === NAVIGATION.AUDIO.name"
             :show-circles="!agentStore.backgroundImageUrl">
             <NuxtPage />
-        </AppLayout>
+        </CaptureView>
     </div>
 </template>
 
 <script setup>
     import { preloadRouteComponents } from '#app';
     import { NAVIGATION } from '@/constants/navigation';
-    import AppLayout from '@/appLayouts/AppLayout.vue';
+    import CaptureView from '@/views/CaptureView.vue';
     import { useAgentStore } from '@/stores/agent';
 
     preloadRouteComponents('/');

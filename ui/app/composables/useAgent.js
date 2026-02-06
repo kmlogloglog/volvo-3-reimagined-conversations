@@ -114,7 +114,7 @@ export function useAgent(options = {}) {
         let textHandled = false;
         if (event.content && event.content.parts) {
             for (const part of event.content.parts) {
-                if (part.inlineData && part.inlineData.mimeType.startsWith('audio/pcm')) {
+                if (part.inlineData && part.inlineData.mimeType && typeof part.inlineData.mimeType === 'string' && part.inlineData.mimeType.startsWith('audio/pcm')) {
                     playAudioChunk(part.inlineData.data);
                 }
                 if (part.text) {

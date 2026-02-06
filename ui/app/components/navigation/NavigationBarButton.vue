@@ -66,6 +66,7 @@ button {
     text-align: center;
     width: 5.5rem;
 
+    &:active,
     &.active {
         background-color: var(--navigation-button-active-color-background);
         color: var(--navigation-button-active-color-font);
