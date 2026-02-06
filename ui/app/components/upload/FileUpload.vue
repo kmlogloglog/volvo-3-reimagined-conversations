@@ -4,7 +4,7 @@
         ref="fileInput"
         type="file"
         multiple
-        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+        accept="image/*,.pdf,.txt"
         style="display: none;"
         @change="onFileSelected" />
 
