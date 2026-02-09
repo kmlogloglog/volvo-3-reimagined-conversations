@@ -1,5 +1,10 @@
 {
   "EX30": {
+    "base_configuration": {
+      "exteriors": "cloud_blue",
+      "wheels": "18",
+      "interiors": "indigo"
+    },
     "wheels": {
       "18": {
         "display_name": "18″ 5-spoke silver/glossy black",
@@ -15,13 +20,13 @@
       }
     },
     "exteriors": {
-      "crystal_white": {
-        "display_name": "Crystal White",
-        "description": "Shimmering, sparkling white pearl colour built up by three layers of coat which gives a soft, deep pearlescent effect for a silky, smooth appearance and a pure exclusive look."
-      },
       "cloud_blue": {
         "display_name": "Cloud Blue",
         "description": "A pure, light solid blue colour with a whitish character, inspired by the cold air of snowy Swedish winter landscapes. This is a playful colour that enhances the graphic impression of your Volvo."
+      },
+      "crystal_white": {
+        "display_name": "Crystal White",
+        "description": "Shimmering, sparkling white pearl colour built up by three layers of coat which gives a soft, deep pearlescent effect for a silky, smooth appearance and a pure exclusive look."
       },
       "onyx_black": {
         "display_name": "Onyx Black",
@@ -44,6 +49,11 @@
     }
   },
   "EX60": {
+    "base_configuration": {
+      "exteriors": "ice_white",
+      "wheels": "20",
+      "interiors": "nordico_charcoal"
+    },
     "wheels": {
       "20": {
         "display_name": "20″ 5-spoke matt/glossy black diamond cut",
@@ -142,6 +152,11 @@
     }
   },
   "EX90": {
+    "base_configuration": {
+      "exteriors": "vapour_grey",
+      "wheels": "21",
+      "interiors": "nordico_charcoal"
+    },
     "wheels": {
       "21": {
         "display_name": "21″ 8-spoke glossy black/matt graphite diamond cut",
@@ -163,6 +178,10 @@
       }
     },
     "exteriors": {
+      "vapour_grey": {
+        "display_name": "Vapour Grey",
+        "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight."
+      },
       "onyx_black": {
         "display_name": "Onyx Black",
         "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light."
@@ -178,10 +197,6 @@
       "platinum_grey": {
         "display_name": "Platinum Grey",
         "description": "A very sophisticated grey metallic with elegant undertones of brown that add an exclusive fluid, smooth velvet finish."
-      },
-      "vapour_grey": {
-        "display_name": "Vapour Grey",
-        "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight."
       },
       "aurora_silver": {
         "display_name": "Aurora Silver",
