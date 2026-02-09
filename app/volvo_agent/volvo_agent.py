@@ -31,7 +31,6 @@ volvo_agent = LlmAgent(
     name="volvo_agent",
     instruction=PROMPT_V2,
     tools=[
-        AgentTool(google_search_agent),
         load_memory_tool,
         save_memory_tool,
         display_model_image_tool,
