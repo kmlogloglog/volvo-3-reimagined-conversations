@@ -1,253 +1,142 @@
 import json
 import logging
-import difflib
 from pathlib import Path
-from typing import Optional, Any
+from typing import Optional, Any, Literal
 
-from google.adk.tools import FunctionTool
-from ..schemas.enums import CarModel
-
-# Define paths to knowledge base
-KNOWLEDGE_ROOT = Path(__file__).resolve().parent.parent / "knowledge"
-CONFIG_FILE = "car_configurations.json"
-IMAGES_FILE = "car_images.json"
+from google.adk.tools import FunctionTool, ToolContext
+from ..schemas.car import CarConfiguration
+from ..utils import load_car_configurations, load_car_images
 
 logger = logging.getLogger(__name__)
 
 
-def _load_json(filename: str) -> dict | None:
-    path = KNOWLEDGE_ROOT / filename
-    if not path.exists():
-        logger.error(f"File not found at {path}")
-        return None
-    try:
-        with path.open("r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as e:
-        logger.error(f"Error reading {filename}: {e}")
-        return None
-
-
-def _fuzzy_match(query: str, items: dict[str, Any], threshold: float = 0.6) -> tuple[str, str] | None:
+def _get_image_data_from_config(config: CarConfiguration) -> dict | None:
     """
-    Matches a query string against a dictionary where keys are IDs and values are dicts 
-    containing a "display_name" property.
-    
-    Returns (key, display_name) if a match is found.
+    Resolves configuration and returns a dictionary with image URL and caption using CarConfiguration.
     """
-    if not query:
-        return None
+    images_data = load_car_images()
+    config_data = load_car_configurations()
 
-    query_norm = query.lower().strip()
-    
-    # 1. Exact match on keys
-    if query_norm in items:
-        return query_norm, items[query_norm].get("display_name", query_norm)
+    model_key = config.model
+    exterior_key = config.exterior
+    interior_key = config.interior
+    wheels_key = config.wheels
 
-    # 2. Exact match on display names (normalized)
-    for key, data in items.items():
-        if data.get("display_name", "").lower() == query_norm:
-            return key, data.get("display_name")
-
-    # 3. Fuzzy match against keys
-    keys = list(items.keys())
-    matches = difflib.get_close_matches(query_norm, keys, n=1, cutoff=threshold)
-    if matches:
-        key = matches[0]
-        return key, items[key].get("display_name", key)
-
-    # 4. Fuzzy match against display names
-    # Create a reverse map for lookup: display_name_lower -> key
-    name_map = {}
-    for key, data in items.items():
-        dn = data.get("display_name", "")
-        if dn:
-            name_map[dn.lower()] = key
-
-    params = list(name_map.keys())
-    matches = difflib.get_close_matches(query_norm, params, n=1, cutoff=threshold)
-    if matches:
-        matched_name = matches[0]
-        key = name_map[matched_name]
-        return key, items[key].get("display_name")
-        
-    return None
-
-
-def _get_image_data(
-    model_name: str,
-    color_query: str | None = None,
-    interior_query: str | None = None,
-    wheel_query: str | None = None
-) -> dict | None:
-    """
-    Resolves configuration and returns a dictionary with image URL and caption.
-    Returns None if no image found.
-    """
-    config_data = _load_json(CONFIG_FILE)
-    images_data = _load_json(IMAGES_FILE)
-    
-    if not config_data or not images_data:
-        return None
-
-    # Resolve Model
-    # We assume model_name is valid or close enough since it comes from an Enum usually.
-    # But let's check exact key match first
-    model_key = model_name
-    if model_key not in config_data:
-        # Try finding case-insensitive match
-        for k in config_data.keys():
-            if k.lower() == model_name.lower():
-                model_key = k
-                break
-        else:
-             logger.error(f"Model {model_name} not found in configuration.")
-             return None
-
-    model_config = config_data.get(model_key, {})
     model_images = images_data.get(model_key, {})
+    model_config = config_data.get(model_key, {})
 
-    # Check for Interior Request
-    if interior_query:
-        interiors_config = model_config.get("interiors", {})
-        interiors_images = model_images.get("interiors", {})
-        
-        # Fuzzy match interior
-        match = _fuzzy_match(interior_query, interiors_config)
-        
-        target_interior_key = None
-        display_name = interior_query
-        
-        if match:
-            target_interior_key, display_name = match
-        else:
-             # Fallback: try to pick first available or just logging?
-             # If exact matching failed, maybe just try to match keys roughly?
-             # For now, if no match, we can't show specific interior.
-             # Let's try to pick the first one if the query was "interior" or similar generic
-             if "interior" in interior_query.lower() and interiors_config:
-                 target_interior_key = next(iter(interiors_config))
-                 display_name = interiors_config[target_interior_key].get("display_name")
+    exterior_images = model_images.get("exteriors", {}).get(exterior_key, {}).get("wheels", {}).get(wheels_key, {})
+    # exterior_images is a dictionary where each key is associated to an URL of an image:
+    #   brand_view_1 - Photo of the vehicle with a branded background
+    #   brand_view_2 - Photo of the vehicle with a branded background
+    #   brand_view_3 - Photo of the vehicle with a branded background
+    #   front_side_view - Photo of the vehicle from the front-side
+    #   front_view - Photo of the vehicle from the front
+    #   left_side_view - Photo of the vehicle from the left side
+    #   rear_side_view - Photo of the vehicle from the side rear
+    #   rear_view - Photo of the vehicle from the rear
+    #   wheel_view - Photo of the vehicle centered around the wheel
 
-        if target_interior_key and target_interior_key in interiors_images:
-            views = interiors_images[target_interior_key]
-            # Pick a nice view, e.g. interior_1
-            image_url = views.get("interior_1") or next(iter(views.values()), None)
-            if image_url:
-                return {
-                    "image_url": image_url,
-                    "caption": f"Volvo {model_key} {display_name}",
-                    "alt_text": f"Interior view of Volvo {model_key} with {display_name}"
-                }
+    interior_images = model_images.get("interiors", {}).get(interior_key, {})
+    # interior_images is a dictionary where each key is associated to an URL of an image:
+    #   dashboard_view - Photo of the vehicle front dashboad
+    #   fabric_close_up_view - Photo of the fabric used for the seats up close
+    #   fabric_view - Photo of the fabric used for the seats
+    #   gear_shift_view - Photo of the gear shift and separator between the two front seats
+    #   glovebox_view - Photo of the view from the front passenger seat
+    #   illumination_view - Photo of the interior illumination
+    #   seats_view_front - Photo of the interior seats from the front
+    #   seats_view_side - Photo of the interior seats from the side
+    #   steering_wheel_view - Photo of the steering wheel
     
-    # Exterior Flow
-    exteriors_config = model_config.get("exteriors", {})
-    wheels_config = model_config.get("wheels", {})
-    
-    exteriors_images = model_images.get("exteriors", {})
-    
-    # Resolve Color
-    target_color_key = None
-    color_name = "Default Color"
-    
-    if color_query:
-        match = _fuzzy_match(color_query, exteriors_config)
-        if match:
-            target_color_key, color_name = match
-    
-    # If no color resolved, pick first available
-    if not target_color_key and exteriors_config:
-        target_color_key = next(iter(exteriors_config))
-        color_name = exteriors_config[target_color_key].get("display_name")
+    exterior_metadata = model_config.get("exteriors", {}).get(exterior_key, {})
+    # exterior_config should contain the display_name and description of the selected exterior configuration
+    interior_metadata = model_config.get("interiors", {}).get(interior_key, {})
+    # interior_config should contain the display_name and description of the selected interior configurations
+    wheels_metadata = model_config.get("wheels", {}).get(wheels_key, {})
 
-    if not target_color_key or target_color_key not in exteriors_images:
-        logger.warning(f"Color {target_color_key} not found in images for {model_key}")
-        return None
-
-    color_images_node = exteriors_images[target_color_key]
-    # Structure is color -> wheels -> wheel_id -> views
-    
-    available_wheels_in_images = color_images_node.get("wheels", {})
-    
-    # Resolve Wheel
-    target_wheel_key = None
-    wheel_name = ""
-    
-    if wheel_query:
-        match = _fuzzy_match(wheel_query, wheels_config)
-        if match:
-            target_wheel_key, wheel_name = match
-            
-    # If no wheel resolved or resolved wheel not in images for this color
-    if (not target_wheel_key) or (str(target_wheel_key) not in available_wheels_in_images):
-        # Pick first available matching wheel in images
-        if available_wheels_in_images:
-             # Try to prefer a "standard" wheel if possible, or just first
-             target_wheel_key = next(iter(available_wheels_in_images))
-             # Update name
-             if str(target_wheel_key) in wheels_config:
-                 wheel_name = wheels_config[str(target_wheel_key)].get("display_name")
-             else:
-                 wheel_name = f"Wheel {target_wheel_key}"
-
-    if not target_wheel_key:
-         return None
-
-    # Get Views
-    wheel_views = available_wheels_in_images.get(str(target_wheel_key), {})
-    image_url = wheel_views.get("front_side_view") or wheel_views.get("front_view") or next(iter(wheel_views.values()), None)
-    
-    if not image_url:
-        return None
-
-    caption = f"Volvo {model_key} in {color_name}"
-    if wheel_name:
-        caption += f" with {wheel_name}"
+    if not exterior_images or not interior_images or not exterior_metadata or not interior_metadata:
+        return None  
 
     return {
-        "image_url": image_url,
-        "caption": caption,
-        "alt_text": caption
+        "exterior_images": exterior_images,
+        "interior_images": interior_images,
+        "exterior_metadata": exterior_metadata,
+        "interior_metadata": interior_metadata,
+        "wheels_metadata": wheels_metadata,
     }
 
-
 def display_model_image(
-    car_model: CarModel,
-    color: Optional[str] = None,
-    interior: Optional[str] = None,
-    wheel: Optional[str] = None
+    tool_context: ToolContext,
+    car_config: CarConfiguration,
+    detail: Literal["ALL","EXTERIOR","INTERIOR","WHEELS","BRAND"]
 ) -> dict:
     """
-    Displays an image of the specified car model with optional configuration.
+    Displays one or more images of the specified car configuration and
+    updates the current configuration in the session state.
     
     Args:
-        car_model: The model of the car (EX90, EX30, EX60).
-        color: Optional exterior color description (e.g. "red", "platinum grey").
-        interior: Optional interior description. If provided, likely shows interior view.
-        wheel: Optional wheel description.
+        context: The tool context containing the session state.
+        car_config: The car configuration that needs to be displayed.
+        detail: The specific images of the car. Valid options are
+            "ALL" for displaying all images available,
+            "EXTERIOR" to show the outer color of the car
+            "INTERIOR" to show the interior of the car
+            "WHEELS" to show an image of the wheel in the selected configuration
+            "BRAND" to show multiple exterior images of the car on a branded background
 
     Returns:
         UI action dictionary.
     """
-    model_name = car_model.value if hasattr(car_model, "value") else car_model
-    logger.info(f"display_model_image called: model={model_name}, color={color}, interior={interior}, wheel={wheel}")
+    model_name = car_config.model
+    exterior = car_config.exterior
+    interior = car_config.interior
+    wheels = car_config.wheels
 
-    result = _get_image_data(model_name, color, interior, wheel)
+    tool_context.state["current_config"] = car_config
 
-    if not result:
-         return {"agent_context": f"Could not find an image for {model_name} with the specified configuration."}
+    logger.info(f"display_model_image called: model={model_name}, exterior={exterior}, interior={interior}, wheels={wheels}")
+
+    image_data = _get_image_data_from_config(car_config)
+
+    if not image_data:
+         return {"agent_context": f"Could not find any images for {model_name} with the specified configuration."}
+
+    exterior_display_name = image_data.get("exterior_metadata", {}).get("display_name", "")
+    interior_display_name = image_data.get("interior_metadata", {}).get("display_name", "")
+    wheels_display_name = image_data.get("wheels_metadata", {}).get("display_name", "")
+    
+    images = []
+    
+    if detail == "ALL":
+        images.extend(image_data.get("exterior_images", {}).values())
+        images.extend(image_data.get("interior_images", {}).values())
+        caption = f"Volvo {model_name} in {exterior_display_name} with {wheels_display_name} wheels and {interior_display_name}"
+    elif detail == "EXTERIOR":
+        images.extend(image_data.get("exterior_images", {}).values())
+        caption = f"Volvo {model_name} in {exterior_display_name} with {wheels_display_name} wheels"
+    elif detail == "INTERIOR":
+        images.extend(image_data.get("interior_images", {}).values())
+        caption = f"Volvo {model_name} with {interior_display_name}"
+    elif detail == "WHEELS":
+        images.append(image_data.get("exterior_images", {}).get("wheel_view", ""))
+        caption = wheels_display_name
+    elif details == "BRAND":
+        images.append(image_data.get("exterior_images", {}).get("brand_view_1", ""))
+        images.append(image_data.get("exterior_images", {}).get("brand_view_2", ""))
+        images.append(image_data.get("exterior_images", {}).get("brand_view_3", ""))
+        caption = f"Volvo {model_name} in {exterior_display_name} with {wheels_display_name} wheels and {interior_display_name}"
 
     return {
         "ui_action": {
             "action": "display_component",
-            "component_name": "display_model_image.html",
+            "component_name": "display_images",
             "data": {
-                "image_url": result["image_url"],
-                "alt_text": result["alt_text"],
-                "caption": result["caption"],
+                "images": images,
+                "caption": caption,
             },
         },
-        "agent_context": f"Displayed an image of {result['caption']}.",
+        "agent_context": f"Displayed images of the {caption}.",
     }
 
 
