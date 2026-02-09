@@ -98,6 +98,13 @@ def display_model_image(
     Returns:
         UI action dictionary.
     """
+    if isinstance(car_config, dict):
+        try:
+            car_config = CarConfiguration(**car_config)
+        except Exception as e:
+            logger.error(f"Error parsing car_config: {e}")
+            return {"agent_context": f"Invalid configuration details provided. {str(e)}"}
+            
     model_name = car_config.model
     exterior = car_config.exterior
     interior = car_config.interior

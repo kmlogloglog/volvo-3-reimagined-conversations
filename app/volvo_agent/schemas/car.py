@@ -1,10 +1,10 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
 from ..utils import load_car_configurations
 
-CAR_CONFIGS = load_car_configurations() or {}
+CAR_CONFIGS = load_car_configurations()
 
 
 class CarConfiguration(BaseModel):
@@ -14,16 +14,13 @@ class CarConfiguration(BaseModel):
     """
 
     model: Literal["EX30", "EX60", "EX90"] = Field(..., description="The car model.")
-    exterior: str | None = Field(
-        default=None,
+    exterior: Optional[str] = Field(
         description="The selected exterior color for the car configuration (e.g. vapour_grey, onyx_black).",
     )
-    interior: str | None = Field(
-        default=None,
+    interior: Optional[str] = Field(
         description="The selected interior for the car configuration (e.g. nordico_charcoal, nappa_cardamom).",
     )
-    wheels: str | None = Field(
-        default=None,
+    wheels: Optional[str] = Field(
         description="The selected wheels type for the car configuration (e.g. 20, 21, 22Y).",
     )
 
