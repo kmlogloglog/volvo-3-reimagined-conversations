@@ -1035,3 +1035,32 @@ button {
 .console-entry.hidden-by-filter {
   display: none !important;
 }
+
+/* Multi-image container styling */
+.multi-image-container {
+  display: flex !important;
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 5px;
+  max-width: 100%;
+}
+
+.multi-image-container img {
+  max-height: 200px;
+  height: auto;
+  width: auto;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+  object-fit: contain;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollbar on image container */
+.multi-image-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.multi-image-container::-webkit-scrollbar-thumb {
+  background: #dadce0;
+  border-radius: 3px;
+}

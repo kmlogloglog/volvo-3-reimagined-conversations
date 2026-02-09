@@ -783,7 +783,7 @@ function connectWebsocket() {
         // Reset input transcription state so next user input creates new balloon
         currentInputTranscriptionId = null;
         currentInputTranscriptionElement = null;
-        inputTranscriptionFinished = true; // Prevent duplicate bubbles from late events
+        inputTranscriptionFinished = true; // Prevent duplicate bubbles
       }
 
       for (const part of parts) {
@@ -799,23 +799,100 @@ function connectWebsocket() {
 
         // Handle text
         if (part.text) {
-          // Add a new message bubble for a new turn
+          const text = part.text;
+          // If we have an active input transcription, finalize it now
+          if (currentInputTranscriptionElement) {
+            const textElement = currentInputTranscriptionElement.querySelector(".bubble-text");
+            const typingIndicator = textElement.querySelector(".typing-indicator");
+            if (typingIndicator) {
+              typingIndicator.remove();
+            }
+            currentInputTranscriptionId = null;
+            currentInputTranscriptionElement = null;
+            inputTranscriptionFinished = true;
+          }
+
           if (currentMessageId == null) {
+            // Create new message bubble
             currentMessageId = Math.random().toString(36).substring(7);
-            currentBubbleElement = createMessageBubble(part.text, false, true);
+            currentBubbleElement = createMessageBubble(text, false, true);
             currentBubbleElement.id = currentMessageId;
             messagesDiv.appendChild(currentBubbleElement);
           } else {
-            // Update the existing message bubble with accumulated text
-            const existingText = currentBubbleElement.querySelector(".bubble-text").textContent;
-            // Remove the "..." if present
-            const cleanText = existingText.replace(/\.\.\.$/, '');
-            updateMessageBubble(currentBubbleElement, cleanText + part.text, true);
+            // Append to existing message
+            if (currentBubbleElement) {
+              const textElement = currentBubbleElement.querySelector(".bubble-text");
+              const existingText = textElement.innerText; // Use innerText to get text without hidden elements
+              // Remove typing indicator logic is handled in updateMessageBubble
+              updateMessageBubble(currentBubbleElement, existingText + text, true);
+            }
           }
-
-          // Scroll down to the bottom of the messagesDiv
           scrollToBottom();
         }
+
+        // Handle function response (UI Actions)
+        if (part.functionResponse) {
+          const response = part.functionResponse.response;
+          if (response && response.ui_action) {
+            const uiAction = response.ui_action;
+            // Check for display_component or carousel_card (used by different tools)
+            const isDisplayAction = uiAction.action === 'display_component';
+            if (isDisplayAction) {
+              const images = uiAction.data.images || (uiAction.data.image_url ? [uiAction.data.image_url] : []);
+
+              if (images.length > 0) {
+                console.log("Rendering images from UI Action:", images);
+
+                const messageDiv = document.createElement("div");
+                messageDiv.className = "message agent";
+
+                const bubbleDiv = document.createElement("div");
+                bubbleDiv.className = "bubble image-bubble";
+                // Allow bubble to expand for multiple images if needed, though max-width 70% still applies
+                if (images.length > 1) {
+                  bubbleDiv.style.maxWidth = "85%"; // Give more space for carousel
+                }
+
+                // Container for images (carousel if multiple)
+                const imageContainer = document.createElement("div");
+                if (images.length > 1) {
+                  imageContainer.className = "multi-image-container";
+                } else {
+                  // Single image style
+                  imageContainer.style.display = "block";
+                }
+
+                images.forEach(url => {
+                  const img = document.createElement("img");
+                  img.src = url;
+                  img.className = "bubble-image";
+                  img.alt = uiAction.data.alt_text || "Car Configuration Image";
+                  imageContainer.appendChild(img);
+                });
+
+                bubbleDiv.appendChild(imageContainer);
+
+                // Add caption if available
+                if (uiAction.data.caption || uiAction.data.title) {
+                  const captionDiv = document.createElement("div");
+                  captionDiv.className = "bubble-caption";
+                  captionDiv.textContent = uiAction.data.caption || uiAction.data.title;
+                  captionDiv.style.fontSize = "0.8em";
+                  captionDiv.style.color = "#666";
+                  captionDiv.style.marginTop = "8px";
+                  captionDiv.style.textAlign = "center";
+                  bubbleDiv.appendChild(captionDiv);
+                }
+
+                messageDiv.appendChild(bubbleDiv);
+                messagesDiv.appendChild(messageDiv);
+                scrollToBottom();
+              }
+            }
+          }
+        }
+        // Scroll down to the bottom of the messagesDiv
+        scrollToBottom();
       }
     }
   };
