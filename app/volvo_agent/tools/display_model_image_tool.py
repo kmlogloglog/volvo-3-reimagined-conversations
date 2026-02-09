@@ -1,9 +1,8 @@
-import json
 import logging
-from pathlib import Path
-from typing import Optional, Any, Literal
+from typing import Literal
 
 from google.adk.tools import FunctionTool, ToolContext
+
 from ..schemas.car import CarConfiguration
 from ..utils import load_car_configurations, load_car_images
 
@@ -25,7 +24,12 @@ def _get_image_data_from_config(config: CarConfiguration) -> dict | None:
     model_images = images_data.get(model_key, {})
     model_config = config_data.get(model_key, {})
 
-    exterior_images = model_images.get("exteriors", {}).get(exterior_key, {}).get("wheels", {}).get(wheels_key, {})
+    exterior_images = (
+        model_images.get("exteriors", {})
+        .get(exterior_key, {})
+        .get("wheels", {})
+        .get(wheels_key, {})
+    )
     # exterior_images is a dictionary where each key is associated to an URL of an image:
     #   brand_view_1 - Photo of the vehicle with a branded background
     #   brand_view_2 - Photo of the vehicle with a branded background
@@ -39,7 +43,7 @@ def _get_image_data_from_config(config: CarConfiguration) -> dict | None:
 
     interior_images = model_images.get("interiors", {}).get(interior_key, {})
     # interior_images is a dictionary where each key is associated to an URL of an image:
-    #   dashboard_view - Photo of the vehicle front dashboad
+    #   dashboard_view - Photo of the vehicle front dashboard
     #   fabric_close_up_view - Photo of the fabric used for the seats up close
     #   fabric_view - Photo of the fabric used for the seats
     #   gear_shift_view - Photo of the gear shift and separator between the two front seats
@@ -48,15 +52,20 @@ def _get_image_data_from_config(config: CarConfiguration) -> dict | None:
     #   seats_view_front - Photo of the interior seats from the front
     #   seats_view_side - Photo of the interior seats from the side
     #   steering_wheel_view - Photo of the steering wheel
-    
+
     exterior_metadata = model_config.get("exteriors", {}).get(exterior_key, {})
     # exterior_config should contain the display_name and description of the selected exterior configuration
     interior_metadata = model_config.get("interiors", {}).get(interior_key, {})
     # interior_config should contain the display_name and description of the selected interior configurations
     wheels_metadata = model_config.get("wheels", {}).get(wheels_key, {})
 
-    if not exterior_images or not interior_images or not exterior_metadata or not interior_metadata:
-        return None  
+    if (
+        not exterior_images
+        or not interior_images
+        or not exterior_metadata
+        or not interior_metadata
+    ):
+        return None
 
     return {
         "exterior_images": exterior_images,
@@ -66,15 +75,16 @@ def _get_image_data_from_config(config: CarConfiguration) -> dict | None:
         "wheels_metadata": wheels_metadata,
     }
 
+
 def display_model_image(
     tool_context: ToolContext,
     car_config: CarConfiguration,
-    detail: Literal["ALL","EXTERIOR","INTERIOR","WHEELS","BRAND"]
+    detail: Literal["ALL", "EXTERIOR", "INTERIOR", "WHEELS", "BRAND"],
 ) -> dict:
     """
     Displays one or more images of the specified car configuration and
     updates the current configuration in the session state.
-    
+
     Args:
         context: The tool context containing the session state.
         car_config: The car configuration that needs to be displayed.
@@ -95,19 +105,27 @@ def display_model_image(
 
     tool_context.state["current_config"] = car_config
 
-    logger.info(f"display_model_image called: model={model_name}, exterior={exterior}, interior={interior}, wheels={wheels}")
+    logger.info(
+        f"display_model_image called: model={model_name}, exterior={exterior}, interior={interior}, wheels={wheels}"
+    )
 
     image_data = _get_image_data_from_config(car_config)
 
     if not image_data:
-         return {"agent_context": f"Could not find any images for {model_name} with the specified configuration."}
+        return {
+            "agent_context": f"Could not find any images for {model_name} with the specified configuration."
+        }
 
-    exterior_display_name = image_data.get("exterior_metadata", {}).get("display_name", "")
-    interior_display_name = image_data.get("interior_metadata", {}).get("display_name", "")
+    exterior_display_name = image_data.get("exterior_metadata", {}).get(
+        "display_name", ""
+    )
+    interior_display_name = image_data.get("interior_metadata", {}).get(
+        "display_name", ""
+    )
     wheels_display_name = image_data.get("wheels_metadata", {}).get("display_name", "")
-    
+
     images = []
-    
+
     if detail == "ALL":
         images.extend(image_data.get("exterior_images", {}).values())
         images.extend(image_data.get("interior_images", {}).values())
@@ -121,7 +139,7 @@ def display_model_image(
     elif detail == "WHEELS":
         images.append(image_data.get("exterior_images", {}).get("wheel_view", ""))
         caption = wheels_display_name
-    elif details == "BRAND":
+    elif detail == "BRAND":
         images.append(image_data.get("exterior_images", {}).get("brand_view_1", ""))
         images.append(image_data.get("exterior_images", {}).get("brand_view_2", ""))
         images.append(image_data.get("exterior_images", {}).get("brand_view_3", ""))

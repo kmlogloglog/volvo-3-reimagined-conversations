@@ -1,8 +1,8 @@
+import difflib
 import json
 import logging
 from pathlib import Path
 from typing import Any
-import difflib
 
 logger = logging.getLogger(__name__)
 
@@ -11,36 +11,42 @@ KNOWLEDGE_ROOT = Path(__file__).resolve().parent.parent / "knowledge"
 CONFIG_FILE = "car_configurations.json"
 IMAGES_FILE = "car_images.json"
 
-def load_json(path: Path, filename: str) -> dict | None:
+
+def load_json(path: Path, filename: str) -> dict:
     filepath = path / filename
     if not filepath.exists():
         logger.error(f"File not found at {filepath}")
-        return None
+        return {}
     try:
         with filepath.open("r", encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         logger.error(f"Error reading {filename}: {e}")
-        return None
+        return {}
 
-def load_car_configurations() -> dict | None:
+
+def load_car_configurations() -> dict:
     return load_json(path=KNOWLEDGE_ROOT, filename=CONFIG_FILE)
 
-def load_car_images() -> dict | None:
+
+def load_car_images() -> dict:
     return load_json(path=KNOWLEDGE_ROOT, filename=IMAGES_FILE)
 
-def fuzzy_match(query: str, items: dict[str, Any], threshold: float = 0.6) -> tuple[str, str] | None:
+
+def fuzzy_match(
+    query: str, items: dict[str, Any], threshold: float = 0.6
+) -> tuple[str, str] | None:
     """
-    Matches a query string against a dictionary where keys are IDs and values are dicts 
+    Matches a query string against a dictionary where keys are IDs and values are dicts
     containing a "display_name" property.
-    
+
     Returns (key, display_name) if a match is found.
     """
     if not query:
         return None
 
     query_norm = query.lower().strip()
-    
+
     # 1. Exact match on keys
     if query_norm in items:
         return query_norm, items[query_norm].get("display_name", query_norm)
@@ -71,6 +77,5 @@ def fuzzy_match(query: str, items: dict[str, Any], threshold: float = 0.6) -> tu
         matched_name = matches[0]
         key = name_map[matched_name]
         return key, items[key].get("display_name")
-        
-    return None
 
+    return None

@@ -1,15 +1,14 @@
+import logging
+
 from google.adk.tools.function_tool import FunctionTool
 from google.adk.tools.tool_context import ToolContext
 from pydantic import BaseModel, Field
 
+logger = logging.getLogger(__name__)
+
 
 class SaveMemoryResponse(BaseModel):
     success: bool = Field(description="Whether the memory was saved successfully.")
-
-
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 async def save_memory(

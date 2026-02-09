@@ -56,7 +56,7 @@ class FirestoreSessionService(BaseSessionService):
         user_id: str,
         session_id: str,
         config: dict[str, Any] | None = None,  # Added config matching base,
-        state: dict[str, Any] | None = None
+        state: dict[str, Any] | None = None,
     ) -> Session | None:
         """Retrieves a session from Firestore, including its events."""
         session_ref = self._get_session_ref(user_id, session_id)
@@ -111,7 +111,12 @@ class FirestoreSessionService(BaseSessionService):
         if session_id is None:
             raise ValueError("session_id is required for FirestoreSessionService")
 
-        session = Session(app_name=app_name, user_id=user_id, id=session_id, state=state)
+        if state is None:
+            state = {}
+
+        session = Session(
+            app_name=app_name, user_id=user_id, id=session_id, state=state
+        )
 
         session_ref = self._get_session_ref(user_id, session_id)
 

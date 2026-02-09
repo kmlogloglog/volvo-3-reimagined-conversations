@@ -195,23 +195,21 @@ async def websocket_endpoint(
             if car_configs:
                 session.state["app:car_configurations"] = car_configs
                 logger.info("Loaded car configurations into session state.")
-                
+
                 # Persist state update if service supports it
                 if hasattr(session_service, "update_session"):
                     await session_service.update_session(session)
             else:
                 logger.error("Failed to load car configurations.")
     else:
-        initial_state = {
-            "app:car_configurations": load_car_configurations()
-        }
+        initial_state = {"app:car_configurations": load_car_configurations()}
         await session_service.create_session(
             app_name=APP_NAME,
             user_id=user_id,
             session_id=session_id,
-            state=initial_state
+            state=initial_state,
         )
-    
+
     live_request_queue = LiveRequestQueue()
 
     # ========================================
