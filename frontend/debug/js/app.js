@@ -94,7 +94,18 @@ const statusIndicator = document.getElementById("statusIndicator");
 const statusText = document.getElementById("statusText");
 const consoleContent = document.getElementById("consoleContent");
 const clearConsoleBtn = document.getElementById("clearConsole");
-const showAudioEventsCheckbox = document.getElementById("showAudioEvents");
+
+// Filter Elements
+const filterDropdownBtn = document.getElementById("filterDropdownBtn");
+const filterDropdownContent = document.getElementById("filterDropdownContent");
+const filterCheckboxes = {
+  'type-text': document.getElementById("filterText"),
+  'type-audio': document.getElementById("filterAudio"),
+  'type-tool': document.getElementById("filterTools"),
+  'type-system': document.getElementById("filterSystem"),
+  'type-error': document.getElementById("filterError")
+};
+
 let currentMessageId = null;
 let currentBubbleElement = null;
 let currentInputTranscriptionId = null;
@@ -102,6 +113,50 @@ let currentInputTranscriptionElement = null;
 let currentOutputTranscriptionId = null;
 let currentOutputTranscriptionElement = null;
 let inputTranscriptionFinished = false; // Track if input transcription is complete for this turn
+
+// Filter Logic
+function toggleFilterDropdown() {
+  filterDropdownContent.classList.toggle("show");
+  // Update button arrow direction
+  const icon = filterDropdownBtn.querySelector(".filter-icon");
+  icon.style.transform = filterDropdownContent.classList.contains("show") ? "rotate(180deg)" : "rotate(0deg)";
+}
+
+// Close dropdown when clicking outside
+window.addEventListener("click", function (event) {
+  if (!event.target.matches('.filter-btn') && !event.target.closest('.filter-dropdown')) {
+    if (filterDropdownContent.classList.contains('show')) {
+      filterDropdownContent.classList.remove('show');
+      const icon = filterDropdownBtn.querySelector(".filter-icon");
+      icon.style.transform = "rotate(0deg)";
+    }
+  }
+});
+
+filterDropdownBtn.addEventListener("click", toggleFilterDropdown);
+
+function isTypeFiltered(type) {
+  const checkbox = filterCheckboxes[type];
+  return checkbox ? !checkbox.checked : false;
+}
+
+function updateFilters() {
+  for (const [type, checkbox] of Object.entries(filterCheckboxes)) {
+    const elements = document.querySelectorAll(`.console-entry.${type}`);
+    elements.forEach(el => {
+      if (checkbox.checked) {
+        el.classList.remove('hidden-by-filter');
+      } else {
+        el.classList.add('hidden-by-filter');
+      }
+    });
+  }
+}
+
+// Add listeners to filter checkboxes
+for (const checkbox of Object.values(filterCheckboxes)) {
+  checkbox.addEventListener("change", updateFilters);
+}
 
 // Helper function to clean spaces between CJK characters
 // Removes spaces between Japanese/Chinese/Korean characters while preserving spaces around Latin text
@@ -131,13 +186,28 @@ function formatTimestamp() {
 }
 
 function addConsoleEntry(type, content, data = null, emoji = null, author = null, isAudio = false) {
-  // Skip audio events if checkbox is unchecked
-  if (isAudio && !showAudioEventsCheckbox.checked) {
-    return;
+  // Determine type for filtering
+  let filterType = 'type-system'; // Default
+
+  if (type === 'error') {
+    filterType = 'type-error';
+  } else if (content.startsWith('Audio Response') || (data && data.content && data.content.parts && data.content.parts.some(p => p.inlineData))) {
+    filterType = 'type-audio';
+  } else if (content.startsWith('Tool Call') || content.startsWith('Tool Response') || content.startsWith('Code Execution') || content.startsWith('Executable Code')) {
+    filterType = 'type-tool';
+  } else if (type === 'incoming' || type === 'outgoing') {
+    // Other incoming/outgoing messages are likely text or general info
+    filterType = 'type-text';
   }
 
+  // Check if this type is currently filtered out
+  const isFiltered = isTypeFiltered(filterType);
+
   const entry = document.createElement("div");
-  entry.className = `console-entry ${type}`;
+  entry.className = `console-entry ${type} ${filterType}`;
+  if (isFiltered) {
+    entry.classList.add('hidden-by-filter');
+  }
 
   const header = document.createElement("div");
   header.className = "console-entry-header";
@@ -479,13 +549,42 @@ function connectWebsocket() {
         const sanitizedEvent = sanitizeEventForDisplay(adkEvent);
         addConsoleEntry('incoming', eventSummary, sanitizedEvent, eventEmoji, author, true);
       }
+
+      // Check for function calls
+      const hasFunctionCall = adkEvent.content.parts.some(p => p.functionCall);
+      if (hasFunctionCall) {
+        const callPart = adkEvent.content.parts.find(p => p.functionCall);
+        if (callPart && callPart.functionCall) {
+          const name = callPart.functionCall.name;
+          const args = JSON.stringify(callPart.functionCall.args);
+          const truncatedArgs = args.length > 50 ? args.substring(0, 50) + '...' : args;
+          eventSummary = `Tool Call: ${name}(${truncatedArgs})`;
+          eventEmoji = '🔧';
+        }
+      }
+
+      // Check for function responses
+      const hasFunctionResponse = adkEvent.content.parts.some(p => p.functionResponse);
+      if (hasFunctionResponse) {
+        const responsePart = adkEvent.content.parts.find(p => p.functionResponse);
+        if (responsePart && responsePart.functionResponse) {
+          const name = responsePart.functionResponse.name;
+          // output is usually a dict/object
+          const response = JSON.stringify(responsePart.functionResponse.response);
+          const truncatedResponse = response.length > 50 ? response.substring(0, 50) + '...' : response;
+          eventSummary = `Tool Response: ${name} -> ${truncatedResponse}`;
+          eventEmoji = '🔙';
+        }
+      }
     }
 
     // Create a sanitized version for console display (replace large audio data with summary)
     // Skip if already logged as audio event above
     const isAudioOnlyEvent = adkEvent.content && adkEvent.content.parts &&
       adkEvent.content.parts.some(p => p.inlineData) &&
-      !adkEvent.content.parts.some(p => p.text);
+      !adkEvent.content.parts.some(p => p.text) &&
+      !adkEvent.content.parts.some(p => p.functionCall) &&
+      !adkEvent.content.parts.some(p => p.functionResponse);
     if (!isAudioOnlyEvent) {
       const sanitizedEvent = sanitizeEventForDisplay(adkEvent);
       addConsoleEntry('incoming', eventSummary, sanitizedEvent, eventEmoji, author);
@@ -684,7 +783,7 @@ function connectWebsocket() {
         // Reset input transcription state so next user input creates new balloon
         currentInputTranscriptionId = null;
         currentInputTranscriptionElement = null;
-        inputTranscriptionFinished = true; // Prevent duplicate bubbles from late events
+        inputTranscriptionFinished = true; // Prevent duplicate bubbles
       }
 
       for (const part of parts) {
@@ -700,23 +799,100 @@ function connectWebsocket() {
 
         // Handle text
         if (part.text) {
-          // Add a new message bubble for a new turn
+          const text = part.text;
+          // If we have an active input transcription, finalize it now
+          if (currentInputTranscriptionElement) {
+            const textElement = currentInputTranscriptionElement.querySelector(".bubble-text");
+            const typingIndicator = textElement.querySelector(".typing-indicator");
+            if (typingIndicator) {
+              typingIndicator.remove();
+            }
+            currentInputTranscriptionId = null;
+            currentInputTranscriptionElement = null;
+            inputTranscriptionFinished = true;
+          }
+
           if (currentMessageId == null) {
+            // Create new message bubble
             currentMessageId = Math.random().toString(36).substring(7);
-            currentBubbleElement = createMessageBubble(part.text, false, true);
+            currentBubbleElement = createMessageBubble(text, false, true);
             currentBubbleElement.id = currentMessageId;
             messagesDiv.appendChild(currentBubbleElement);
           } else {
-            // Update the existing message bubble with accumulated text
-            const existingText = currentBubbleElement.querySelector(".bubble-text").textContent;
-            // Remove the "..." if present
-            const cleanText = existingText.replace(/\.\.\.$/, '');
-            updateMessageBubble(currentBubbleElement, cleanText + part.text, true);
+            // Append to existing message
+            if (currentBubbleElement) {
+              const textElement = currentBubbleElement.querySelector(".bubble-text");
+              const existingText = textElement.innerText; // Use innerText to get text without hidden elements
+              // Remove typing indicator logic is handled in updateMessageBubble
+              updateMessageBubble(currentBubbleElement, existingText + text, true);
+            }
           }
-
-          // Scroll down to the bottom of the messagesDiv
           scrollToBottom();
         }
+
+        // Handle function response (UI Actions)
+        if (part.functionResponse) {
+          const response = part.functionResponse.response;
+          if (response && response.ui_action) {
+            const uiAction = response.ui_action;
+            // Check for display_component or carousel_card (used by different tools)
+            const isDisplayAction = uiAction.action === 'display_component';
+            if (isDisplayAction) {
+              const images = uiAction.data.images || (uiAction.data.image_url ? [uiAction.data.image_url] : []);
+
+              if (images.length > 0) {
+                console.log("Rendering images from UI Action:", images);
+
+                const messageDiv = document.createElement("div");
+                messageDiv.className = "message agent";
+
+                const bubbleDiv = document.createElement("div");
+                bubbleDiv.className = "bubble image-bubble";
+                // Allow bubble to expand for multiple images if needed, though max-width 70% still applies
+                if (images.length > 1) {
+                  bubbleDiv.style.maxWidth = "85%"; // Give more space for carousel
+                }
+
+                // Container for images (carousel if multiple)
+                const imageContainer = document.createElement("div");
+                if (images.length > 1) {
+                  imageContainer.className = "multi-image-container";
+                } else {
+                  // Single image style
+                  imageContainer.style.display = "block";
+                }
+
+                images.forEach(url => {
+                  const img = document.createElement("img");
+                  img.src = url;
+                  img.className = "bubble-image";
+                  img.alt = uiAction.data.alt_text || "Car Configuration Image";
+                  imageContainer.appendChild(img);
+                });
+
+                bubbleDiv.appendChild(imageContainer);
+
+                // Add caption if available
+                if (uiAction.data.caption || uiAction.data.title) {
+                  const captionDiv = document.createElement("div");
+                  captionDiv.className = "bubble-caption";
+                  captionDiv.textContent = uiAction.data.caption || uiAction.data.title;
+                  captionDiv.style.fontSize = "0.8em";
+                  captionDiv.style.color = "#666";
+                  captionDiv.style.marginTop = "8px";
+                  captionDiv.style.textAlign = "center";
+                  bubbleDiv.appendChild(captionDiv);
+                }
+
+                messageDiv.appendChild(bubbleDiv);
+                messagesDiv.appendChild(messageDiv);
+                scrollToBottom();
+              }
+            }
+          }
+        }
+        // Scroll down to the bottom of the messagesDiv
+        scrollToBottom();
       }
     }
   };

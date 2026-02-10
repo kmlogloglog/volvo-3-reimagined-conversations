@@ -62,10 +62,33 @@
       <div class="console-header">
         <h2>Event Console</h2>
         <div class="console-controls">
-          <label class="console-checkbox">
-            <input type="checkbox" id="showAudioEvents">
-            <span>Show audio</span>
-          </label>
+          <div class="filter-dropdown">
+            <button id="filterDropdownBtn" class="filter-btn">
+              Filter <span class="filter-icon">▼</span>
+            </button>
+            <div id="filterDropdownContent" class="filter-content">
+              <label class="filter-option">
+                <input type="checkbox" id="filterText" checked>
+                <span>💬 Text</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" id="filterAudio">
+                <span>🔊 Audio</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" id="filterTools" checked>
+                <span>🔧 Tools</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" id="filterSystem" checked>
+                <span>🔌 System</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" id="filterError" checked>
+                <span>⚠️ Errors</span>
+              </label>
+            </div>
+          </div>
           <button id="clearConsole" class="console-clear-btn">Clear</button>
         </div>
       </div>
