@@ -97,18 +97,6 @@
     function setActive(navItem) {
         const { id, name } = navItem;
 
-        const ignoreNavigation = [NAVIGATION.PHOTO.name, NAVIGATION.UPLOAD.name];
-
-        if (ignoreNavigation.includes(name)) {
-            if(name === NAVIGATION.PHOTO.name) {
-                emit(EMITS.OPEN_PHOTO_CAPTURE);
-            } else if(name === NAVIGATION.UPLOAD.name) {
-                emit(EMITS.OPEN_FILE_UPLOAD);
-            }
-
-            return;
-        }
-
         activeId.value = id;
 
         emit(EMITS.NAVIGATION_CHANGE, name);

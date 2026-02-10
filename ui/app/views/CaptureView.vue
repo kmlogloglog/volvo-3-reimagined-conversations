@@ -8,21 +8,8 @@
             </div>
         </div>
 
-        <FileUpload
-            :is-open="isFileUploadOpen"
-            @[EMITS.CLOSE]="onFileUploadClose"
-            @[EMITS.FILES_UPLOADED]="onFilesUploaded" />
-
-        <!-- Photo Capture Component -->
-        <PhotoCapture
-            :is-open="isPhotoCaptureOpen"
-            @[EMITS.CLOSE]="onPhotoCaptureClose"
-            @[EMITS.PHOTO_CAPTURED]="onPhotoCaptured" />
-
         <NavigationBar
             :is-page-loading="isLoading"
-            @[EMITS.OPEN_FILE_UPLOAD]="onOpenUpload"
-            @[EMITS.OPEN_PHOTO_CAPTURE]="onOpenPhotoCapture"
             @[EMITS.NAVIGATION_CHANGE]="onNavigate" />
 
         <!--
@@ -45,8 +32,6 @@
     import { navigateTo, useRoute } from '#app';
     import { useAgentStore } from '@/stores/agent';
     import VolvoLogo from '@/components/logo/VolvoLogo.vue';
-    import PhotoCapture from '@/components/camera/PhotoCapture.vue';
-    import FileUpload from '@/components/upload/FileUpload.vue';
 
     const emit = defineEmits([
         EMITS.NAVIGATION_CHANGE,
@@ -59,42 +44,6 @@
     const route = useRoute();
 
     const { isLoading } = useLoadingIndicator();
-
-    const isPhotoCaptureOpen = ref(false);
-    const isFileUploadOpen = ref(false);
-
-    function onOpenPhotoCapture() {
-        isPhotoCaptureOpen.value = true;
-    }
-
-    function onPhotoCaptureClose() {
-        isPhotoCaptureOpen.value = false;
-    }
-
-    function onPhotoCaptured(photoData) {
-        // Emit the captured photo to parent components
-        console.log(photoData);
-
-        // Close the photo capture modal
-        isPhotoCaptureOpen.value = false;
-    }
-
-    // File upload functionality
-    function onOpenUpload() {
-        isFileUploadOpen.value = true;
-    }
-
-    function onFileUploadClose() {
-        isFileUploadOpen.value = false;
-    }
-
-    function onFilesUploaded(files) {
-        // Emit the uploaded files to parent components
-        emit('files-uploaded', files);
-
-        // Close the file upload
-        isFileUploadOpen.value = false;
-    }
 
     function onNavigate(name) {
         navigateTo(`/${name}`);
