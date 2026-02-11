@@ -1,0 +1,253 @@
+{
+  "EX30": {
+    "base_configuration": {
+      "exteriors": "cloud_blue",
+      "wheels": "18",
+      "interiors": "indigo"
+    },
+    "wheels": {
+      "18": {
+        "display_name": "18″ 5-spoke silver/glossy black",
+        "description": "This new generation of aerodynamic wheels perfectly complements the bold design of your full-electric Volvo SUV. Contrasting surfaces of silver-coloured aluminium and glossy black aero inserts enhances the car’s dynamic yet stylish appearance. Aerodynamic design and innovative use of synthetic materials also help to lower air resistance and weight which gives you good conditions for optimised energy efficiency and long range.",
+        "dimension": "7.5x18",
+        "tyre_dimension": "225/55 R18"
+      },
+      "19": {
+        "display_name": "19″ 5-spoke glossy black diamond cut",
+        "description": "These aerodynamic wheels perfectly complement the bold design of your fully electric Volvo. Diamond cut design with contrasting surfaces of polished aluminium and glossy black aero inserts create a distinctive contemporary look inspired by the art of metal folding. Aerodynamic design and innovative use of synthetic materials also help to lower air resistance and weight which gives you good conditions for optimised energy efficiency and long range.",
+        "dimension": "8x19",
+        "tyre_dimension": "245/45 R19"
+      }
+    },
+    "exteriors": {
+      "cloud_blue": {
+        "display_name": "Cloud Blue",
+        "description": "A pure, light solid blue colour with a whitish character, inspired by the cold air of snowy Swedish winter landscapes. This is a playful colour that enhances the graphic impression of your Volvo."
+      },
+      "crystal_white": {
+        "display_name": "Crystal White",
+        "description": "Shimmering, sparkling white pearl colour built up by three layers of coat which gives a soft, deep pearlescent effect for a silky, smooth appearance and a pure exclusive look."
+      },
+      "onyx_black": {
+        "display_name": "Onyx Black",
+        "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light."
+      },
+      "vapour_grey": {
+        "display_name": "Vapour Grey",
+        "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight."
+      },
+      "sand_dune": {
+        "display_name": "Sand Dune",
+        "description": "A warm, sand-coloured solid effect metallic with glass flakes that sparkle like sand in the sun. Inspired by the sand dunes of Sweden's west coast, this colour adds a natural, contrasting feel."
+      }
+    },
+    "interiors": {
+      "indigo": {
+        "display_name": "Indigo interior",
+        "description": "Peaceful deep blue interior with studio-inspired textile materials, contrasting bio-attributed Nordico, upcycled denim decor, and black headlining for a modern, sporty look."
+      }
+    }
+  },
+  "EX60": {
+    "base_configuration": {
+      "exteriors": "ice_white",
+      "wheels": "20",
+      "interiors": "nordico_charcoal"
+    },
+    "wheels": {
+      "20": {
+        "display_name": "20″ 5-spoke matt/glossy black diamond cut",
+        "description": "The optimized 5-spoke design in machined diamond cut with the contrasting matt black colour gives your Volvo SUV an athletic and active expression. The lightweight design with aerodynamic inserts in glossy black contributes to optimized handling and energy efficiency.",
+        "dimension": "8x20",
+        "tyre_dimension": "235/55 R20"
+      },
+      "21_5": {
+        "display_name": "21″ 5-spoke glossy black/matt graphite diamond cut",
+        "description": "The optimized 5-spoke design in machined diamond cut with the contrasting matt black colour gives your Volvo SUV an athletic and active expression. The lightweight design with aerodynamic inserts in glossy black contributes to optimized handling and energy efficiency.",
+        "dimension": "8.5x21",
+        "tyre_dimension": "255/45 R21"
+      },
+      "21_6": {
+        "display_name": "21″ 6-spoke matt/glossy black diamond cut",
+        "description": "The symmetric 6-spoke design in machined diamond cut with the contrasting areas in matt black and glossy black colour gives your Volvo SUV a rugged and technical expression. The black inserts with line pattern connect to the lower body trim details on the exterior.",
+        "dimension": "8.5x21",
+        "tyre_dimension": "255/45 R21"
+      }
+    },
+    "exteriors": {
+      "ice_white": {
+        "display_name": "Ice White",
+        "description": "Bright, solid white with broken white tones that enhances the car's shape and adds intensity."
+      },
+      "onyx_black": {
+        "display_name": "Onyx Black",
+        "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light."
+      },
+      "denim_blue": {
+        "display_name": "Denim Blue",
+        "description": "Rich, smokey blue metallic colour with plenty of depth and a fluid, silky finish. A modern classic that works everywhere, inspired by Scandinavian fashion."
+      },
+      "vapour_grey": {
+        "display_name": "Vapour Grey",
+        "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight."
+      },
+      "aurora_silver": {
+        "display_name": "Aurora Silver",
+        "description": "A futuristic silver metallic with a balanced purple tint. Adds an ethereal, weightless touch while building contrasts. Sparkles with a hint of purple in sunlight."
+      },
+      "sand_dune": {
+        "display_name": "Sand Dune",
+        "description": "A warm, sand-coloured solid effect metallic with glass flakes that sparkle like sand in the sun. Inspired by the sand dunes of Sweden's west coast, this colour adds a natural, contrasting feel."
+      },
+      "forest_lake": {
+        "display_name": "Forest Lake",
+        "description": "Both tranquil and active, this semi-dark green metallic adds a technical hint that enhances the car’s design in a balanced way. In sunlight, it has an elegant turquoise sparkle."
+      },
+      "heather_bronze": {
+        "display_name": "Heather Bronze",
+        "description": "A warm and earthy metallic inspired by the heather blooming across Nordic landscapes. Its soft bronze and violet tones create a refined, natural look that subtly shifts with the light."
+      }
+    },
+    "interiors": {
+      "nordico_charcoal": {
+        "display_name": "Charcoal Nordico in charcoal interior",
+        "description": "Elegant bio-attributed charcoal Nordico seat upholstery in a charcoal interior with black headlining and contemporary decor."
+      },
+      "nordico_cardamom": {
+        "display_name": "Cardamom Nordico in charcoal interior",
+        "description": "Elegant bio-attributed cardamom Nordico seat upholstery in a contrasting charcoal interior with black headlining and contemporary decor."
+      },
+      "nordico_dawn": {
+        "display_name": "Dawn Nordico in dawn interior",
+        "description": "Stylish light-coloured bio-attributed dawn Nordico seat upholstery in a dawn interior with weathered grey ash wood decor, contrasting dark rubus base carpet and dualtone tailored steering wheel."
+      },
+      "nordico_ventilated_charcoal": {
+        "display_name": "Charcoal ventilated Nordico in charcoal interior",
+        "description": "Elegant bio-attributed charcoal Nordico seat upholstery with subtly contrasting piping and front seat ventilation in a charcoal interior with black headlining and weathered grey ash wood decor."
+      },
+      "nordico_ventilated_cardamom": {
+        "display_name": "Cardamom ventilated Nordico in charcoal interior",
+        "description": "Elegant bio-attributed cardamom Nordico seat upholstery with front seat ventilation in a contrasting charcoal interior with black headlining and weathered grey ash wood decor."
+      },
+      "nordico_ventilated_dawn": {
+        "display_name": "Dawn ventilated Nordico in dawn interior",
+        "description": "Light-coloured bio-attributed dawn Nordico seat upholstery with front seat ventilation in a dawn interior with weathered grey ash wood decor, contrasting dark rubus base carpet, and a tailored dual-tone steering wheel."
+      },
+      "nappa_charcoal": {
+        "display_name": "Charcoal ventilated nappa leather in charcoal interior",
+        "description": "Exclusive perforated charcoal nappa leather upholstery with subtly contrasting piping and front seat ventilation in a charcoal interior with black headlining and weathered grey ash wood decor."
+      },
+      "nappa_cardamom": {
+        "display_name": "Cardamom ventilated nappa leather in charcoal interior",
+        "description": "Exclusive perforated cardamom nappa leather upholstery with front seat ventilation in a contrasting charcoal interior with black headlining and weathered grey ash wood decor."
+      },
+      "nappa_dawn": {
+        "display_name": "Dawn ventilated nappa leather in dawn interior",
+        "description": "Exclusive perforated light-coloured dawn nappa leather upholstery with front seat ventilation in a dawn interior with dark rubus fused ash wood decor, contrasting dark rubus base carpet, and a tailored dual-tone steering wheel."
+      },
+      "wool_rye": {
+        "display_name": "Rye tailored wool blend in dawn interior",
+        "description": "Exclusive rye tailored wool blend seat upholstery in a dawn interior with dark rubus fused ash wood decor, dark rubus base carpet and tailored dual-tone steering wheel."
+      }
+    }
+  },
+  "EX90": {
+    "base_configuration": {
+      "exteriors": "vapour_grey",
+      "wheels": "21",
+      "interiors": "nordico_charcoal"
+    },
+    "wheels": {
+      "21": {
+        "display_name": "21″ 8-spoke glossy black/matt graphite diamond cut",
+        "description": "This new generation aerodynamic wheels perfectly complements the bold design of your full-electric Volvo SUV. Diamond cut design with contrasting surfaces of polished aluminium and glossy black inserts create a distinctive, technical look. Aerodynamic design and innovative use of synthetic materials also help to lower air resistance and weight which gives you good conditions for optimised energy efficiency and long range.",
+        "dimension": "9x21",
+        "tyre_dimension": "265/45 R21"
+      },
+      "22": {
+        "display_name": "22″ 5-spoke glossy black diamond cut",
+        "description": "This advanced, large 22-inch wheel in futuristic aerodynamic design features a multicolour insert that covers the complete wheel centre. Together with Diamond Cut design and contrasting surfaces of polished aluminium, this creates a unique look that gives your full-electric Volvo SUV an outstanding presence. Aerodynamic design and innovative use of synthetic materials also help to lower air resistance and weight which gives you good conditions for optimised energy efficiency and long range.",
+        "dimension": "9x22",
+        "tyre_dimension": "265/40 R22"
+      },
+      "22Y": {
+        "display_name": "22″ 5-Y spoke glossy black diamond cut, forged",
+        "description": "Adding to the car's excellent handling as well as its distinctive look, the 22-inch 5-Y spoke glossy black diamond cut forged wheels are in a unique light-weight design as contribute to responsive driving characteristics and excellent road holding. Forging is an exclusive high-end production method where the wheel design is milled out of an aluminum blank. Compared to traditional low-pressure casting do the forged wheel have higher material properties that allows strong and low weight designs.",
+        "dimension": "9x22",
+        "tyre_dimension": "265/40 R22"
+      }
+    },
+    "exteriors": {
+      "vapour_grey": {
+        "display_name": "Vapour Grey",
+        "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight."
+      },
+      "onyx_black": {
+        "display_name": "Onyx Black",
+        "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light."
+      },
+      "crystal_white": {
+        "display_name": "Crystal White",
+        "description": "Shimmering, sparkling white pearl colour built up by three layers of coat which gives a soft, deep pearlescent effect for a silky, smooth appearance and a pure exclusive look."
+      },
+      "denim_blue": {
+        "display_name": "Denim Blue",
+        "description": "Rich, smokey blue metallic colour with plenty of depth and a fluid, silky finish. A modern classic that works everywhere, inspired by Scandinavian fashion."
+      },
+      "platinum_grey": {
+        "display_name": "Platinum Grey",
+        "description": "A very sophisticated grey metallic with elegant undertones of brown that add an exclusive fluid, smooth velvet finish."
+      },
+      "aurora_silver": {
+        "display_name": "Aurora Silver",
+        "description": "A futuristic silver metallic with a balanced purple tint. Adds an ethereal, weightless touch while building contrasts. Sparkles with a hint of purple in sunlight."
+      },
+      "sand_dune": {
+        "display_name": "Sand Dune",
+        "description": "A warm, sand-coloured solid effect metallic with glass flakes that sparkle like sand in the sun. Inspired by the sand dunes of Sweden's west coast, this colour adds a natural, contrasting feel."
+      },
+      "mulberry_red": {
+        "display_name": "Mulberry Red",
+        "description": "A dark, elegant blackish red metallic inspired by Scandinavian autumn. With a calm yet dramatic feel, it sparkles up in sunlight for a colourful expression with prominent shades of red."
+      }
+    },
+    "interiors": {
+      "nordico_charcoal": {
+        "display_name": "Charcoal Nordico in Charcoal interior",
+        "description": "Elegant bio-attributed Charcoal Nordico seat upholstery in a leather-free Charcoal interior with light-coloured contrasting Dawn headlining and contemporary decor for an airy, distinctive ambience."
+      },
+      "nordico_cardamom": {
+        "display_name": "Cardamom Nordico in Charcoal/Cardamom interior",
+        "description": "Elegant bio-attributed Cardamom Nordico seat upholstery in a leather-free, subtly contrasting Charcoal/Cardamom interior with black headlining and contemporary decor for a distinctive, timeless expression of style."
+      },
+      "nordico_dawn": {
+        "display_name": "Dawn Nordico in dawn interior",
+        "description": "Light-coloured bio-attributed Dawn Nordico seat upholstery in a leather-free Dawn interior with dual-tone tailored steering wheel and contemporary decor for an airy, elegant ambience."
+      },
+      "nordico_ventilated_charcoal": {
+        "display_name": "Charcoal ventilated Nordico in charcoal interior",
+        "description": "Elegant bio-attributed Charcoal Nordico seat upholstery with ventilated front seats in a leather-free Charcoal interior with light-coloured contrasting Dawn headlining and contemporary decor for an airy, distinctive ambience."
+      },
+      "nordico_ventilated_cardamom": {
+        "display_name": "Ventilated Cardamom Nordico in Charcoal/Cardamom interior",
+        "description": "Elegant bio-attributed Cardamom Nordico seat upholstery with ventilated front seats in a leather-free, subtly contrasting Charcoal/Cardamom interior with black headlining and contemporary decor for a distinctive, timeless expression of style."
+      },
+      "nordico_ventilated_dawn": {
+        "display_name": "Dawn ventilated Nordico in dawn interior",
+        "description": "Light-coloured bio-attributed Dawn Nordico seat upholstery with ventilated front seats in a leather-free Dawn interior with dual-tone tailored steering wheel and contemporary decor for an airy, elegant ambience."
+      },
+      "nappa_charcoal": {
+        "display_name": "Charcoal ventilated nappa leather in charcoal interior",
+        "description": "Exceptionally fine, ventilated dark nappa leather in Charcoal interior, crafted decor and a unique crystal gear shift creates a sophisticated yet dynamic, cockpit-like feel inside the car."
+      },
+      "nappa_cardamom": {
+        "display_name": "Ventilated Cardamom nappa leather in Charcoal/Cardamom interior",
+        "description": "Cardamom smooth nappa leather upholstery with front seat ventilation in a subtly contrasting Charcoal/Cardamom interior with black headlining and contemporary back-lit wood decor for a timeless expression of style."
+      },
+      "nappa_dawn": {
+        "display_name": "Ventilated Dawn nappa leather in Dawn interior",
+        "description": "Light-coloured Dawn smooth nappa leather upholstery with front seat ventilation in a Dawn interior with dual-tone steering wheel and contemporary back-lit wood decor for an airy, elegant ambience."
+      }
+    }
+  }
+}

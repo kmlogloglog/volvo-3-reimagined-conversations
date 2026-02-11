@@ -21,6 +21,7 @@ from google.genai import types
 
 from .volvo_agent.services.firestore_session_service import FirestoreSessionService
 from .volvo_agent.services.memory_service import MemoryService
+from .volvo_agent.utils import load_car_configurations
 
 # Load environment variables from .env file BEFORE importing agent
 load_dotenv(Path(__file__).parent / ".env")
@@ -31,7 +32,7 @@ from .volvo_agent.volvo_agent import root_agent as agent  # noqa: E402
 
 # Configure logging
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
@@ -51,8 +52,6 @@ app = FastAPI()
 # Mount static files
 static_dir = Path(__file__).parent.parent / "frontend"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
-
-
 
 
 # Define your session and memory services based on config
@@ -186,11 +185,29 @@ async def websocket_endpoint(
 
     # Get or create session (handles both new sessions and reconnections)
     session = await session_service.get_session(
-        app_name=APP_NAME, user_id=user_id, session_id=session_id
+        app_name=APP_NAME,
+        user_id=user_id,
+        session_id=session_id,
     )
-    if not session:
+    if session:
+        if not session.state.get("app:car_configurations"):
+            car_configs = load_car_configurations()
+            if car_configs:
+                session.state["app:car_configurations"] = car_configs
+                logger.info("Loaded car configurations into session state.")
+
+                # Persist state update if service supports it
+                if hasattr(session_service, "update_session"):
+                    await session_service.update_session(session)
+            else:
+                logger.error("Failed to load car configurations.")
+    else:
+        initial_state = {"app:car_configurations": load_car_configurations()}
         await session_service.create_session(
-            app_name=APP_NAME, user_id=user_id, session_id=session_id
+            app_name=APP_NAME,
+            user_id=user_id,
+            session_id=session_id,
+            state=initial_state,
         )
 
     live_request_queue = LiveRequestQueue()

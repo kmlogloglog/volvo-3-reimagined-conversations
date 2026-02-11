@@ -55,7 +55,8 @@ class FirestoreSessionService(BaseSessionService):
         app_name: str,
         user_id: str,
         session_id: str,
-        config: dict[str, Any] | None = None,  # Added config matching base
+        config: dict[str, Any] | None = None,  # Added config matching base,
+        state: dict[str, Any] | None = None,
     ) -> Session | None:
         """Retrieves a session from Firestore, including its events."""
         session_ref = self._get_session_ref(user_id, session_id)
@@ -110,7 +111,12 @@ class FirestoreSessionService(BaseSessionService):
         if session_id is None:
             raise ValueError("session_id is required for FirestoreSessionService")
 
-        session = Session(app_name=app_name, user_id=user_id, id=session_id)
+        if state is None:
+            state = {}
+
+        session = Session(
+            app_name=app_name, user_id=user_id, id=session_id, state=state
+        )
 
         session_ref = self._get_session_ref(user_id, session_id)
 
@@ -182,3 +188,12 @@ class FirestoreSessionService(BaseSessionService):
             events_ref.document(doc_id).set(event_data)
         else:
             events_ref.add(event_data)
+
+    async def update_session(self, session: Session) -> None:
+        """Updates session metadata in Firestore."""
+        session_ref = self._get_session_ref(session.user_id, session.id)
+        # Update session data, excluding events to avoid overwriting/duplicating
+        session_data = session.model_dump(mode="json", exclude={"events"})
+        # Use set with merge=True to update fields without deleting unmentioned ones
+        # (though we are dumping the whole session model so it should be complete metadata)
+        session_ref.set(session_data, merge=True)
