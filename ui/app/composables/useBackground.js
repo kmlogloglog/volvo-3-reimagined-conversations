@@ -1,6 +1,6 @@
 import { useColorMode, ref, computed, onMounted } from '#imports';
 
-export function useBackground(agentStore = null) {
+export function useBackground() {
     const colorMode = useColorMode();
     const isMounted = ref(false);
 
@@ -84,18 +84,6 @@ export function useBackground(agentStore = null) {
         const offsetGradient6 = `radial-gradient(circle farthest-corner at 70% 8%, ${makeStops(offsetStops3)})`;
 
         const combinedGradient = `${offsetGradient1}, ${offsetGradient2}, ${offsetGradient3}, ${offsetGradient4}, ${offsetGradient5}, ${offsetGradient6}, ${mainGradient}`;
-
-        const backgroundImageUrl = agentStore && agentStore.backgroundImageUrl;
-
-        if (backgroundImageUrl) {
-            return {
-                backgroundAttachment: 'fixed',
-                backgroundImage: `url(${backgroundImageUrl}), ${combinedGradient}`,
-                backgroundPosition: `center bottom, ${'center, '.repeat(6)}center`,
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: `cover, ${'100% 100%, '.repeat(6)}100% 100%`,
-            };
-        }
 
         return {
             background: combinedGradient,

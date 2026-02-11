@@ -87,25 +87,38 @@ export default {
         }
     },
 
+    handleImageResponse(imageUrl) {
+        console.log(imageUrl);
+
+        this.backgroundImageUrl = imageUrl;
+    },
+
     handleAgentEvent(event) {
         let textHandled = false;
+        // find ui_action key in event.content.parts. We do not know how deep ui_action is nested, so we need to search for it recursively
         if (event.content && event.content.parts) {
             for (const part of event.content.parts) {
-                if (part.inlineData && part.inlineData.mimeType && typeof part.inlineData.mimeType === 'string' && part.inlineData.mimeType.startsWith('audio/pcm')) {
+                //handle audio parts
+                if (part.inlineData?.mimeType && typeof part.inlineData.mimeType === 'string' && part.inlineData.mimeType.startsWith('audio/pcm')) {
                     this.playAudioChunk(part.inlineData.data);
                 }
+                // handle text parts
                 if (part.text) {
                     this.handleTextResponse(part.text, part.finished);
                     textHandled = true;
                 }
+
+                if (part.functionResponse?.response?.ui_action?.data.image_url) {
+                    this.handleImageResponse(part.functionResponse.response?.ui_action?.data.image_url);
+                }
             }
         }
 
-        if (!textHandled && event.outputTranscription && event.outputTranscription.text) {
+        if (!textHandled && event.outputTranscription?.text) {
             this.handleTextResponse(event.outputTranscription.text, event.outputTranscription?.finished);
         }
 
-        if (event.inputTranscription && event.inputTranscription.text) {
+        if (event.inputTranscription?.text) {
             this.handleUserTranscription(event.inputTranscription.text, event.outputTranscription?.finished);
         }
 

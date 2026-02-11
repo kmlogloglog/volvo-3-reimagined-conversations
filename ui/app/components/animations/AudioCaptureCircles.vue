@@ -8,6 +8,10 @@
 
 <script setup>
     const props = defineProps({
+        enabled: {
+            type: Boolean,
+            default: true,
+        },
         lightModeColor: {
             type: Object,
             default: () => ({ r: 191, g: 154, b: 103 }),
@@ -53,6 +57,16 @@
         isTransitioning.value = true;
         transitionStartTime.value = import.meta.client ? performance.now() : 0;
     }, { immediate: true });
+
+    // Watch for enabled prop changes to restart circles when re-enabled
+    watch(() => props.enabled, (newEnabled, oldEnabled) => {
+        if (!isMounted.value) return;
+
+        if (newEnabled && oldEnabled === false) {
+            // Restart circles when enabled changes from false to true
+            circles = Array.from({ length: CIRCLE_COUNT }, (_, i) => generateCircle(i));
+        }
+    });
 
     // CIRCLE_COUNT: Number of circles (integer)
     const CIRCLE_COUNT = 3;
@@ -127,10 +141,16 @@
         const pulseOpacity = Math.sin(progress * Math.PI);
 
         if (elapsed >= circle.duration) {
-            randomizeCircle(circle);
+            if (props.enabled) {
+                randomizeCircle(circle);
+            } else {
+                // Mark circle as inactive when disabled
+                circle.inactive = true;
+                return;
+            }
         }
 
-        if (pulseOpacity < 0.03) return;
+        if (pulseOpacity < 0.03 || circle.inactive) return;
 
         const scale = 0.9 + (pulseOpacity * 0.3);
         const sizePixels = circle.size * width * scale;
@@ -213,6 +233,9 @@
         const rect = canvas.getBoundingClientRect();
 
         ctx.clearRect(0, 0, rect.width, rect.height);
+
+        // Filter out inactive circles to prevent memory accumulation
+        circles = circles.filter(circle => !circle.inactive);
 
         for (let i = 0; i < circles.length; i++) {
             drawCircle(ctx, circles[i], timestamp, rect.width, rect.height);

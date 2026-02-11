@@ -22,8 +22,6 @@
 
     const agentStore = useAgentStore();
     const { backgroundStyle } = useBackground(agentStore);
-
-    // agentStore.backgroundImageUrl = './assets/images/backgrounds/placeholder-volvo-ex60-front.jpg';
 </script>
 
 <style scoped lang="scss">

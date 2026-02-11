@@ -1,9 +1,16 @@
 <template>
     <div class="app-screen">
+        <BackgroundImage
+            :src="agentStore.backgroundImageUrl" />
         <div class="base-view">
-            <NuxtLoadingIndicator color="var(--color-white)" />
-            <VolvoLogo color="var(--color-white)" class="logo" />
-            <div v-show="!isLoading" class="base-view-inner">
+            <NuxtLoadingIndicator
+                color="var(--color-white)" />
+            <VolvoLogo
+                color="var(--color-white)"
+                class="logo" />
+            <div
+                v-show="!isLoading"
+                class="base-view-inner">
                 <slot></slot>
             </div>
         </div>
@@ -21,7 +28,8 @@
                 v-if="route.name === NAVIGATION.AUDIO.name"
                 class="audio-waves"
                 :level="agentStore.audioLevel" />
-            <AudioCaptureCircles />
+            <AudioCaptureCircles
+                :enabled="!agentStore.backgroundImageUrl" />
         </ClientOnly>
     </div>
 </template>
@@ -32,6 +40,9 @@
     import { navigateTo, useRoute } from '#app';
     import { useAgentStore } from '@/stores/agent';
     import VolvoLogo from '@/components/logo/VolvoLogo.vue';
+    import BackgroundImage from '@/components/backgroundImage/BackgroundImage.vue';
+    import AudioCaptureCircles from '@/components/animations/AudioCaptureCircles.vue';
+    import AudioCaptureWaves from '@/components/animations/AudioCaptureWaves.vue';
 
     const emit = defineEmits([
         EMITS.NAVIGATION_CHANGE,
