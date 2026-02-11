@@ -87,10 +87,8 @@ export default {
         }
     },
 
-    handleImageResponse(imageUrl) {
-        console.log(imageUrl);
-
-        this.backgroundImageUrl = imageUrl;
+    handleImageResponse(imageUrls) {
+        this.backgroundImages = imageUrls;
     },
 
     handleAgentEvent(event) {
@@ -103,24 +101,23 @@ export default {
                 }
                 // handle text parts
                 if (part.text) {
+                    console.log(part);
                     this.handleTextResponse(part.text, part.finished);
                     textHandled = true;
                 }
-
-                console.group('');
-                console.log(part.functionResponse);
-                console.groupEnd();
+                // handle images
                 if (part.functionResponse?.response?.ui_action) {
                     const uiAction = part.functionResponse.response.ui_action;
 
                     if (uiAction.action === 'display_component') {
-                        this.handleImageResponse(uiAction.data?.image_url);
+                        this.handleImageResponse(uiAction.data.images);
                     }
                 }
             }
         }
 
-        if (!textHandled && event.outputTranscription?.text) {
+        if (!textHandled && !event.partial && event.outputTranscription?.text) {
+            console.log(event.outputTranscription);
             this.handleTextResponse(event.outputTranscription.text, event.outputTranscription?.finished);
         }
 

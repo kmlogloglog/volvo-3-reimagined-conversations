@@ -2,7 +2,7 @@
     <div id="app" :style="backgroundStyle">
         <CaptureView
             :show-waves="$route.name === NAVIGATION.AUDIO.name"
-            :show-circles="!agentStore.backgroundImageUrl">
+            :show-circles="!agentStore.backgroundImages">
             <NuxtPage />
         </CaptureView>
     </div>

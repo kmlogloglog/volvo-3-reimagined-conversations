@@ -1,13 +1,13 @@
 <template>
-    <div class="app-screen">
-        <BackgroundImage
-            :src="agentStore.backgroundImageUrl" />
-        <div class="base-view">
+    <div
+        class="view">
+        <BackgroundImagesCarousel
+            :src="agentStore.backgroundImages" />
+        <div
+            class="base-view"
+            :class="{ 'full-height': isFullHeightPage }">
             <NuxtLoadingIndicator
                 color="var(--color-white)" />
-            <VolvoLogo
-                color="var(--color-white)"
-                class="logo" />
             <div
                 v-show="!isLoading"
                 class="base-view-inner">
@@ -29,7 +29,7 @@
                 class="audio-waves"
                 :level="agentStore.audioLevel" />
             <AudioCaptureCircles
-                :enabled="!agentStore.backgroundImageUrl" />
+                :enabled="!agentStore.backgroundImages" />
         </ClientOnly>
     </div>
 </template>
@@ -39,8 +39,7 @@
     import { NAVIGATION } from '@/constants/navigation';
     import { navigateTo, useRoute } from '#app';
     import { useAgentStore } from '@/stores/agent';
-    import VolvoLogo from '@/components/logo/VolvoLogo.vue';
-    import BackgroundImage from '@/components/backgroundImage/BackgroundImage.vue';
+    import BackgroundImagesCarousel from '@/components/backgroundImage/BackgroundImagesCarousel.vue';
     import AudioCaptureCircles from '@/components/animations/AudioCaptureCircles.vue';
     import AudioCaptureWaves from '@/components/animations/AudioCaptureWaves.vue';
 
@@ -61,38 +60,34 @@
         emit(EMITS.NAVIGATION_CHANGE, name);
     }
 
+    const isFullHeightPage = computed(() => {
+        return [NAVIGATION.PHOTO.name, NAVIGATION.UPLOAD.name].includes(route.name);
+    });
+
 </script>
 
 <style scoped lang="scss">
-.app-screen {
+.view {
     align-items: center;
-    bottom: 0;
     display: flex;
     flex-direction: column;
     height: 100dvh;
-    left: 0;
+    justify-content: flex-end;
     padding-top: env(safe-area-inset-top, 0px);
     position: fixed;
-    right: 0;
-    top: 0;
-
-    .logo {
-        height: auto;
-        left: 50%;
-        position: absolute;
-        top: calc(20px + env(safe-area-inset-top, 0px));
-        transform: translateX(-50%);
-        width: 110px;
-    }
+    width: 100%;
 
     .base-view {
-        flex: 1;
         margin: 0 auto;
         overflow-y: auto;
         position: relative;
         width: 100%;
         z-index: 10;
         -webkit-overflow-scrolling: touch;
+
+        &.full-height {
+            flex: 1;
+        }
 
         &-inner {
             height: 100%;

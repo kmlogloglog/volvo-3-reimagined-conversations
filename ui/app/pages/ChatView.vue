@@ -12,8 +12,6 @@
 
     onMounted(async () => {
         await agentStore.connect();
-        // Test: Also try starting audio to see if that fixes the WebSocket
-        // await agentStore.startAudio();
     });
 </script>
 

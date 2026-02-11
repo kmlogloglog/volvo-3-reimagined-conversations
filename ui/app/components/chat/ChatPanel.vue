@@ -85,7 +85,7 @@
             display: flex;
             flex-direction: column;
             overflow: auto;
-            padding: 1.25rem 1.25rem 0;
+            padding: 0 1.25rem;
             row-gap: 1rem;
             overflow-anchor: none;
             visibility: hidden;

@@ -1,5 +1,4 @@
 <template>
-
     <svg
         id="Layer_1"
         xmlns="http://www.w3.org/2000/svg"
@@ -51,6 +50,10 @@
             type: String,
             default: 'currentColor',
         },
+        dropShadow: {
+            type: String,
+            default: '',
+        },
     });
 </script>
 
@@ -60,5 +63,6 @@
         width: 100%;
         max-width: v-bind('width');
         height: auto;
+        filter: v-bind('dropShadow ? `drop-shadow(0px 0px 20px ${dropShadow}) drop-shadow(0 0 15px ${dropShadow})` : "none"');
     }
 </style>

@@ -125,7 +125,7 @@
         margin: 0;
         text-box-trim: trim-both;
         display: -webkit-box;
-        -webkit-line-clamp: 4;
+        -webkit-line-clamp: 5;
         -webkit-box-orient: vertical;
         overflow: hidden;
 
