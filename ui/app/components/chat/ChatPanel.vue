@@ -21,11 +21,8 @@
     import ChatStream from '@/components/chat/ChatStream.vue';
     import { EMITS } from '@/constants/emits.js';
     import { useAgentStore } from '@/stores/agent';
-    import { useAgent } from '@/composables/useAgent';
 
     const agentStore = useAgentStore();
-
-    const agent = useAgent();
 
     const chatMessage = ref('');
 
@@ -34,10 +31,10 @@
 
         if (!agentStore.connected) {
             console.info('Connection dropped! Reconnecting...');
-            await agent.connect();
+            await agentStore.connect();
         }
 
-        agent.sendMessage(message);
+        agentStore.sendMessage(message);
     };
 
     const mainInnerRef = ref(null);

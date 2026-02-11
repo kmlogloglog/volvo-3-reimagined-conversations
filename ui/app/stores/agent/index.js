@@ -13,7 +13,6 @@ export const useAgentStore = defineStore('agentStore', {
         connecting: false,
         listening: false,
         speaking: false,
-        isMuted: false,
 
         // Audio contexts and analyzers
         audioContext: null,

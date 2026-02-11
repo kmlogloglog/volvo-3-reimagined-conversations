@@ -6,14 +6,14 @@
 
 <script setup>
     import ChatPanel from '@/components/chat/ChatPanel.vue';
-    import { useAgent } from '@/composables/useAgent';
+    import { useAgentStore } from '@/stores/agent';
 
-    const agent = useAgent();
+    const agentStore = useAgentStore();
 
     onMounted(async () => {
-        await agent.connect();
+        await agentStore.connect();
         // Test: Also try starting audio to see if that fixes the WebSocket
-        // await agent.startAudio();
+        // await agentStore.startAudio();
     });
 </script>
 

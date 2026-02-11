@@ -5,16 +5,9 @@
 <script setup>
     import { useEventBus } from '@vueuse/core';
     import { useAgent } from '@/composables/useAgent';
-    import { useAgentStore } from '@/stores/agent';
     import { BUS } from '@/constants/bus.js';
 
-    const agentStore = useAgentStore();
-
-    const agent = useAgent({
-        onLevelChange: (newLevel) => {
-            agentStore.audioLevel = newLevel;
-        },
-    });
+    const agent = useAgent();
 
     const busRecord = useEventBus(BUS.TOGGLE_RECORD);
 
