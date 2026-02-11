@@ -95,7 +95,6 @@ export default {
 
     handleAgentEvent(event) {
         let textHandled = false;
-        // find ui_action key in event.content.parts. We do not know how deep ui_action is nested, so we need to search for it recursively
         if (event.content && event.content.parts) {
             for (const part of event.content.parts) {
                 //handle audio parts
@@ -108,8 +107,15 @@ export default {
                     textHandled = true;
                 }
 
-                if (part.functionResponse?.response?.ui_action?.data.image_url) {
-                    this.handleImageResponse(part.functionResponse.response?.ui_action?.data.image_url);
+                console.group('');
+                console.log(part.functionResponse);
+                console.groupEnd();
+                if (part.functionResponse?.response?.ui_action) {
+                    const uiAction = part.functionResponse.response.ui_action;
+
+                    if (uiAction.action === 'display_component') {
+                        this.handleImageResponse(uiAction.data?.image_url);
+                    }
                 }
             }
         }
