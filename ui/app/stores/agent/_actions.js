@@ -1,4 +1,6 @@
 import { AGENT } from '@/constants/agent.js';
+import { BUS } from '@/constants/bus.js';
+import { useEventBus } from '@vueuse/core';
 
 export default {
     // Helper to convert Float32 to Int16 PCM
@@ -219,6 +221,10 @@ export default {
 
         this.connecting = true;
 
+        // Emit bus event for connection start
+        const connectionBus = useEventBus(BUS.AGENT_CONNECTION);
+        connectionBus.emit({ connecting: true, connected: false });
+
         console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'connecting to agent...');
 
         const { $router } = useNuxtApp();
@@ -239,6 +245,10 @@ export default {
                     console.error('%cWEBSOCKET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'WebSocket connection timed out');
                     this.websocket.close();
                     this.connecting = false;
+
+                    // Emit bus event for timeout
+                    connectionBus.emit({ connecting: false, connected: false });
+
                     reject(new Error('Connection timed out'));
                 }
             }, 5000);
@@ -248,6 +258,10 @@ export default {
                 console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Connected');
                 this.connected = true;
                 this.connecting = false;
+
+                // Emit bus event for successful connection
+                connectionBus.emit({ connecting: false, connected: true });
+
                 resolve();
             };
 
@@ -255,6 +269,9 @@ export default {
                 clearTimeout(timeoutId);
                 console.error('%cWEBSOCKET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', err);
                 this.connecting = false;
+
+                // Emit bus event for connection failure
+                connectionBus.emit({ connecting: false, connected: false });
             };
 
             this.websocket.onclose = (event) => {
@@ -263,11 +280,15 @@ export default {
 
                 if (!this.connected) {
                     this.connecting = false;
+                    // Emit bus event for connection failure
+                    connectionBus.emit({ connecting: false, connected: false });
                     reject(new Error(`Connection failed or closed: ${event.code} - ${event.reason}`));
                 }
 
                 this.connected = false;
                 this.connecting = false;
+                // Emit bus event for disconnection
+                connectionBus.emit({ connecting: false, connected: false });
                 this.stopAudio();
                 this.connectionPromise = null;
                 this.websocket = null;
@@ -293,6 +314,10 @@ export default {
             this.websocket = null;
         }
         this.stopAudio();
+
+        // Emit bus event for disconnection
+        const connectionBus = useEventBus(BUS.AGENT_CONNECTION);
+        connectionBus.emit({ connecting: false, connected: false });
     },
 
     // Audio level monitoring - separate method that can be called from composable with callback

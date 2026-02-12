@@ -6,23 +6,24 @@
                 :is-recording="isAudioRecording"
                 :active="isActive(NAVIGATION.AUDIO.id)"
                 :loading="(isActive(NAVIGATION.UPLOAD.id) && connecting) || micRequesting"
-                :disabled="micRequesting || (isActive(NAVIGATION.AUDIO.id) && (connecting || isPageLoading))"
+                :disabled="micRequesting || (isActive(NAVIGATION.AUDIO.id) && (connecting || isLoading))"
                 @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
             <NavigationBarButton
                 :icon="NAVIGATION.CHAT.icon"
                 :active="isActive(NAVIGATION.CHAT.id)"
-                :disabled="micRequesting"
+                :disabled="micRequesting || isLoading"
+                :loading="isActive(NAVIGATION.CHAT.id) && connecting"
                 @click="setActive(NAVIGATION.CHAT)" />
             <NavigationBarButton
                 class="navigation-photo"
                 :icon="NAVIGATION.PHOTO.icon"
                 :active="isActive(NAVIGATION.PHOTO.id)"
-                :disabled="micRequesting"
+                :disabled="micRequesting || isLoading"
                 @click="setActive(NAVIGATION.PHOTO)" />
             <NavigationBarButton
                 :icon="NAVIGATION.UPLOAD.icon"
                 :active="isActive(NAVIGATION.UPLOAD.id)"
-                :disabled="micRequesting"
+                :disabled="micRequesting || isLoading"
                 @click="setActive(NAVIGATION.UPLOAD)" />
         </nav>
     </div>
@@ -45,11 +46,9 @@
             type: String,
             default: null,
         },
-        isPageLoading: {
-            type: Boolean,
-            default: false,
-        },
     });
+
+    const { isLoading } = useLoadingIndicator();
 
     const connected = ref(false);
     const connecting = ref(false);

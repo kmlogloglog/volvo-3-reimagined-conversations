@@ -16,7 +16,6 @@
         </div>
 
         <NavigationBar
-            :is-page-loading="isLoading"
             @[EMITS.NAVIGATION_CHANGE]="onNavigate" />
 
         <!--

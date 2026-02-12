@@ -77,35 +77,36 @@
     line-height: 0;
     text-align: center;
 
+    &:active:not(:disabled),
     &.active {
         background-color: var(--navigation-button-active-color-background);
         color: var(--navigation-button-active-color-font);
     }
 
+    &.active:disabled {
+        background-color: var(--navigation-button-disabled-color-background);
+        color: var(--navigation-button-disabled-color-font);
+    }
+
     &:disabled {
         cursor: default;
-        opacity: 0.5;
+        color: var(--navigation-button-disabled-color-font);
     }
 }
 
 .mic-button {
-    width: 5.5rem;
     flex: 1;
+    width: 5.5rem;
 
     &.recording {
         background-color: var(--color-red);
         color: var(--color-white);
     }
-
-    &:disabled {
-        cursor: default;
-        opacity: 0.5;
-    }
 }
 
 .spinner {
-    display: inline-block;
     animation: spin 1s linear infinite;
+    display: inline-block;
     width: 20px;
 }
 

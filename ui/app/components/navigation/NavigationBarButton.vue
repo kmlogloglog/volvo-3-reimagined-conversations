@@ -66,22 +66,26 @@ button {
     text-align: center;
     width: 5.5rem;
 
-    &:active,
+    &:active:not(:disabled),
     &.active {
         background-color: var(--navigation-button-active-color-background);
         color: var(--navigation-button-active-color-font);
     }
 
+    &.active:disabled {
+        background-color: var(--navigation-button-disabled-color-background);
+        color: var(--navigation-button-disabled-color-font);
+    }
+
     &:disabled {
         cursor: default;
         color: var(--navigation-button-disabled-color-font);
-        background-color: var(--navigation-button-disabled-color-background);
     }
 }
 
 .spinner {
-    display: inline-block;
     animation: spin 1s linear infinite;
+    display: inline-block;
     width: 20px;
 }
 
