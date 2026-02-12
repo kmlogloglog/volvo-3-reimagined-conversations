@@ -22,63 +22,42 @@
             type: Array,
             default: () => [],
         },
-        filterLastUser: {
-            type: Boolean,
-            default: false,
-        },
-        filterLastAgent: {
-            type: Boolean,
-            default: false,
+        filterFromLast: {
+            type: String,
+            default: '',
+            validator: (value) => [AGENT.USER, AGENT.AGENT, ''].includes(value),
         },
     });
 
     const chatFiltered = computed(() => {
-        let lastAgentMsg, lastUserMsg;
+        // Ensure we have a valid array
+        const chatArr = Array.isArray(props.chat) ? props.chat : [];
 
-        if (props.filterLastAgent) {
-            lastAgentMsg = props.chat.filter(e => e.sender === AGENT.AGENT).at(-1);
-        }
-        if (props.filterLastUser) {
-            lastUserMsg = props.chat.filter(e => e.sender === AGENT.USER).at(-1);
-        }
+        if (props.filterFromLast === AGENT.USER) {
+            // last user message index
+            const index = [...chatArr].reverse().findIndex(e => e?.sender === AGENT.USER);
 
-        // If both filters are active, preserve chat order
-        if (props.filterLastAgent && props.filterLastUser) {
-            if (!lastAgentMsg && !lastUserMsg) {
-                return [];
+            if (index < 0) {
+                return chatArr;
             }
 
-            if (lastAgentMsg && lastUserMsg) {
-                const indices = [
-                    { msg: lastAgentMsg, idx: props.chat.indexOf(lastAgentMsg) },
-                    { msg: lastUserMsg, idx: props.chat.indexOf(lastUserMsg) },
-                ];
-
-                indices.sort((a, b) => a.idx - b.idx);
-
-                return indices.map(i => i.msg);
-            }
-
-            if (lastAgentMsg) {
-                return [lastAgentMsg];
-            }
-
-            if (lastUserMsg) {
-                return [lastUserMsg];
-            }
-
-            return [];
+            // create a new array with messages from the last user message
+            return chatArr.slice(chatArr.length - index - 1);
         }
 
-        if (props.filterLastAgent) {
-            return lastAgentMsg ? [lastAgentMsg] : [];
+        if (props.filterFromLast === AGENT.AGENT) {
+            // last user message index
+            const index = [...chatArr].reverse().findIndex(e => e?.sender === AGENT.USER);
+
+            if (index < 0) {
+                return chatArr;
+            }
+
+            // create a new array with messages from the last agent message
+            return chatArr.slice(chatArr.length - index);
         }
 
-        if (props.filterLastUser) {
-            return lastUserMsg ? [lastUserMsg] : [];
-        }
-
-        return props.chat;
+        return chatArr;
     });
 
     defineEmits([

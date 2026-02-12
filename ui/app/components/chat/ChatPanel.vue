@@ -3,8 +3,7 @@
         <div ref="mainInnerRef" class="main-inner" :class="{ show }">
             <ChatStream
                 :chat="agentStore.conversation"
-                :filter-last-agent="true"
-                :filter-last-user="true"
+                :filter-from-last="AGENT.USER"
                 @[EMITS.IMAGE_LOADED]="onImageLoaded"
                 @[EMITS.SPEECH_BUBBLE_EXPAND]="onSpeechBubbleExpand($event)" />
         </div>
@@ -20,6 +19,7 @@
     import BaseChatTextArea from '@/components/baseComponents/uiElements/BaseChatTextArea.vue';
     import ChatStream from '@/components/chat/ChatStream.vue';
     import { EMITS } from '@/constants/emits.js';
+    import { AGENT } from '@/constants/agent';
     import { useAgentStore } from '@/stores/agent';
 
     const agentStore = useAgentStore();
