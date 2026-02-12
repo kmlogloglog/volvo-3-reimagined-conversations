@@ -69,6 +69,7 @@
             color: var(--input-color-font);
             field-sizing: content;
             font-size: 1rem;
+            line-height: normal;
             max-height: 7.5rem;
             min-height: 2.5rem;
             outline: none;

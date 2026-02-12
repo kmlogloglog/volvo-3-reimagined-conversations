@@ -219,13 +219,14 @@ export default {
 
         console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'connecting to agent...');
 
+        const { $router } = useNuxtApp();
+
         this.connectionPromise = new Promise((resolve, reject) => {
+            const userIdFromQuery = $router.currentRoute.value.query.user || 'demo-user';
+            const sessionIdFromQuery = $router.currentRoute.value.query.session || crypto.randomUUID();
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const host = window.location.host;
-
-            const userId = 'demo-user';
-            const sessionId = 'demo-session-' + Math.random().toString(36).substring(7);
-            const url = `${protocol}//${host}/ws/${userId}/${sessionId}`;
+            const url = `${protocol}//${host}/ws/${userIdFromQuery}/${sessionIdFromQuery}`;
 
             console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Connecting to:', url);
 
