@@ -26,3 +26,6 @@ logs
 
 # VSCode settings
 .vscode
+
+# Github ignore
+.github

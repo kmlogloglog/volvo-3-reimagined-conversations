@@ -8,8 +8,34 @@
 </template>
 
 <script setup>
-    import { ref, computed, onMounted, onUnmounted } from 'vue';
-    import { useResizeObserver } from '@vueuse/core';
+    import { useResizeObserver, useRafFn, useIntersectionObserver } from '@vueuse/core';
+
+    // ============================================
+    // PROPS
+    // ============================================
+
+    const props = defineProps({
+        analyser: {
+            type: Object,
+            default: null,
+        },
+        level: {
+            type: Number,
+            default: 0,
+        },
+        isActive: {
+            type: Boolean,
+            default: null,
+        },
+        lightModeGlowColor: {
+            type: Object,
+            default: () => ({ r: 0, g: 0, b: 0 }),
+        },
+        darkModeGlowColor: {
+            type: Object,
+            default: () => ({ r: 255, g: 255, b: 255 }),
+        },
+    });
 
     // ============================================
     // CANVAS CONFIGURATION
@@ -17,8 +43,11 @@
 
     const canvasHeight = 400;
     const lineWidth = 1.0;
-    const lineOpacity = 0.05;
-    const glowOpacity = 0.15;
+    // Opacity values - different for light and dark modes
+    const lightModeLineOpacity = 0.05;
+    const lightModeGlowOpacity = 0.15;
+    const darkModeLineOpacity = 0.08;
+    const darkModeGlowOpacity = 0.15;
     const glowFadeStop = 0.7;
     const BUFFER_LENGTH = 80;
     const EDGE_FADE = 0.15;
@@ -28,7 +57,10 @@
     // PERFORMANCE CONFIGURATION
     // ============================================
 
-    const IDLE_FRAME_INTERVAL = 33; // ~30fps when idle
+    const IDLE_FRAME_INTERVAL = 50; // ~20fps when idle
+    const ACTIVE_FRAME_INTERVAL = 33; // ~30fps when active
+    const AUDIO_PROCESSING_INTERVAL = 16; // ~60fps for audio processing
+    const COLOR_TRANSITION_CHECK_INTERVAL = 16; // Only check transitions at 60fps
     const SMOOTHING_WEIGHTS = new Float32Array([0.01, 0.03, 0.07, 0.12, 0.18, 0.18, 0.18, 0.12, 0.07, 0.03, 0.01]);
 
     // ============================================
@@ -105,44 +137,93 @@
     ];
 
     // ============================================
-    // PROPS
-    // ============================================
-
-    const props = defineProps({
-        analyser: {
-            type: Object,
-            default: null,
-        },
-        level: {
-            type: Number,
-            default: 0,
-        },
-        isActive: {
-            type: Boolean,
-            default: null,
-        },
-    });
-
-    // ============================================
     // COLOR HANDLING
     // ============================================
 
     const colorMode = useColorMode();
     const isMounted = ref(false);
+    const isVisible = ref(true); // Start as visible, intersection observer will update
+    const hasStartedAudio = ref(false);
+    const isInitialRender = ref(true);
+    const shouldAnimate = computed(() => isVisible.value);
 
     const lineColor = computed(() => {
-        if (!isMounted.value) return `rgba(128, 128, 128, ${lineOpacity})`;
+        if (!isMounted.value) return `rgba(128, 128, 128, ${lightModeLineOpacity})`;
+        const opacity = colorMode.value === 'dark' ? darkModeLineOpacity : lightModeLineOpacity;
         return colorMode.value === 'dark'
-            ? `rgba(255, 255, 255, ${lineOpacity})`
-            : `rgba(0, 0, 0, ${lineOpacity})`;
+            ? `rgba(255, 255, 255, ${opacity})`
+            : `rgba(0, 0, 0, ${opacity})`;
     });
 
+    // Helper function to calculate opacity based on color and mode
+    const calculateGlowOpacity = (color, isDarkMode) => {
+        if (isDarkMode) {
+            return darkModeGlowOpacity;
+        } else {
+            // Light mode: adjust opacity based on color brightness
+            const brightness = getColorBrightness(color);
+
+            if (brightness > 0.5) {
+                // For lighter colors, reduce opacity more (make less transparent)
+                return lightModeGlowOpacity * 3;
+            } else {
+                // For darker colors, use configured glow opacity
+                return lightModeGlowOpacity;
+            }
+        }
+    };
+
     const baseGlowColor = computed(() => {
-        if (!isMounted.value) return { r: 128, g: 128, b: 128 };
-        return colorMode.value === 'dark'
-            ? { r: 255, g: 255, b: 255 }
-            : { r: 0, g: 0, b: 0 };
+        if (!isMounted.value) return props.lightModeGlowColor;
+        return colorMode.value === 'dark' ? props.darkModeGlowColor : props.lightModeGlowColor;
     });
+
+    // COLOR_TRANSITION: Transition duration in milliseconds
+    const COLOR_TRANSITION_DURATION = 1000;
+
+    // Color transition state
+    const isTransitioning = ref(false);
+    const transitionStartTime = ref(0);
+    const fromGlowColor = ref(null);
+    const toGlowColor = ref(null);
+    const currentGlowColor = ref(null);
+    const fromGlowOpacity = ref(null);
+    const toGlowOpacity = ref(null);
+    const currentGlowOpacity = ref(null);
+
+    function interpolateColor(from, to, progress) {
+        return {
+            r: Math.round(from.r + (to.r - from.r) * progress),
+            g: Math.round(from.g + (to.g - from.g) * progress),
+            b: Math.round(from.b + (to.b - from.b) * progress),
+        };
+    }
+
+    // Calculate color brightness (0-1 scale)
+    function getColorBrightness(color) {
+        // Use standard luminance formula
+        return (0.299 * color.r + 0.587 * color.g + 0.114 * color.b) / 255;
+    }
+
+    // Watch for color changes and trigger transitions
+    watch(baseGlowColor, (newColor, oldColor) => {
+        if (!isMounted.value || !oldColor || !currentGlowColor.value || !currentGlowOpacity.value) {
+            currentGlowColor.value = newColor;
+            currentGlowOpacity.value = calculateGlowOpacity(newColor, colorMode.value === 'dark');
+            return;
+        }
+
+        // Calculate new opacity
+        const newOpacity = calculateGlowOpacity(newColor, colorMode.value === 'dark');
+
+        // Start transition
+        fromGlowColor.value = { ...currentGlowColor.value };
+        toGlowColor.value = { ...newColor };
+        fromGlowOpacity.value = currentGlowOpacity.value;
+        toGlowOpacity.value = newOpacity;
+        isTransitioning.value = true;
+        transitionStartTime.value = import.meta.client ? performance.now() : 0;
+    }, { immediate: true });
 
     // ============================================
     // COMPONENT LOGIC
@@ -151,9 +232,14 @@
     const containerRef = ref(null);
     const canvasRef = ref(null);
     let ctx = null;
-    let animationId = null;
     let time = 0;
     let lastDrawTime = 0;
+    let lastAudioProcessTime = 0;
+    let lastColorTransitionCheck = 0;
+
+    // Cached dimensions for performance
+    const cachedWidth = ref(0);
+    const cachedHeight = ref(0);
 
     let frequencyData = null;
     let smoothedWaveData = [];
@@ -202,9 +288,14 @@
 
         const container = containerRef.value;
         const canvas = canvasRef.value;
-        const dpr = window.devicePixelRatio || 1;
+        // Use lower DPI for initial render, upgrade after LCP
+        const dpr = isInitialRender.value ? 1 : (window.devicePixelRatio || 1);
         const width = container.offsetWidth;
         const height = container.offsetHeight;
+
+        // Cache dimensions for performance
+        cachedWidth.value = width;
+        cachedHeight.value = height;
 
         canvas.width = width * dpr;
         canvas.height = height * dpr;
@@ -367,7 +458,14 @@
         return sum / (usableBins * 255);
     };
 
-    const updateWaveformData = (t) => {
+    // Separate audio processing from rendering for better performance
+    const updateWaveformData = (t, now) => {
+        // Throttle audio processing separately
+        if (now - lastAudioProcessTime < AUDIO_PROCESSING_INTERVAL) {
+            return;
+        }
+        lastAudioProcessTime = now;
+
         let rawEnergy = 0;
         let hasAudioSource = false;
 
@@ -398,6 +496,16 @@
             isActiveMode = props.isActive;
         } else {
             isActiveMode = hasAudioSource;
+        }
+
+        // Track if audio has started for deferred animation (LCP optimization)
+        if ((rawEnergy > 0.01 || props.level > 0 || props.isActive) && !hasStartedAudio.value) {
+            hasStartedAudio.value = true;
+            // Upgrade to full DPI after first audio activity to improve LCP
+            if (isInitialRender.value) {
+                isInitialRender.value = false;
+                nextTick(() => resizeCanvas());
+            }
         }
 
         if (rawEnergy > smoothedEnergy) {
@@ -434,26 +542,42 @@
         }
     };
 
-    const draw = () => {
-        if (!ctx || !canvasRef.value || !containerRef.value) return;
+    const drawInternal = () => {
+        if (!ctx || !canvasRef.value || !containerRef.value || !cachedWidth.value || !cachedHeight.value) return;
 
-        const now = performance.now();
-
-        // Throttle to ~30fps when idle to save CPU
-        if (!isActiveMode && now - lastDrawTime < IDLE_FRAME_INTERVAL) {
-            animationId = requestAnimationFrame(draw);
-            return;
-        }
-        lastDrawTime = now;
-
-        const width = containerRef.value.offsetWidth;
-        const height = containerRef.value.offsetHeight;
+        const width = cachedWidth.value;
+        const height = cachedHeight.value;
         const centerY = height * 0.5;
+        const now = performance.now();
 
         ctx.clearRect(0, 0, width, height);
 
         time += 1;
-        updateWaveformData(time);
+        updateWaveformData(time, now);
+
+        // Update color transition if active (throttled separately)
+        if (isTransitioning.value && now - lastColorTransitionCheck >= COLOR_TRANSITION_CHECK_INTERVAL) {
+            lastColorTransitionCheck = now;
+
+            if (fromGlowColor.value && toGlowColor.value && fromGlowOpacity.value !== null && toGlowOpacity.value !== null) {
+                const transitionElapsed = now - transitionStartTime.value;
+                const transitionProgress = Math.min(transitionElapsed / COLOR_TRANSITION_DURATION, 1);
+
+                // Use easing function for smooth transition
+                const easedProgress = transitionProgress * transitionProgress * (3 - 2 * transitionProgress);
+
+                currentGlowColor.value = interpolateColor(fromGlowColor.value, toGlowColor.value, easedProgress);
+                currentGlowOpacity.value = lerp(fromGlowOpacity.value, toGlowOpacity.value, easedProgress);
+
+                if (transitionProgress >= 1) {
+                    isTransitioning.value = false;
+                    fromGlowColor.value = null;
+                    toGlowColor.value = null;
+                    fromGlowOpacity.value = null;
+                    toGlowOpacity.value = null;
+                }
+            }
+        }
 
         const sliceWidth = width / (BUFFER_LENGTH - 1);
 
@@ -477,13 +601,14 @@
             const intensity = isActiveMode ? Math.min(maxVal / MAX_AMPLITUDE, 1) : 0;
             const colorBlend = intensity * activeGlow.amount;
 
-            const base = baseGlowColor.value;
+            const base = currentGlowColor.value || baseGlowColor.value;
             const glowR = Math.round(lerp(base.r, activeGlow.color.r, colorBlend));
             const glowG = Math.round(lerp(base.g, activeGlow.color.g, colorBlend));
             const glowB = Math.round(lerp(base.b, activeGlow.color.b, colorBlend));
 
             // Boost opacity based on intensity
-            const topOpacity = lerp(glowOpacity, activeGlow.maxOpacity, colorBlend);
+            const baseOpacity = currentGlowOpacity.value || calculateGlowOpacity(baseGlowColor.value, colorMode.value === 'dark');
+            const topOpacity = lerp(baseOpacity, activeGlow.maxOpacity, colorBlend);
 
             // Create gradient with proper fade-out at bottom
             const minY = getMinY(pointsPool, BUFFER_LENGTH);
@@ -541,9 +666,38 @@
 
             ctx.stroke();
         }
-
-        animationId = requestAnimationFrame(draw);
     };
+
+    // Use VueUse RAF function for better performance
+    const { pause: pauseAnimation, resume: resumeAnimation } = useRafFn(() => {
+        if (!shouldAnimate.value) return;
+
+        const now = performance.now();
+
+        // Fixed frame rate for consistent performance
+        const baseInterval = isActiveMode ? ACTIVE_FRAME_INTERVAL : IDLE_FRAME_INTERVAL;
+
+        if (now - lastDrawTime < baseInterval) {
+            return;
+        }
+        lastDrawTime = now;
+
+        drawInternal();
+    }, { immediate: false });
+
+    // Use VueUse intersection observer
+    const { stop: stopIntersectionObserver } = useIntersectionObserver(
+        containerRef,
+        ([{ isIntersecting }]) => {
+            isVisible.value = isIntersecting;
+            if (isIntersecting) {
+                resumeAnimation();
+            } else {
+                pauseAnimation();
+            }
+        },
+        { threshold: 0.1 },
+    );
 
     useResizeObserver(containerRef, () => {
         resizeCanvas();
@@ -551,13 +705,20 @@
 
     onMounted(() => {
         isMounted.value = true;
+        currentGlowColor.value = baseGlowColor.value;
+        currentGlowOpacity.value = calculateGlowOpacity(baseGlowColor.value, colorMode.value === 'dark');
         initializeBuffers();
         resizeCanvas();
-        draw();
+
+        // Start animation with a small delay for LCP optimization
+        nextTick(() => {
+            resumeAnimation();
+        });
     });
 
     onUnmounted(() => {
-        if (animationId) cancelAnimationFrame(animationId);
+        pauseAnimation();
+        stopIntersectionObserver();
     });
 </script>
 

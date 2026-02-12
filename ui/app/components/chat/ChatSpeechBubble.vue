@@ -3,26 +3,31 @@
         ref="speechBubbleRef"
         :align-bubble="alignBubble"
         padding="small">
-        <!-- eslint-disable vue/no-v-html -->
-        <div
-            ref="textRef"
-            class="chat-message text-sm"
-            :class="{ 'show-all': showAllText }"
-            v-html="sanitizedText"></div>
-        <!-- eslint-enable vue/no-v-html -->
-        <button
-            v-show="showReadMoreButton"
-            class="button-reset button-read-more"
-            :class="{ 'open': showAllText}"
-            @[EMITS.CLICK]="onReadMoreClick">
-            {{  buttonLabel }}<span class="icon-chevron-right"></span>
-        </button>
+        <ChatTypeIndicator v-if="!finished" />
+        <template v-else>
+            <!-- eslint-disable vue/no-v-html -->
+            <div
+                ref="textRef"
+                class="chat-message text-sm"
+                :class="{ 'show-all': showAllText }"
+                v-html="sanitizedText"></div>
+            <!-- eslint-enable vue/no-v-html -->
+            <button
+                v-show="showReadMoreButton"
+                class="button-reset button-read-more"
+                :class="{ 'open': showAllText}"
+                @[EMITS.CLICK]="onReadMoreClick">
+                {{  buttonLabel }}<span class="icon-chevron-right"></span>
+            </button>
+        </template>
     </BaseSpeechBubble>
 </template>
 <script setup>
     import BaseSpeechBubble from '@/components/baseComponents/uiElements/BaseSpeechBubble.vue';
-    import { EMITS } from '@/constants/emits.js';
+    import { EMITS } from '@/constants/emits';
+    import { AGENT } from '@/constants/agent';
     import DOMPurify from 'isomorphic-dompurify';
+    import ChatTypeIndicator from './ChatTypeIndicator.vue';
 
     const props = defineProps({
         text: {
@@ -32,7 +37,11 @@
         alignBubble: {
             type: String,
             default: 'none',
-            validator: (value) => ['user', 'agent', 'none'].includes(value),
+            validator: (value) => [AGENT.USER, AGENT.AGENT, 'none'].includes(value),
+        },
+        finished: {
+            type: Boolean,
+            default: true,
         },
     });
 
@@ -105,7 +114,7 @@
             showReadMoreButton.value = newVal.scrollHeight > newVal.clientHeight;
             attachImageListeners();
         }
-    });
+    }, { immediate: true });
 
     onBeforeUnmount(() => {
         detachImageListeners();
@@ -116,7 +125,7 @@
         margin: 0;
         text-box-trim: trim-both;
         display: -webkit-box;
-        -webkit-line-clamp: 4;
+        -webkit-line-clamp: 5;
         -webkit-box-orient: vertical;
         overflow: hidden;
 

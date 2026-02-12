@@ -6,14 +6,13 @@ export const useAgentStore = defineStore('agentStore', {
     state: () => ({
         conversation: [],
         audioLevel: 0,
-        backgroundImageUrl: null,
+        backgroundImages: null,
 
         // Connection state
         connected: false,
         connecting: false,
         listening: false,
         speaking: false,
-        isMuted: false,
 
         // Audio contexts and analyzers
         audioContext: null,

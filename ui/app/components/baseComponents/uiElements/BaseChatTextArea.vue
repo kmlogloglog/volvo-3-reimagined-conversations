@@ -5,12 +5,13 @@
             v-model="vModel"
             type="text"
             class="chat-text-input"
+            :disabled="disabled"
             :placeholder="placeholderTxt"
-            @keydown.enter.prevent="onSubmit"
-        ></textarea>
+            @keydown.enter.prevent="onSubmit"></textarea>
         <button
             type="button"
             class="button-reset chat-text-button"
+            :disabled="disabled"
             @click="onSubmit">
             <span
                 class="chat-text-button-icon"
@@ -21,12 +22,18 @@
 <script setup>
     import { EMITS } from '@/constants/emits.js';
 
-    const id = useId();
-
+    defineProps({
+        disabled: {
+            type: Boolean,
+            default: false,
+        },
+    });
     const vModel = defineModel({
         type: String,
         default: '',
     });
+
+    const id = useId();
 
     const emit = defineEmits([EMITS.SUBMIT]);
 
@@ -62,6 +69,7 @@
             color: var(--input-color-font);
             field-sizing: content;
             font-size: 1rem;
+            line-height: normal;
             max-height: 7.5rem;
             min-height: 2.5rem;
             outline: none;
@@ -74,6 +82,12 @@
             &::placeholder {
                 color: var(--input-color-font-placeholder);
             }
+
+            &:disabled {
+                &::placeholder {
+                    color: var(--input-color-font-placeholder-disabled);
+                }
+            }
         }
 
         &-button {
@@ -84,6 +98,12 @@
 
             &-icon {
                 color: var(--input-color-font-placeholder);
+            }
+
+            &:disabled {
+                & .chat-text-button-icon {
+                    color: var(--input-color-font-placeholder-disabled);
+                }
             }
         }
     }

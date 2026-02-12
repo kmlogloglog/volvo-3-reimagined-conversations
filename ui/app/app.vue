@@ -1,18 +1,17 @@
 <template>
-    <div id="app" class="j" :style="backgroundStyle">
-
-        <AppLayout
+    <div id="app" :style="backgroundStyle">
+        <CaptureView
             :show-waves="$route.name === NAVIGATION.AUDIO.name"
-            :show-circles="!agentStore.backgroundImageUrl">
+            :show-circles="!agentStore.backgroundImages">
             <NuxtPage />
-        </AppLayout>
+        </CaptureView>
     </div>
 </template>
 
 <script setup>
     import { preloadRouteComponents } from '#app';
     import { NAVIGATION } from '@/constants/navigation';
-    import AppLayout from '@/appLayouts/AppLayout.vue';
+    import CaptureView from '@/views/CaptureView.vue';
     import { useAgentStore } from '@/stores/agent';
 
     preloadRouteComponents('/');
@@ -23,8 +22,6 @@
 
     const agentStore = useAgentStore();
     const { backgroundStyle } = useBackground(agentStore);
-
-    // agentStore.backgroundImageUrl = './assets/images/backgrounds/placeholder-volvo-ex60-front.jpg';
 </script>
 
 <style scoped lang="scss">

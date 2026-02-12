@@ -66,6 +66,7 @@ button {
     text-align: center;
     width: 5.5rem;
 
+    &:active,
     &.active {
         background-color: var(--navigation-button-active-color-background);
         color: var(--navigation-button-active-color-font);
@@ -73,7 +74,8 @@ button {
 
     &:disabled {
         cursor: default;
-        opacity: 0.5;
+        color: var(--navigation-button-disabled-color-font);
+        background-color: var(--navigation-button-disabled-color-background);
     }
 }
 

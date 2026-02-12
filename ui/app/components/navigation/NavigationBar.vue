@@ -6,26 +6,23 @@
                 :is-recording="isAudioRecording"
                 :active="isActive(NAVIGATION.AUDIO.id)"
                 :loading="(isActive(NAVIGATION.UPLOAD.id) && connecting) || micRequesting"
-                :disabled="connecting || micRequesting"
+                :disabled="micRequesting || (isActive(NAVIGATION.AUDIO.id) && (connecting || isPageLoading))"
                 @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
             <NavigationBarButton
                 :icon="NAVIGATION.CHAT.icon"
                 :active="isActive(NAVIGATION.CHAT.id)"
-                :loading="isActive(NAVIGATION.CHAT.id) && connecting"
-                :disabled="connecting || micRequesting"
+                :disabled="micRequesting"
                 @click="setActive(NAVIGATION.CHAT)" />
             <NavigationBarButton
                 class="navigation-photo"
                 :icon="NAVIGATION.PHOTO.icon"
                 :active="isActive(NAVIGATION.PHOTO.id)"
-                :loading="isActive(NAVIGATION.PHOTO.id) && connecting"
-                :disabled="connecting || micRequesting"
+                :disabled="micRequesting"
                 @click="setActive(NAVIGATION.PHOTO)" />
             <NavigationBarButton
                 :icon="NAVIGATION.UPLOAD.icon"
                 :active="isActive(NAVIGATION.UPLOAD.id)"
-                :loading="isActive(NAVIGATION.UPLOAD.id) && connecting"
-                :disabled="connecting || micRequesting"
+                :disabled="micRequesting"
                 @click="setActive(NAVIGATION.UPLOAD)" />
         </nav>
     </div>
@@ -37,17 +34,20 @@
     import { NAVIGATION } from '@/constants/navigation';
     import { EMITS } from '@/constants/emits.js';
     import { BUS } from '@/constants/bus.js';
-
     import { useEventBus } from '@vueuse/core';
 
-    const busRecord = useEventBus('toggle-record');
     const busMicrophone = useEventBus(BUS.MICROPHONE);
     const busConnection = useEventBus(BUS.AGENT_CONNECTION);
+    const busRecord = useEventBus(BUS.TOGGLE_RECORD);
 
     const props = defineProps({
         forceActive: {
             type: String,
             default: null,
+        },
+        isPageLoading: {
+            type: Boolean,
+            default: false,
         },
     });
 
@@ -66,7 +66,7 @@
 
     const route = useRoute();
 
-    const emit = defineEmits([EMITS.NAVIGATION_CHANGE]);
+    const emit = defineEmits([EMITS.NAVIGATION_CHANGE, EMITS.OPEN_PHOTO_CAPTURE, EMITS.OPEN_FILE_UPLOAD]);
 
     const recordingControlsRef = ref(props.forceActive ? props.forceActive : null);
 
@@ -98,6 +98,7 @@
         const { id, name } = navItem;
 
         activeId.value = id;
+
         emit(EMITS.NAVIGATION_CHANGE, name);
     }
 

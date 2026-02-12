@@ -22,5 +22,10 @@
         padding: 0.5rem 1rem;
         transition: border-color 0.3s;
         width: 100%;
+
+        &:disabled {
+            cursor: default;
+            color: var(--input-color-font-placeholder-disabled);
+        }
     }
 </style>

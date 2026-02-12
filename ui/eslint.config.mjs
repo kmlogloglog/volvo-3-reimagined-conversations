@@ -28,6 +28,8 @@ export default withNuxt([
                 },
             ],
             '@stylistic/block-spacing': 'error',
+            '@stylistic/object-curly-spacing': ['error', 'always'],
+            '@stylistic/no-multi-spaces': 'error',
             '@stylistic/no-multiple-empty-lines': ['error', { max: 1 }],
             'vue/script-indent': ['error', 4, { baseIndent: 1 }],
             'vue/html-indent': [
