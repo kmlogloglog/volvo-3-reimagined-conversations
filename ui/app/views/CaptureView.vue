@@ -75,6 +75,7 @@
     justify-content: flex-end;
     padding-top: env(safe-area-inset-top, 0px);
     position: fixed;
+    row-gap: 1.25rem;
     width: 100%;
 
     .base-view {
@@ -83,6 +84,7 @@
         position: relative;
         width: 100%;
         z-index: 10;
+        overflow: hidden;
         -webkit-overflow-scrolling: touch;
 
         &.full-height {

@@ -43,6 +43,8 @@ export default {
         const msg = this.conversation.find(m => m.id === this.currentUserMessageId);
         if (msg && msg.content) {
             msg.content.text = text;
+
+            msg.finished = finished;
         }
     },
 

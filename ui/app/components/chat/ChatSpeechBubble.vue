@@ -114,7 +114,7 @@
             showReadMoreButton.value = newVal.scrollHeight > newVal.clientHeight;
             attachImageListeners();
         }
-    });
+    }, { immediate: true });
 
     onBeforeUnmount(() => {
         detachImageListeners();
