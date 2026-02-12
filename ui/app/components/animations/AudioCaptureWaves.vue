@@ -51,7 +51,7 @@
     const glowFadeStop = 0.7;
     const BUFFER_LENGTH = 80;
     const EDGE_FADE = 0.15;
-    const MAX_AMPLITUDE = 0.38;
+    const MAX_AMPLITUDE = 0.5;
 
     // ============================================
     // PERFORMANCE CONFIGURATION
@@ -60,7 +60,6 @@
     const IDLE_FRAME_INTERVAL = 50; // ~20fps when idle
     const ACTIVE_FRAME_INTERVAL = 33; // ~30fps when active
     const AUDIO_PROCESSING_INTERVAL = 16; // ~60fps for audio processing
-    const COLOR_TRANSITION_CHECK_INTERVAL = 16; // Only check transitions at 60fps
     const SMOOTHING_WEIGHTS = new Float32Array([0.01, 0.03, 0.07, 0.12, 0.18, 0.18, 0.18, 0.12, 0.07, 0.03, 0.01]);
 
     // ============================================
@@ -179,7 +178,7 @@
     });
 
     // COLOR_TRANSITION: Transition duration in milliseconds
-    const COLOR_TRANSITION_DURATION = 1000;
+    const COLOR_TRANSITION_DURATION = 800; // Shorter duration for snappier transitions
 
     // Color transition state
     const isTransitioning = ref(false);
@@ -191,12 +190,21 @@
     const toGlowOpacity = ref(null);
     const currentGlowOpacity = ref(null);
 
+    // Smoothed intensity for better color blending
+    const smoothedIntensity = ref(0);
+    const INTENSITY_SMOOTHING = 0.15;
+
     function interpolateColor(from, to, progress) {
         return {
-            r: Math.round(from.r + (to.r - from.r) * progress),
-            g: Math.round(from.g + (to.g - from.g) * progress),
-            b: Math.round(from.b + (to.b - from.b) * progress),
+            r: from.r + (to.r - from.r) * progress,
+            g: from.g + (to.g - from.g) * progress,
+            b: from.b + (to.b - from.b) * progress,
         };
+    }
+
+    // Improved easing function for smoother transitions
+    function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
     // Calculate color brightness (0-1 scale)
@@ -235,7 +243,6 @@
     let time = 0;
     let lastDrawTime = 0;
     let lastAudioProcessTime = 0;
-    let lastColorTransitionCheck = 0;
 
     // Cached dimensions for performance
     const cachedWidth = ref(0);
@@ -550,21 +557,22 @@
         const centerY = height * 0.5;
         const now = performance.now();
 
+        // Performance monitoring (remove in production)
+        // const frameStart = performance.now();
+
         ctx.clearRect(0, 0, width, height);
 
         time += 1;
         updateWaveformData(time, now);
 
-        // Update color transition if active (throttled separately)
-        if (isTransitioning.value && now - lastColorTransitionCheck >= COLOR_TRANSITION_CHECK_INTERVAL) {
-            lastColorTransitionCheck = now;
-
+        // Update color transition if active (every frame for smoothness)
+        if (isTransitioning.value) {
             if (fromGlowColor.value && toGlowColor.value && fromGlowOpacity.value !== null && toGlowOpacity.value !== null) {
                 const transitionElapsed = now - transitionStartTime.value;
                 const transitionProgress = Math.min(transitionElapsed / COLOR_TRANSITION_DURATION, 1);
 
-                // Use easing function for smooth transition
-                const easedProgress = transitionProgress * transitionProgress * (3 - 2 * transitionProgress);
+                // Use improved easing function for smoother transition
+                const easedProgress = easeInOutCubic(transitionProgress);
 
                 currentGlowColor.value = interpolateColor(fromGlowColor.value, toGlowColor.value, easedProgress);
                 currentGlowOpacity.value = lerp(fromGlowOpacity.value, toGlowOpacity.value, easedProgress);
@@ -597,14 +605,16 @@
                 pointsPool[i].y = waveCenterY - waveData[i] * height;
             }
 
-            // Calculate color blend based on intensity
-            const intensity = isActiveMode ? Math.min(maxVal / MAX_AMPLITUDE, 1) : 0;
-            const colorBlend = intensity * activeGlow.amount;
+            // Calculate color blend based on smoothed intensity
+            const rawIntensity = isActiveMode ? Math.min(maxVal / MAX_AMPLITUDE, 1) : 0;
+            smoothedIntensity.value = lerp(smoothedIntensity.value, rawIntensity, INTENSITY_SMOOTHING);
+            const colorBlend = smoothedIntensity.value * activeGlow.amount;
 
             const base = currentGlowColor.value || baseGlowColor.value;
-            const glowR = Math.round(lerp(base.r, activeGlow.color.r, colorBlend));
-            const glowG = Math.round(lerp(base.g, activeGlow.color.g, colorBlend));
-            const glowB = Math.round(lerp(base.b, activeGlow.color.b, colorBlend));
+            // Avoid Math.round for smoother color transitions
+            const glowR = lerp(base.r, activeGlow.color.r, colorBlend);
+            const glowG = lerp(base.g, activeGlow.color.g, colorBlend);
+            const glowB = lerp(base.b, activeGlow.color.b, colorBlend);
 
             // Boost opacity based on intensity
             const baseOpacity = currentGlowOpacity.value || calculateGlowOpacity(baseGlowColor.value, colorMode.value === 'dark');
@@ -614,8 +624,9 @@
             const minY = getMinY(pointsPool, BUFFER_LENGTH);
             const gradientEndY = minY + (height - minY) * glowFadeStop;
             const gradient = ctx.createLinearGradient(0, minY, 0, gradientEndY);
-            gradient.addColorStop(0, `rgba(${glowR}, ${glowG}, ${glowB}, ${topOpacity})`);
-            gradient.addColorStop(1, `rgba(${glowR}, ${glowG}, ${glowB}, 0)`);
+            // Round colors only when creating the gradient for final rendering
+            gradient.addColorStop(0, `rgba(${Math.round(glowR)}, ${Math.round(glowG)}, ${Math.round(glowB)}, ${topOpacity})`);
+            gradient.addColorStop(1, `rgba(${Math.round(glowR)}, ${Math.round(glowG)}, ${Math.round(glowB)}, 0)`);
 
             ctx.beginPath();
             ctx.moveTo(0, height);
@@ -666,6 +677,10 @@
 
             ctx.stroke();
         }
+
+        // Performance monitoring (remove in production)
+        // const frameTime = performance.now() - frameStart;
+        // if (frameTime > 2) console.log(`Frame time: ${frameTime.toFixed(2)}ms`);
     };
 
     // Use VueUse RAF function for better performance
