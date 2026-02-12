@@ -27,18 +27,16 @@ export default {
         this.conversation.push(msg);
     },
 
-    handleUserTranscription(text, finished) {
+    handleUserTranscription(text, finished = false) {
         if (!this.currentUserMessageId) {
-            this.currentUserMessageId = Date.now().toString();
+            this.currentUserMessageId = `${Date.now().toString()}_${AGENT.USER}`;
             const newMsg = {
                 id: this.currentUserMessageId,
                 sender: AGENT.USER,
                 content: { text: '' },
                 timestamp: new Date(),
+                finished,
             };
-            if (finished != null) {
-                newMsg.finished = finished;
-            }
             this.addMessage(newMsg);
         }
 
@@ -56,18 +54,18 @@ export default {
         }
     },
 
-    handleTextResponse(text, finished) {
+    handleTextResponse(text, finished = false) {
+        // Create new message if no current message ID exists
         if (!this.currentMessageId) {
-            this.currentMessageId = Date.now().toString();
+            this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
             const newMsg = {
                 id: this.currentMessageId,
                 sender: AGENT.AGENT,
                 content: { text: '' },
                 timestamp: new Date(),
+                finished,
             };
-            if (finished != null) {
-                newMsg.finished = finished;
-            }
+
             this.addMessage(newMsg);
         }
 
@@ -75,15 +73,19 @@ export default {
 
         if (msg && msg.content) {
             const currentText = msg.content.text || '';
-            if (finished != null) {
-                msg.finished = finished;
-            }
+
+            msg.finished = finished;
 
             // Prevent duplicate text appending if the same text is received again
             if (currentText.endsWith(text) && text.length > 1) {
                 return;
             }
             msg.content.text = `${currentText}${text}`;
+        }
+
+        // Clear currentMessageId when message is finished to allow new messages
+        if (finished) {
+            this.currentMessageId = null;
         }
     },
 
@@ -101,7 +103,6 @@ export default {
                 }
                 // handle text parts
                 if (part.text) {
-                    console.log(part);
                     this.handleTextResponse(part.text, part.finished);
                     textHandled = true;
                 }
@@ -116,13 +117,12 @@ export default {
             }
         }
 
-        if (!textHandled && !event.partial && event.outputTranscription?.text) {
-            console.log(event.outputTranscription);
+        if (!textHandled && event.outputTranscription?.text) {
             this.handleTextResponse(event.outputTranscription.text, event.outputTranscription?.finished);
         }
 
         if (event.inputTranscription?.text) {
-            this.handleUserTranscription(event.inputTranscription.text, event.outputTranscription?.finished);
+            this.handleUserTranscription(event.inputTranscription.text, event.inputTranscription?.finished);
         }
 
         if (event.turnComplete) {
@@ -202,7 +202,7 @@ export default {
         }
 
         this.audioLevel = 0;
-        this.micPermissionGranted = false; // Reset permission state after stopping
+        this.micPermissionGranted = false;
     },
 
     async connect() {
@@ -210,6 +210,7 @@ export default {
         if (this.connected) {
             return Promise.resolve();
         }
+
         if (this.connectionPromise) {
             return this.connectionPromise;
         }
@@ -464,13 +465,14 @@ export default {
         this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
 
         // Add a pending agent message with empty text
-        this.addMessage({
+        const newMsg = {
             id: this.currentMessageId,
             sender: AGENT.AGENT,
             content: { text: '' },
             timestamp: new Date(),
             finished: false,
-        });
+        };
+        this.addMessage(newMsg);
 
         if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
             console.warn('%cWEBSOCKET WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'WebSocket not open, message added to UI but not sent.');
