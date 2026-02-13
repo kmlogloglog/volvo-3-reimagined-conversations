@@ -19,18 +19,11 @@
                     :loading="isActive(ROUTE.CHAT.id) && connecting"
                     @click="setActive(ROUTE.CHAT)" />
                 <NavigationBarButton
-                    v-if="!$device.isDesktop"
                     class="navigation-photo"
                     :active="isActive(ROUTE.CAMERA.id)"
                     :disabled="micRequesting || isLoading"
-                    :icon="ROUTE.CAMERA.icon"
+                    :icon="$device.isDesktop ? ROUTE.UPLOAD.icon : ROUTE.CAMERA.icon"
                     @click="setActive(ROUTE.CAMERA)" />
-                <NavigationBarButton
-                    v-if="$device.isDesktop"
-                    :icon="ROUTE.UPLOAD.icon"
-                    :active="isActive(ROUTE.UPLOAD.id)"
-                    :disabled="micRequesting"
-                    @click="setActive(ROUTE.UPLOAD)" />
             </nav>
         </div>
     </ClientOnly>
@@ -95,7 +88,7 @@
     function setActive(navItem) {
         const { id, name } = navItem;
 
-        const ignoreRouteNames = [ROUTE.CAMERA.name, ROUTE.UPLOAD.name];
+        const ignoreRouteNames = [ROUTE.CAMERA.name];
         if (!ignoreRouteNames.includes(name)) {
             activeId.value = id;
         }
