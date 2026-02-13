@@ -152,7 +152,7 @@
         display: flex;
         height: $height;
         padding: 0.1875rem;
-        column-gap: .25rem;
+        column-gap: 0.1875rem;
 
         button,
         :deep(.mic-button) {
