@@ -23,7 +23,7 @@
 
 <script setup>
     import { EMITS } from '@/constants/emits';
-    import { NAVIGATION } from '@/constants/navigation';
+    import { ROUTE } from '@/constants/route';
 
     const props = defineProps({
         active: {
@@ -54,14 +54,14 @@
 
     const micIconClass = computed(() => {
         if (!props.active) {
-            return NAVIGATION.AUDIO.icon;
+            return ROUTE.AUDIO.icon;
         }
 
         if (props.isRecording) {
             return 'icon-stop';
         }
 
-        return `${NAVIGATION.AUDIO.icon}-fill`;
+        return `${ROUTE.AUDIO.icon}-fill`;
     });
 </script>
 

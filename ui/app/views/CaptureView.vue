@@ -22,31 +22,23 @@
         Do not use AudioCaptureCircles together with full screen background image.
         AudioCaptureCircles breaks iOS Safari's background rendering behind browser chrome
         -->
-        <ClientOnly>
-            <AudioCaptureWaves
-                v-if="route.name === NAVIGATION.AUDIO.name"
-                class="audio-waves"
-                :level="agentStore.audioLevel" />
-            <AudioCaptureCircles
-                :enabled="!agentStore.backgroundImages" />
-        </ClientOnly>
+        <AudioCaptureWaves
+            v-if="route.name === ROUTE.AUDIO.name"
+            class="audio-waves"
+            :level="agentStore.audioLevel" />
+        <AudioCaptureCircles
+            :enabled="!agentStore.backgroundImages" />
     </div>
 </template>
 
 <script setup>
     import { EMITS } from '@/constants/emits.js';
-    import { NAVIGATION } from '@/constants/navigation';
+    import { ROUTE } from '@/constants/route';
     import { navigateTo, useRoute } from '#app';
     import { useAgentStore } from '@/stores/agent';
     import BackgroundImagesCarousel from '@/components/backgroundImage/BackgroundImagesCarousel.vue';
     import AudioCaptureCircles from '@/components/animations/AudioCaptureCircles.vue';
     import AudioCaptureWaves from '@/components/animations/AudioCaptureWaves.vue';
-
-    const emit = defineEmits([
-        EMITS.NAVIGATION_CHANGE,
-        EMITS.PHOTO_CAPTURED,
-        EMITS.CLOSE,
-    ]);
 
     const agentStore = useAgentStore();
     const route = useRoute();
@@ -54,12 +46,17 @@
     const { isLoading } = useLoadingIndicator();
 
     function onNavigate(name) {
+        const ignoreRouteNames = [ROUTE.CAMERA.name, ROUTE.UPLOAD.name];
+
+        if (ignoreRouteNames.includes(name)) {
+            return;
+        }
+
         navigateTo(`/${name}`);
-        emit(EMITS.NAVIGATION_CHANGE, name);
     }
 
     const isFullHeightPage = computed(() => {
-        return [NAVIGATION.PHOTO.name].includes(route.name);
+        return [ROUTE.CAMERA.name, 'index'].includes(route.name);
     });
 
 </script>

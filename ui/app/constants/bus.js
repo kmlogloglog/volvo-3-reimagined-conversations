@@ -1,5 +1,5 @@
 export const BUS = Object.freeze({
-    NAVIGATION: 'navigation',
+    ROUTE: 'navigation',
     AGENT_CONNECTION: 'agent-connection',
     MICROPHONE: 'microphone',
     MESSAGE_STATUS: 'message-status',

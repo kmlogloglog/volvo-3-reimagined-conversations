@@ -1,40 +1,48 @@
 <template>
-    <div class="navigation">
-        <nav class="navigation-groups">
-            <NavigationBarAudioButton
-                ref="recordingControlsRef"
-                :active="isActive(NAVIGATION.AUDIO.id)"
-                :disabled="micRequesting || (isActive(NAVIGATION.AUDIO.id) && (connecting || isLoading))"
-                :is-recording="isAudioRecording"
-                :loading="(isActive(NAVIGATION.AUDIO.id) && connecting) || micRequesting"
-                @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
-            <NavigationBarButton
-                :active="isActive(NAVIGATION.CHAT.id)"
-                :disabled="micRequesting || isLoading"
-                :icon="NAVIGATION.CHAT.icon"
-                :loading="isActive(NAVIGATION.CHAT.id) && connecting"
-                @click="setActive(NAVIGATION.CHAT)" />
-            <NavigationBarButton
-                class="navigation-photo"
-                :active="isActive(NAVIGATION.PHOTO.id)"
-                :disabled="micRequesting || isLoading"
-                :icon="NAVIGATION.PHOTO.icon"
-                @click="setActive(NAVIGATION.PHOTO)" />
-        </nav>
-    </div>
+    <!--
+    ClientOnly is required to prevent hydration mismatch errors caused by device detection
+    -->
+    <ClientOnly>
+        <div class="navigation">
+            <nav class="navigation-groups">
+                <NavigationBarAudioButton
+                    ref="recordingControlsRef"
+                    :active="isActive(ROUTE.AUDIO.id)"
+                    :disabled="micRequesting || (isActive(ROUTE.AUDIO.id) && (connecting || isLoading))"
+                    :is-recording="isAudioRecording"
+                    :loading="(isActive(ROUTE.AUDIO.id) && connecting) || micRequesting"
+                    @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
+                <NavigationBarButton
+                    :active="isActive(ROUTE.CHAT.id)"
+                    :disabled="micRequesting || isLoading"
+                    :icon="ROUTE.CHAT.icon"
+                    :loading="isActive(ROUTE.CHAT.id) && connecting"
+                    @click="setActive(ROUTE.CHAT)" />
+                <NavigationBarButton
+                    v-if="!$device.isDesktop"
+                    class="navigation-photo"
+                    :active="isActive(ROUTE.CAMERA.id)"
+                    :disabled="micRequesting || isLoading"
+                    :icon="ROUTE.CAMERA.icon"
+                    @click="setActive(ROUTE.CAMERA)" />
+                <NavigationBarButton
+                    v-if="$device.isDesktop"
+                    :icon="ROUTE.UPLOAD.icon"
+                    :active="isActive(ROUTE.UPLOAD.id)"
+                    :disabled="micRequesting"
+                    @click="setActive(ROUTE.UPLOAD)" />
+            </nav>
+        </div>
+    </ClientOnly>
 </template>
 
 <script setup>
     import NavigationBarButton from './NavigationBarButton.vue';
     import NavigationBarAudioButton from './NavigationBarAudioButton.vue';
-    import { NAVIGATION } from '@/constants/navigation';
+    import { ROUTE } from '@/constants/route';
     import { EMITS } from '@/constants/emits.js';
     import { BUS } from '@/constants/bus.js';
     import { useEventBus } from '@vueuse/core';
-
-    const busMicrophone = useEventBus(BUS.MICROPHONE);
-    const busConnection = useEventBus(BUS.AGENT_CONNECTION);
-    const busRecord = useEventBus(BUS.TOGGLE_RECORD);
 
     const props = defineProps({
         forceActive: {
@@ -43,35 +51,31 @@
         },
     });
 
+    const emit = defineEmits([EMITS.NAVIGATION_CHANGE]);
+
     const { isLoading } = useLoadingIndicator();
+    const route = useRoute();
+
+    const busMicrophone = useEventBus(BUS.MICROPHONE);
+    const busConnection = useEventBus(BUS.AGENT_CONNECTION);
+    const busRecord = useEventBus(BUS.TOGGLE_RECORD);
 
     const connected = ref(false);
     const connecting = ref(false);
     const micRequesting = ref(false);
-
-    busConnection.on((payload) => {
-        connected.value = payload.connected ?? connected.value;
-        connecting.value = payload.connecting ?? connecting.value;
-    });
-
-    busMicrophone.on((payload) => {
-        micRequesting.value = payload.requesting ?? micRequesting.value;
-    });
-
-    const route = useRoute();
-
-    const emit = defineEmits([EMITS.NAVIGATION_CHANGE, EMITS.OPEN_PHOTO_CAPTURE]);
-
     const recordingControlsRef = ref(props.forceActive ? props.forceActive : null);
-
     const activeId = ref(null);
+    const isAudioRecording = ref(false);
 
+    // check if a navigation item is active
     const isActive = (id) => activeId.value === id;
 
+    // get navigation item by route name
     function getNavItemByRouteName(name) {
-        return Object.values(NAVIGATION).find(item => item.name === name);
+        return Object.values(ROUTE).find(item => item.name === name);
     }
 
+    // sync active navigation button with current route
     function syncWithRoute() {
         const navItem = getNavItemByRouteName(route.name);
         if (navItem) {
@@ -79,24 +83,25 @@
         } else {
             // Unknown route (404, etc.) - reset navigation
             activeId.value = null;
-            resetAudioState();
+            isAudioRecording.value = false;
         }
 
-        if(navItem?.id !== NAVIGATION.AUDIO.id) {
-            resetAudioState();
+        if(navItem?.id !== ROUTE.AUDIO.id) {
+            isAudioRecording.value = false;
         }
     }
 
-    // Actions
+    // set active navigation button
     function setActive(navItem) {
         const { id, name } = navItem;
 
-        activeId.value = id;
+        const ignoreRouteNames = [ROUTE.CAMERA.name, ROUTE.UPLOAD.name];
+        if (!ignoreRouteNames.includes(name)) {
+            activeId.value = id;
+        }
 
         emit(EMITS.NAVIGATION_CHANGE, name);
     }
-
-    const isAudioRecording = ref(false);
 
     function onToggleRecord(isRecording) {
         busRecord.emit(isRecording);
@@ -104,7 +109,7 @@
 
     // Handle microphone click logic (moved from NavigationBarAudioButton)
     async function handleMicrophoneClick() {
-        if (isActive(NAVIGATION.AUDIO.id)) {
+        if (isActive(ROUTE.AUDIO.id)) {
             if (isAudioRecording.value) {
                 // If recording, stop recording
                 isAudioRecording.value = false;
@@ -117,21 +122,26 @@
                 onToggleRecord(isAudioRecording.value);
             }
         } else {
-            // Select this navigation item
-            setActive(NAVIGATION.AUDIO);
+            setActive(ROUTE.AUDIO);
         }
     }
 
-    // Reset audio state (moved from NavigationBarAudioButton)
-    function resetAudioState() {
-        isAudioRecording.value = false;
-    }
+    // bus event listeners
+    busConnection.on((payload) => {
+        connected.value = payload.connected ?? connected.value;
+        connecting.value = payload.connecting ?? connecting.value;
+    });
 
-    // Watch route changes
+    busMicrophone.on((payload) => {
+        micRequesting.value = payload.requesting ?? micRequesting.value;
+    });
+
+    // watch route changes to sync active navigation button state
     watch(() => route.name, syncWithRoute);
 
-    // Sync with current route on mount
-    onMounted(syncWithRoute);
+    onMounted(() => {
+        syncWithRoute();
+    });
 </script>
 
 <style lang="scss" scoped>

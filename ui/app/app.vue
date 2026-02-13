@@ -1,7 +1,7 @@
 <template>
     <div id="app" :style="backgroundStyle">
         <CaptureView
-            :show-waves="$route.name === NAVIGATION.AUDIO.name"
+            :show-waves="$route.name === ROUTE.AUDIO.name"
             :show-circles="!agentStore.backgroundImages">
             <NuxtPage />
         </CaptureView>
@@ -10,7 +10,7 @@
 
 <script setup>
     import { preloadRouteComponents } from '#app';
-    import { NAVIGATION } from '@/constants/navigation';
+    import { ROUTE } from '@/constants/route';
     import CaptureView from '@/views/CaptureView.vue';
     import { useAgentStore } from '@/stores/agent';
 
