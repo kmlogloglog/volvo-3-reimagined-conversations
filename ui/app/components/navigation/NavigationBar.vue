@@ -3,28 +3,23 @@
         <nav class="navigation-groups">
             <NavigationBarAudioButton
                 ref="recordingControlsRef"
-                :is-recording="isAudioRecording"
                 :active="isActive(NAVIGATION.AUDIO.id)"
-                :loading="(isActive(NAVIGATION.UPLOAD.id) && connecting) || micRequesting"
                 :disabled="micRequesting || (isActive(NAVIGATION.AUDIO.id) && (connecting || isLoading))"
+                :is-recording="isAudioRecording"
+                :loading="(isActive(NAVIGATION.AUDIO.id) && connecting) || micRequesting"
                 @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
             <NavigationBarButton
-                :icon="NAVIGATION.CHAT.icon"
                 :active="isActive(NAVIGATION.CHAT.id)"
                 :disabled="micRequesting || isLoading"
+                :icon="NAVIGATION.CHAT.icon"
                 :loading="isActive(NAVIGATION.CHAT.id) && connecting"
                 @click="setActive(NAVIGATION.CHAT)" />
             <NavigationBarButton
                 class="navigation-photo"
-                :icon="NAVIGATION.PHOTO.icon"
                 :active="isActive(NAVIGATION.PHOTO.id)"
                 :disabled="micRequesting || isLoading"
+                :icon="NAVIGATION.PHOTO.icon"
                 @click="setActive(NAVIGATION.PHOTO)" />
-            <NavigationBarButton
-                :icon="NAVIGATION.UPLOAD.icon"
-                :active="isActive(NAVIGATION.UPLOAD.id)"
-                :disabled="micRequesting || isLoading"
-                @click="setActive(NAVIGATION.UPLOAD)" />
         </nav>
     </div>
 </template>
@@ -65,7 +60,7 @@
 
     const route = useRoute();
 
-    const emit = defineEmits([EMITS.NAVIGATION_CHANGE, EMITS.OPEN_PHOTO_CAPTURE, EMITS.OPEN_FILE_UPLOAD]);
+    const emit = defineEmits([EMITS.NAVIGATION_CHANGE, EMITS.OPEN_PHOTO_CAPTURE]);
 
     const recordingControlsRef = ref(props.forceActive ? props.forceActive : null);
 

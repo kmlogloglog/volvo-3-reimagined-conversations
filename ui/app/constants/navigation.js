@@ -14,9 +14,4 @@ export const NAVIGATION = Object.freeze({
         id: 'photo',
         icon: 'icon-photo',
     },
-    UPLOAD: {
-        name: 'UploadView',
-        id: 'upload',
-        icon: 'icon-upload',
-    },
 });

@@ -45,7 +45,6 @@
     const emit = defineEmits([
         EMITS.NAVIGATION_CHANGE,
         EMITS.PHOTO_CAPTURED,
-        EMITS.FILES_UPLOADED,
         EMITS.CLOSE,
     ]);
 
@@ -60,7 +59,7 @@
     }
 
     const isFullHeightPage = computed(() => {
-        return [NAVIGATION.PHOTO.name, NAVIGATION.UPLOAD.name].includes(route.name);
+        return [NAVIGATION.PHOTO.name].includes(route.name);
     });
 
 </script>

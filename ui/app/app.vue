@@ -18,7 +18,6 @@
     preloadRouteComponents('/ChatView');
     preloadRouteComponents('/AudioView');
     preloadRouteComponents('/PhotoView');
-    preloadRouteComponents('/UploadView');
 
     const agentStore = useAgentStore();
     const { backgroundStyle } = useBackground(agentStore);
