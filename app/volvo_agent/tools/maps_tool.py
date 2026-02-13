@@ -43,6 +43,8 @@ def maps_tool(location: str) -> dict:
     retailer_name = "Volvo Studio Stockholm"
     address = "Kungsträdgårdsgatan 10, 111 47 Stockholm, Sweden"
     retailer_id = "ChIJ7T2iO1ydX0YRr1o4J5h46OQ"
+    lat = 59.330833
+    lng = 18.073611
 
     if api_key:
         try:
@@ -60,6 +62,8 @@ def maps_tool(location: str) -> dict:
                     retailer_name = first_result.get('name', retailer_name)
                     address = first_result.get('vicinity', address)
                     retailer_id = first_result.get('place_id', retailer_id)
+                    lat = first_result['geometry']['location']['lat']
+                    lng = first_result['geometry']['location']['lng']
         except Exception as e:
             logger.error(f"Error fetching from Google Maps API: {e}")
 
@@ -72,9 +76,11 @@ def maps_tool(location: str) -> dict:
                 "retailer_name": retailer_name,
                 "address": address,
                 "retailer_id": retailer_id,
+                "retailer_lat": float(lat),
+                "retailer_lng": float(lng),
             },
         },
-        "agent_context": f"Found closest retailer: {retailer_name} at {address} (ID: {retailer_id}). Tell the user you found this retailer and explicitly ask for their preferred date and time to check availability.",
+        "agent_context": f"Found closest retailer: {retailer_name} at {address} (ID: {retailer_id}, Lat: {lat}, Lng: {lng}). Save the exact retailer_name, address, retailer_lat, and retailer_lng to pass them into the book_test_drive_tool later, explicitly ask for the user's preferred date and time to check availability.",
     }
 
 # Create the tool instance
