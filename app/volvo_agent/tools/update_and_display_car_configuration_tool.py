@@ -98,16 +98,10 @@ def update_and_display_car_configuration(
     Returns:
         A dictionary containing the UI action to display the images and the agent context.
     """
-    if isinstance(car_config, dict):
-        try:
-            car_config = CarConfiguration(**car_config)
-        except Exception as e:
-            logger.error(f"Error parsing car_config: {e}")
-            return {"agent_context": f"Invalid configuration details provided. {str(e)}"}
-            
     # Validate phase
-    if not isinstance(phase, int) or not (1 <= phase <= 5):
-        raise ValueError("Phase must be an integer between 1 and 5.")
+    if not (1 <= phase <= 5):
+        logger.error(f"Invalid phase: {phase}")
+        phase = -1
 
     model_name = car_config.model
     exterior = car_config.exterior
@@ -144,7 +138,9 @@ def update_and_display_car_configuration(
         caption = f"{caption} in {exterior_display_name} with {wheels_display_name} wheels and {interior_display_name}"
     elif display_type == "EXTERIOR":
         images.extend(image_data.get("exterior_images", {}).values())
-        caption = f"{caption} in {exterior_display_name} with {wheels_display_name} wheels"
+        caption = (
+            f"{caption} in {exterior_display_name} with {wheels_display_name} wheels"
+        )
     elif display_type == "INTERIOR":
         images.extend(image_data.get("interior_images", {}).values())
         caption = f"{caption} with {interior_display_name}"
@@ -170,12 +166,14 @@ def update_and_display_car_configuration(
         "agent_context": f"Configuration updated to {car_config.model} {car_config.exterior} {car_config.interior} {car_config.wheels} and images displayed to the user.",
     }
 
-    if display_type == "NONE" or phase is None:
+    if display_type == "NONE" or phase == -1:
         payload = {
             "agent_context": f"Configuration updated to {car_config.model} {car_config.exterior} {car_config.interior} {car_config.wheels} and no images displayed to the user.",
         }
-    
+
     return payload
 
 
-update_and_display_car_configuration_tool = FunctionTool(update_and_display_car_configuration)
+update_and_display_car_configuration_tool = FunctionTool(
+    update_and_display_car_configuration
+)
