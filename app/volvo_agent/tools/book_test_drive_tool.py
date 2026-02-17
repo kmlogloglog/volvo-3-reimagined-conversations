@@ -1,11 +1,12 @@
 import logging
 
-from google.adk.tools import FunctionTool
+from google.adk.tools import FunctionTool, ToolContext
 
 logger = logging.getLogger(__name__)
 
 
 def book_test_drive(
+    tool_context: ToolContext,
     first_name: str,
     email: str,
     location: str,
@@ -29,15 +30,16 @@ def book_test_drive(
     the date/time for availability, providing only the necessary arguments.
 
     Args:
+        tool_context: The tool context containing session state.
         first_name: The user's first name. Empty string if just checking availability.
         email: The user's email address. Empty string if just checking availability.
         location: The user's general location.
         preferred_date_time: The user's preferred date and time for the test drive.
-        retailer_name: The name of the specific retailer.
-        retailer_address: The exact physical address of the specific retailer.
-        retailer_id: The ID of the retailer obtained from the maps tool.
-        retailer_lat: Latitude of the retailer obtained from the maps tool.
-        retailer_lng: Longitude of the retailer obtained from the maps tool.
+        retailer_name: (Optional) The name of the specific retailer.
+        retailer_address: (Optional) The exact physical address of the specific retailer.
+        retailer_id: (Optional) The ID of the retailer.
+        retailer_lat: (Optional) Latitude of the retailer.
+        retailer_lng: (Optional) Longitude of the retailer.
         height: (Optional) The user's height for seat pre-adjustment.
         music_preference: (Optional) The user's preferred music.
         ambience_preference: (Optional) The user's preferred mood lighting.
@@ -46,7 +48,16 @@ def book_test_drive(
     Returns:
         A dictionary containing the UI action for the booking confirmation.
     """
-    logger.info(f"Test drive action '{action}' for {first_name} ({email}) at {retailer_name} ({retailer_address}) at {preferred_date_time}")
+    # Try to load retailer from state if not provided
+    saved_retailer = tool_context.state.get("selected_retailer", {})
+    
+    final_retailer_name = saved_retailer.get("name") or retailer_name
+    final_retailer_address = saved_retailer.get("address") or retailer_address
+    final_retailer_id = saved_retailer.get("id") or retailer_id
+    final_retailer_lat = saved_retailer.get("lat") or retailer_lat
+    final_retailer_lng = saved_retailer.get("lng") or retailer_lng
+
+    logger.info(f"Test drive action '{action}' for {first_name} ({email}) at {final_retailer_name} ({final_retailer_address}) at {preferred_date_time}")
 
     if action == "check_availability":
         # Mock logic to check availability
@@ -58,21 +69,21 @@ def book_test_drive(
                 "data": {
                     "location": location,
                     "date_time": preferred_date_time,
-                    "retailer_name": retailer_name,
-                    "retailer_address": retailer_address,
-                    "retailer_id": retailer_id,
-                    "retailer_lat": float(retailer_lat) if retailer_lat else 0.0,
-                    "retailer_lng": float(retailer_lng) if retailer_lng else 0.0,
+                    "retailer_name": final_retailer_name,
+                    "retailer_address": final_retailer_address,
+                    "retailer_id": final_retailer_id,
+                    "retailer_lat": float(final_retailer_lat) if final_retailer_lat else 0.0,
+                    "retailer_lng": float(final_retailer_lng) if final_retailer_lng else 0.0,
                     "available": True,
                 },
             },
-            "agent_context": f"The requested date and time ({preferred_date_time}) is available! You should now ask the user for their first name and email to finalize the booking.",
+            "agent_context": f"The requested date and time ({preferred_date_time}) is available at {final_retailer_name}! Confirm this explicitly with the user as 'Date, Time' (e.g. 'Monday 12th, 10:00'). Then ask for their first name and email to finalize the booking.",
         }
 
     # Otherwise action == "book"
     # [Future] Perform actual API call to backend/CRM here.
 
-    agent_context_str = f"The test drive has been successfully booked in the backend. Confirm this with the user. The user's collected details were: Name: {first_name}, Email: {email}, Location: {location}, Retailer: {retailer_name}, Address: {retailer_address}, Coordinates: {retailer_lat}, {retailer_lng}, Time: {preferred_date_time}, Height: {height}, Music: {music_preference}."
+    agent_context_str = f"The test drive has been successfully booked in the backend. Confirm this with the user. The booking is for {preferred_date_time}. Make sure to state the date and time clearly (e.g. 'Monday 12th, 10:00'). The user's collected details were: Name: {first_name}, Email: {email}, Retailer: {final_retailer_name}, Address: {final_retailer_address}, Coordinates: {final_retailer_lat}, {final_retailer_lng}, Height: {height}, Music: {music_preference}."
 
     return {
         "ui_action": {
@@ -83,11 +94,11 @@ def book_test_drive(
                 "email": email,
                 "location": location,
                 "date_time": preferred_date_time,
-                "retailer_name": retailer_name,
-                "retailer_address": retailer_address,
-                "retailer_id": retailer_id,
-                "retailer_lat": float(retailer_lat) if retailer_lat else 0.0,
-                "retailer_lng": float(retailer_lng) if retailer_lng else 0.0,
+                "retailer_name": final_retailer_name,
+                "retailer_address": final_retailer_address,
+                "retailer_id": final_retailer_id,
+                "retailer_lat": float(final_retailer_lat) if final_retailer_lat else 0.0,
+                "retailer_lng": float(final_retailer_lng) if final_retailer_lng else 0.0,
                 "height": height,
                 "music_preference": music_preference,
                 "ambience_preference": ambience_preference,

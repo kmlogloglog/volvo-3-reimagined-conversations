@@ -1,43 +1,40 @@
 import logging
 import os
 import googlemaps
-from google.cloud import secretmanager
 
-from google.adk.tools import FunctionTool
+from google.adk.tools import FunctionTool, ToolContext
+from ..utils.utils import get_secret
 
 logger = logging.getLogger(__name__)
 
-def get_secret(secret_id: str, version_id: str = "latest") -> str | None:
-    """Fetch the secret payload from GCP Secret Manager."""
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", "vml-map-xd-volvo")
-    try:
-        client = secretmanager.SecretManagerServiceClient()
-        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-        response = client.access_secret_version(request={"name": name})
-        return response.payload.data.decode("UTF-8")
-    except Exception as e:
-        logger.error(f"Failed to fetch secret {secret_id}: {e}")
-        return None
+# Initialize Google Maps Client at module level
+api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+if not api_key:
+    api_key = get_secret("GOOGLE_MAPS_API_KEY")
 
-def maps_tool(location: str) -> dict:
+gmaps_client = None
+if api_key:
+    try:
+        gmaps_client = googlemaps.Client(key=api_key)
+    except Exception as e:
+        logger.error(f"Failed to initialize Google Maps client: {e}")
+
+def maps_tool(tool_context: ToolContext, location: str) -> dict:
     """
     Finds the closest Volvo retailer to the specified location.
 
     Use this tool when the user provides their location or city to find where they can
-    take a test drive.
+    take a test drive. Do not call this tool with a guessed location. Only use this tool
+    if the user has explicitly stated their location.
 
     Args:
+        tool_context: The tool context.
         location: The user's city or location (e.g. "Gothenburg", "London").
 
     Returns:
         A dictionary containing the UI action to display the map/retailer info.
     """
     logger.info(f"Tool maps_tool called with location: {location}")
-    
-    # Try getting API key from environment first (local override), then Secret Manager.
-    api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
-    if not api_key:
-        api_key = get_secret("GOOGLE_MAPS_API_KEY")
     
     # Defaults in case the API is not set up correctly
     retailer_name = "Volvo Studio Stockholm"
@@ -46,13 +43,12 @@ def maps_tool(location: str) -> dict:
     lat = 59.330833
     lng = 18.073611
 
-    if api_key:
+    if gmaps_client:
         try:
-            gmaps = googlemaps.Client(key=api_key)
-            geocode_result = gmaps.geocode(location)
+            geocode_result = gmaps_client.geocode(location)
             if geocode_result:
                 latlng = geocode_result[0]['geometry']['location']
-                places_result = gmaps.places_nearby(
+                places_result = gmaps_client.places_nearby(
                     location=latlng,
                     radius=50000,
                     keyword="Volvo cars dealer"
@@ -67,6 +63,16 @@ def maps_tool(location: str) -> dict:
         except Exception as e:
             logger.error(f"Error fetching from Google Maps API: {e}")
 
+    # Save to session state
+    tool_context.state["selected_retailer"] = {
+        "name": retailer_name,
+        "address": address,
+        "id": retailer_id,
+        "lat": float(lat),
+        "lng": float(lng)
+    }
+    logger.info(f"Saved selected_retailer to state: {tool_context.state['selected_retailer']}")
+
     return {
         "ui_action": {
             "action": "display_component",
@@ -80,8 +86,9 @@ def maps_tool(location: str) -> dict:
                 "retailer_lng": float(lng),
             },
         },
-        "agent_context": f"Found closest retailer: {retailer_name} at {address} (ID: {retailer_id}, Lat: {lat}, Lng: {lng}). Save the exact retailer_name, address, retailer_lat, and retailer_lng to pass them into the book_test_drive_tool later, explicitly ask for the user's preferred date and time to check availability.",
+        "agent_context": f"Found closest retailer: {retailer_name} at {address}. The retailer details have been saved to the session. Now ask the user for their preferred date and time to check availability.",
     }
 
 # Create the tool instance
 maps_tool_instance = FunctionTool(maps_tool)
+
