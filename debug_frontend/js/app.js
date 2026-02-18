@@ -7,8 +7,7 @@
  */
 
 // Connect the server with a WebSocket connection
-// Connect the server with a WebSocket connection
-let userId = "demo-user";
+let userId = "demo-user-" + Math.random().toString(36).substring(7);
 let sessionId = "demo-session-" + Math.random().toString(36).substring(7);
 let websocket = null;
 let is_audio = false;
@@ -75,11 +74,15 @@ function getWebSocketUrl() {
   // Add proactivity option if checked
   if (enableProactivityCheckbox && enableProactivityCheckbox.checked) {
     params.append("proactivity", "true");
+  } else {
+    params.append("proactivity", "false");
   }
 
   // Add affective dialog option if checked
   if (enableAffectiveDialogCheckbox && enableAffectiveDialogCheckbox.checked) {
     params.append("affective_dialog", "true");
+  } else {
+    params.append("affective_dialog", "false");
   }
 
   const queryString = params.toString();

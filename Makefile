@@ -98,8 +98,7 @@ build-ui: ## Build the UI
 run-agent: # Run the agent with using the main (same as in Cloud Run) - Runs on port 8080
 	@echo "----------------------------------------------------------"
 	@echo "Debug UI available at: http://127.0.0.1:8080/debug"
-	@echo "Old UI available at: http://127.0.0.1:8080/old-ui"
-	@echo "New UI available at: http://127.0.0.1:8080/"
+	@echo "Nuxt UI available at: http://127.0.0.1:8080/"
 	@echo "----------------------------------------------------------"
 	uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8080
 

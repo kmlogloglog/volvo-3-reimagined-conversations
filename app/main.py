@@ -82,18 +82,10 @@ runner = Runner(
 # ========================================
 
 
-@app.get("/old_ui")
-async def root() -> FileResponse:
-    """Serve the Voice First UI."""
-    return FileResponse(Path(__file__).parent.parent / "frontend" / "index.html")
-
-
 @app.get("/debug")
 async def debug_ui() -> FileResponse:
     """Serve the a debug UI to see the different payloads."""
-    return FileResponse(
-        Path(__file__).parent.parent / "frontend" / "debug" / "index.html"
-    )
+    return FileResponse(Path(__file__).parent.parent / "debug_frontend" / "index.html")
 
 
 # ========================================
@@ -106,8 +98,8 @@ async def websocket_endpoint(
     websocket: WebSocket,
     user_id: str,
     session_id: str,
-    proactivity: bool = False,
-    affective_dialog: bool = False,
+    proactivity: bool = True,
+    affective_dialog: bool = True,
 ) -> None:
     """WebSocket endpoint for bidirectional streaming with ADK.
 

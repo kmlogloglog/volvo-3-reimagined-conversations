@@ -1,9 +1,9 @@
-import difflib
 import json
 import logging
 import os
 from pathlib import Path
-from typing import Any
+
+from thefuzz import process
 
 from google.cloud import secretmanager
 
@@ -30,6 +30,16 @@ IMAGES_FILE = "car_images.json"
 
 
 def load_json(path: Path, filename: str) -> dict:
+    """
+    Load JSON from file
+
+    Args:
+        path (Path): The path to the file.
+        filename (str): The name of the file.
+
+    Returns:
+        dict: The JSON data.
+    """
     filepath = path / filename
     if not filepath.exists():
         logger.error(f"File not found at {filepath}")
@@ -43,56 +53,43 @@ def load_json(path: Path, filename: str) -> dict:
 
 
 def load_car_configurations() -> dict:
+    """
+    Load car configurations from JSON file
+
+    Returns:
+        dict: The car configurations.
+    """
     return load_json(path=KNOWLEDGE_ROOT, filename=CONFIG_FILE)
 
 
 def load_car_images() -> dict:
+    """
+    Load car images from JSON file
+
+    Returns:
+        dict: The car images.
+    """
     return load_json(path=KNOWLEDGE_ROOT, filename=IMAGES_FILE)
 
 
-def fuzzy_match(
-    query: str, items: dict[str, Any], threshold: float = 0.6
-) -> tuple[str, str] | None:
+def fuzzy_match(selected_option: str, valid_options: list[str]) -> str:
     """
-    Matches a query string against a dictionary where keys are IDs and values are dicts
-    containing a "display_name" property.
+    Fuzzy match tries to match the selected option to the closest valid option.
 
-    Returns (key, display_name) if a match is found.
+    Args:
+        selected_option (str): The value to match.
+        valid_options (list[str]): The valid options to match against.
+
+    Returns:
+        str: The closest option to the selection.
     """
-    if not query:
-        return None
-
-    query_norm = query.lower().strip()
-
-    # 1. Exact match on keys
-    if query_norm in items:
-        return query_norm, items[query_norm].get("display_name", query_norm)
-
-    # 2. Exact match on display names (normalized)
-    for key, data in items.items():
-        if data.get("display_name", "").lower() == query_norm:
-            return key, data.get("display_name")
-
-    # 3. Fuzzy match against keys
-    keys = list(items.keys())
-    matches = difflib.get_close_matches(query_norm, keys, n=1, cutoff=threshold)
-    if matches:
-        key = matches[0]
-        return key, items[key].get("display_name", key)
-
-    # 4. Fuzzy match against display names
-    # Create a reverse map for lookup: display_name_lower -> key
-    name_map = {}
-    for key, data in items.items():
-        dn = data.get("display_name", "")
-        if dn:
-            name_map[dn.lower()] = key
-
-    params = list(name_map.keys())
-    matches = difflib.get_close_matches(query_norm, params, n=1, cutoff=threshold)
-    if matches:
-        matched_name = matches[0]
-        key = name_map[matched_name]
-        return key, items[key].get("display_name")
-
-    return None
+    # We assume selected_option is not empty
+    assert selected_option
+    match, score = process.extractOne(selected_option, valid_options)
+    if score >= 75:  # threshold for fuzzy matching
+        logger.info(f"Fuzzy matched '{selected_option}' to '{match}' (score: {score})")
+    else:
+        logger.warning(
+            f"Fuzzy matched '{selected_option}' to '{match}' with low confidence (score: {score})"
+        )
+    return match
