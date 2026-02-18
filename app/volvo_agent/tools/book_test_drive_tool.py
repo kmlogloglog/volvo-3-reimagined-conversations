@@ -1,4 +1,5 @@
 import logging
+import random
 from google.adk.tools import FunctionTool, ToolContext
 
 from ..schemas.test_drive import Retailer, UserInfo, AppointmentSlot
@@ -41,13 +42,43 @@ def book_test_drive(
 
     # Mock Availability Check
     # In a real app, this would query the retailer's booking system
-    is_available = True 
+    # Randomize availability to test both success and failure flows
+    is_available = random.choice([True, False]) 
 
     if not is_available:
-        # If not available, return alternative slots
-        return {
-            "agent_context": f"The slot {appointment_slot.date} at {appointment_slot.time} is not available at {retailer.name}."
-        }
+        # Calculate alternative slots based on the USER'S requested slot
+        # Mock logic: +1 hour, +2 hours, +1 day relative to the requested time
+        try:
+            from datetime import datetime, timedelta
+            
+            # Parse requested date and time
+            # Assuming format YYYY-MM-DD and HH:MM
+            requested_dt = datetime.strptime(f"{appointment_slot.date} {appointment_slot.time}", "%Y-%m-%d %H:%M")
+            
+            alternatives = []
+            # Option 1: Same day, +1 hour
+            alt1 = requested_dt + timedelta(hours=1)
+            alternatives.append(f"{alt1.strftime('%Y-%m-%d')} at {alt1.strftime('%H:%M')}")
+            
+            # Option 2: Same day, +2 hours
+            alt2 = requested_dt + timedelta(hours=2)
+            alternatives.append(f"{alt2.strftime('%Y-%m-%d')} at {alt2.strftime('%H:%M')}")
+            
+            # Option 3: Next day, same time
+            alt3 = requested_dt + timedelta(days=1)
+            alternatives.append(f"{alt3.strftime('%Y-%m-%d')} at {alt3.strftime('%H:%M')}")
+            
+            suggestions = ", ".join(alternatives)
+            
+            return {
+                "agent_context": f"The slot {appointment_slot.date} at {appointment_slot.time} is not available at {retailer.name}. "
+                f"Suggested alternative slots are: {suggestions}.",
+            }
+        except ValueError:
+            # Fallback if parsing fails (e.g. invalid date/time format)
+            return {
+                "agent_context": f"The slot {appointment_slot.date} at {appointment_slot.time} is not available at {retailer.name}."
+            }
 
     # If available, confirm booking
     payload = {

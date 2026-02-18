@@ -46,7 +46,8 @@ def find_retailer(tool_context: ToolContext, location: Location) -> dict:
     query = f"{location.city}, {location.nation}"
     if location.street:
         query = f"{location.street}, {query}"
-
+    
+    retailer_phone = None
     if gmaps_client:
         try:
             # First try geocoding the specific query
@@ -65,8 +66,18 @@ def find_retailer(tool_context: ToolContext, location: Location) -> dict:
                     retailer_id = first_result.get('place_id', retailer_id)
                     lat = first_result['geometry']['location']['lat']
                     lng = first_result['geometry']['location']['lng']
+
+                    # Fetch phone number for the found retailer
+                    try:
+                        place_details = gmaps_client.place(place_id=retailer_id, fields=['formatted_phone_number'])
+                        if place_details and 'result' in place_details:
+                            retailer_phone = place_details['result'].get('formatted_phone_number')
+                    except Exception as e:
+                        logger.error(f"Error fetching place details: {e}")
         except Exception as e:
             logger.error(f"Error fetching from Google Maps API: {e}")
+    else:
+        logger.warning("Google Maps client is not initialized. Using default retailer data.")
 
     # Construct Retailer object
     retailer = Retailer(
@@ -78,12 +89,13 @@ def find_retailer(tool_context: ToolContext, location: Location) -> dict:
             street=address,
             lat=lat,
             lng=lng
-        )
+        ),
+        phone=retailer_phone
     )
 
     # Save to session state
-    tool_context.state["selected_retailer"] = retailer.model_dump()
-    logger.info(f"Saved selected_retailer to state: {tool_context.state['selected_retailer']}")
+    tool_context.state["user:selected_retailer"] = retailer.model_dump()
+    logger.info(f"Saved selected_retailer to state: {tool_context.state['user:selected_retailer']}")
 
     return {
         "ui_action": {
