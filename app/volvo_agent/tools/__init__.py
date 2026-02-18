@@ -1,4 +1,4 @@
-from .maps_tool import maps_tool_instance as maps_tool
+from .find_retailer_tool import find_retailer_tool
 from .save_memory_tool import save_memory_tool
 from .book_test_drive_tool import book_test_drive_tool
 from .update_and_display_car_configuration_tool import (
@@ -6,7 +6,7 @@ from .update_and_display_car_configuration_tool import (
 )
 
 __all__ = [
-    "maps_tool",
+    "find_retailer_tool",
     "save_memory_tool",
     "book_test_drive_tool",
     "update_and_display_car_configuration_tool",

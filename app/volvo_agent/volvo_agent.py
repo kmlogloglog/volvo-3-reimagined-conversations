@@ -7,7 +7,7 @@ from google.adk.tools.load_memory_tool import load_memory_tool
 
 from .config.prompts import PROMPT
 from .tools import (
-    maps_tool,
+    find_retailer_tool,
     save_memory_tool,
     update_and_display_car_configuration_tool,
     book_test_drive_tool
@@ -28,7 +28,7 @@ volvo_agent = LlmAgent(
         load_memory_tool,
         save_memory_tool,
         update_and_display_car_configuration_tool,
-        maps_tool,
+        find_retailer_tool,
         book_test_drive_tool,
     ],
 )

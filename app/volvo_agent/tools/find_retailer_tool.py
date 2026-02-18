@@ -19,7 +19,7 @@ if api_key:
     except Exception as e:
         logger.error(f"Failed to initialize Google Maps client: {e}")
 
-def maps_tool(tool_context: ToolContext, location: str) -> dict:
+def find_retailer(tool_context: ToolContext, location: str) -> dict:
     """
     Finds the closest Volvo retailer to the specified location.
 
@@ -34,7 +34,7 @@ def maps_tool(tool_context: ToolContext, location: str) -> dict:
     Returns:
         A dictionary containing the UI action to display the map/retailer info.
     """
-    logger.info(f"Tool maps_tool called with location: {location}")
+    logger.info(f"Tool find_retailer called with location: {location}")
     
     # Defaults in case the API is not set up correctly
     retailer_name = "Volvo Studio Stockholm"
@@ -86,9 +86,8 @@ def maps_tool(tool_context: ToolContext, location: str) -> dict:
                 "retailer_lng": float(lng),
             },
         },
-        "agent_context": f"Found closest retailer: {retailer_name} at {address}. The retailer details have been saved to the session. Now ask the user for their preferred date and time to check availability.",
+        "agent_context": f"Found closest retailer: {retailer_name} at {address}. The retailer details have been saved to the session.",
     }
 
 # Create the tool instance
-maps_tool_instance = FunctionTool(maps_tool)
-
+find_retailer_tool = FunctionTool(find_retailer)
