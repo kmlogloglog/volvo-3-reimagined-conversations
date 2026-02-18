@@ -1,14 +1,22 @@
 import { BUS } from '@/constants/bus.js';
 import { useEventBus } from '@vueuse/core';
 import { useAgentStore } from '@/stores/agent';
+import { storeToRefs } from 'pinia';
 
 export function useAgent(options = {}) {
     const { onLevelChange } = options;
 
     const agentStore = useAgentStore();
+    const { listening } = storeToRefs(agentStore); // reactive ref to store state
 
     const connectionBus = useEventBus(BUS.AGENT_CONNECTION);
     const microphoneBus = useEventBus(BUS.MICROPHONE);
+    const listeningBus = useEventBus(BUS.LISTENING); // add BUS.LISTENING to your constants
+
+    // Emit whenever listening changes in the store
+    watch(listening, (value) => {
+        listeningBus.emit({ listening: value });
+    });
 
     async function startAudio() {
         try {

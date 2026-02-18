@@ -1,14 +1,9 @@
 <template>
     <div
         class="view">
-        <BackgroundImagesCarousel
-            :src="agentStore.backgroundImages" />
         <div
             class="base-view">
-            <NuxtLoadingIndicator
-                color="var(--color-white)" />
             <div
-                v-show="!isLoading"
                 class="base-view-inner">
             </div>
         </div>
@@ -33,17 +28,17 @@
 <script setup>
     import { EMITS } from '@/constants/emits.js';
     import { useAgentStore } from '@/stores/agent';
-    import BackgroundImagesCarousel from '@/components/backgroundImage/BackgroundImagesCarousel.vue';
     import AudioCaptureBlob from '@/components/animations/AudioCaptureBlob.vue';
     import AudioCaptureMeter from '@/components/animations/AudioCaptureMeter.vue';
     import FileUpload from '@/components/upload/FileUpload.vue';
     import { useAgent } from '@/composables/useAgent';
+    import { useEventBus } from '@vueuse/core';
+    import { BUS } from '@/constants/bus.js';
+    import { storeToRefs } from 'pinia';
 
     const agentStore = useAgentStore();
 
     const activeNavItem = ref(null);
-
-    const { isLoading } = useLoadingIndicator();
 
     function handleFileUploaded(files) {
         console.log('Files uploaded:', files);
@@ -54,6 +49,7 @@
     }
 
     const agent = useAgent();
+
     function handleMicrophoneClick(enabled) {
         if (enabled) {
             agent.startAudio();
@@ -63,6 +59,22 @@
 
         agent.stopAudio();
     }
+
+    const busConnection = useEventBus(BUS.AGENT_CONNECTION);
+
+    const isConnected = ref(false);
+
+    busConnection.on(async(payload) => {
+        isConnected.value = !payload.connecting && payload.connected;
+    });
+
+    const { listening: isListening } = storeToRefs(agentStore);
+
+    watch([isConnected, isListening], ([connectedVal, listeningVal]) => {
+        if (connectedVal && listeningVal) {
+            agent.sendMessage('Introduce yourself! If you have introduced yourself already, do not introduce yourself again, but say something new to keep the conversation going.');
+        }
+    });
 
 </script>
 

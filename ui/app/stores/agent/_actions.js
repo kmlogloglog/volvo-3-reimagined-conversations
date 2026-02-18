@@ -2,8 +2,14 @@ import { AGENT } from '@/constants/agent.js';
 import { BUS } from '@/constants/bus.js';
 import { useEventBus } from '@vueuse/core';
 
+const log = {
+    info: (label, ...args) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
+    success: (label, ...args) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
+    warn: (label, ...args) => console.warn(`%c${label}`, 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
+    error: (label, ...args) => console.error(`%c${label}`, 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', ...args),
+};
+
 export default {
-    // Helper to convert Float32 to Int16 PCM
     float32ToInt16(float32) {
         const int16 = new Int16Array(float32.length);
         for (let i = 0; i < float32.length; i++) {
@@ -45,7 +51,6 @@ export default {
         const msg = this.conversation.find(m => m.id === this.currentUserMessageId);
         if (msg && msg.content) {
             msg.content.text = text;
-
             msg.finished = finished;
         }
     },
@@ -59,7 +64,6 @@ export default {
     },
 
     handleTextResponse(text, finished = false) {
-        // Create new message if no current message ID exists
         if (!this.currentMessageId) {
             this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
             const newMsg = {
@@ -69,7 +73,6 @@ export default {
                 timestamp: new Date(),
                 finished,
             };
-
             this.addMessage(newMsg);
         }
 
@@ -77,17 +80,12 @@ export default {
 
         if (msg && msg.content) {
             const currentText = msg.content.text || '';
-
             msg.finished = finished;
 
-            // Prevent duplicate text appending if the same text is received again
-            if (currentText.endsWith(text) && text.length > 1) {
-                return;
-            }
+            if (currentText.endsWith(text) && text.length > 1) return;
             msg.content.text = `${currentText}${text}`;
         }
 
-        // Clear currentMessageId when message is finished to allow new messages
         if (finished) {
             this.currentMessageId = null;
         }
@@ -101,19 +99,15 @@ export default {
         let textHandled = false;
         if (event.content && event.content.parts) {
             for (const part of event.content.parts) {
-                //handle audio parts
                 if (part.inlineData?.mimeType && typeof part.inlineData.mimeType === 'string' && part.inlineData.mimeType.startsWith('audio/pcm')) {
                     this.playAudioChunk(part.inlineData.data);
                 }
-                // handle text parts
                 if (part.text) {
                     this.handleTextResponse(part.text, part.finished);
                     textHandled = true;
                 }
-                // handle images
                 if (part.functionResponse?.response?.ui_action) {
                     const uiAction = part.functionResponse.response.ui_action;
-
                     if (uiAction.action === 'display_component') {
                         this.handleImageResponse(uiAction.data.images);
                     }
@@ -142,65 +136,49 @@ export default {
     },
 
     stopAudio() {
-        console.log('%cAUDIO STOP', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Stopping audio...');
+        log.info('AUDIO', 'Stopping...');
 
         this.listening = false;
         this.speaking = false;
 
-        // Stop and cleanup media stream
         if (this.mediaStream) {
-            this.mediaStream.getTracks().forEach(track => {
-                console.log('%cAUDIO TRACK', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Stopping track:', track.kind);
-                track.stop();
-            });
+            this.mediaStream.getTracks().forEach(track => track.stop());
             this.mediaStream = null;
         }
 
-        // Properly disconnect and cleanup audio recorder node
         if (this.audioRecorderNode) {
             try {
                 this.audioRecorderNode.disconnect();
                 this.audioRecorderNode.port.onmessage = null;
             } catch (e) {
-                console.warn('%cAUDIO WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Error disconnecting audio recorder node:', e);
+                log.warn('AUDIO', 'Error disconnecting recorder node:', e);
             }
             this.audioRecorderNode = null;
         }
 
-        // Cleanup audio player node
         if (this.audioPlayerNode) {
             try {
                 this.audioPlayerNode.disconnect();
                 this.audioPlayerNode.port.postMessage({ command: 'clear' });
             } catch (e) {
-                console.warn('%cAUDIO WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Error disconnecting audio player node:', e);
+                log.warn('AUDIO', 'Error disconnecting player node:', e);
             }
             this.audioPlayerNode = null;
         }
 
-        // Cancel animation frame
         if (this.animationId) {
             cancelAnimationFrame(this.animationId);
             this.animationId = null;
         }
 
-        // Close and cleanup audio contexts
         if (this.audioContext && this.audioContext.state !== 'closed') {
-            try {
-                this.audioContext.close();
-            } catch (e) {
-                console.warn('%cAUDIO WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Error closing audio context:', e);
-            }
+            try { this.audioContext.close(); } catch (e) { log.warn('AUDIO', 'Error closing audio context:', e); }
             this.audioContext = null;
             this.analyser = null;
         }
 
         if (this.recorderContext && this.recorderContext.state !== 'closed') {
-            try {
-                this.recorderContext.close();
-            } catch (e) {
-                console.warn('%cAUDIO WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Error closing recorder context:', e);
-            }
+            try { this.recorderContext.close(); } catch (e) { log.warn('AUDIO', 'Error closing recorder context:', e); }
             this.recorderContext = null;
             this.inputAnalyser = null;
         }
@@ -210,22 +188,13 @@ export default {
     },
 
     async connect() {
-        console.log('%cCONNECT', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'called');
-        if (this.connected) {
-            return Promise.resolve();
-        }
-
-        if (this.connectionPromise) {
-            return this.connectionPromise;
-        }
+        if (this.connected) return Promise.resolve();
+        if (this.connectionPromise) return this.connectionPromise;
 
         this.connecting = true;
 
-        // Emit bus event for connection start
         const connectionBus = useEventBus(BUS.AGENT_CONNECTION);
         connectionBus.emit({ connecting: true, connected: false });
-
-        console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'connecting to agent...');
 
         const { $router } = useNuxtApp();
 
@@ -233,61 +202,49 @@ export default {
             const userIdFromQuery = $router.currentRoute.value.query.user || 'demo-user';
             const sessionIdFromQuery = $router.currentRoute.value.query.session || crypto.randomUUID();
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const host = window.location.host;
-            const url = `${protocol}//${host}/ws/${userIdFromQuery}/${sessionIdFromQuery}`;
+            const url = `${protocol}//${window.location.host}/ws/${userIdFromQuery}/${sessionIdFromQuery}`;
 
-            console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Connecting to:', url);
-
+            log.info('WEBSOCKET', 'Connecting to:', url);
             this.websocket = new WebSocket(url);
 
             const timeoutId = setTimeout(() => {
                 if (this.websocket && this.websocket.readyState !== WebSocket.OPEN) {
-                    console.error('%cWEBSOCKET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'WebSocket connection timed out');
+                    log.error('WEBSOCKET', 'Connection timed out');
                     this.websocket.close();
                     this.connecting = false;
-
-                    // Emit bus event for timeout
                     connectionBus.emit({ connecting: false, connected: false });
-
                     reject(new Error('Connection timed out'));
                 }
             }, 5000);
 
             this.websocket.onopen = () => {
                 clearTimeout(timeoutId);
-                console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Connected');
+                log.success('WEBSOCKET', 'Connected');
                 this.connected = true;
                 this.connecting = false;
-
-                // Emit bus event for successful connection
                 connectionBus.emit({ connecting: false, connected: true });
-
                 resolve();
             };
 
             this.websocket.onerror = (err) => {
                 clearTimeout(timeoutId);
-                console.error('%cWEBSOCKET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', err);
+                log.error('WEBSOCKET', 'Error:', err);
                 this.connecting = false;
-
-                // Emit bus event for connection failure
                 connectionBus.emit({ connecting: false, connected: false });
             };
 
             this.websocket.onclose = (event) => {
                 clearTimeout(timeoutId);
-                console.log('%cWEBSOCKET', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Disconnected', event.code, event.reason);
+                log.warn('WEBSOCKET', `Disconnected: ${event.code} - ${event.reason}`);
 
                 if (!this.connected) {
                     this.connecting = false;
-                    // Emit bus event for connection failure
                     connectionBus.emit({ connecting: false, connected: false });
                     reject(new Error(`Connection failed or closed: ${event.code} - ${event.reason}`));
                 }
 
                 this.connected = false;
                 this.connecting = false;
-                // Emit bus event for disconnection
                 connectionBus.emit({ connecting: false, connected: false });
                 this.stopAudio();
                 this.connectionPromise = null;
@@ -299,7 +256,7 @@ export default {
                     const data = JSON.parse(event.data);
                     this.handleAgentEvent(data);
                 } catch (e) {
-                    console.error('%cWEBSOCKET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Error parsing WebSocket message:', e);
+                    log.error('WEBSOCKET', 'Error parsing message:', e);
                 }
             };
         });
@@ -308,45 +265,32 @@ export default {
     },
 
     disconnect() {
-        console.log('%cDISCONNECT', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'called');
+        log.warn('WEBSOCKET', 'Disconnecting...');
         if (this.websocket) {
             this.websocket.close();
             this.websocket = null;
         }
         this.stopAudio();
 
-        // Emit bus event for disconnection
         const connectionBus = useEventBus(BUS.AGENT_CONNECTION);
         connectionBus.emit({ connecting: false, connected: false });
     },
 
-    // Audio level monitoring - separate method that can be called from composable with callback
     startLevelMonitoring(onLevelChange = null) {
         if (!this.inputAnalyser || !this.analyser) return;
 
-        // Only start the draw function after everything is properly set up
         const inputDataArray = new Uint8Array(this.inputAnalyser.frequencyBinCount);
         const outputDataArray = new Uint8Array(this.analyser.frequencyBinCount);
 
         const draw = () => {
             this.animationId = requestAnimationFrame(draw);
-
-            // Get frequency data from both input and output analyzers
             this.inputAnalyser.getByteFrequencyData(inputDataArray);
             this.analyser.getByteFrequencyData(outputDataArray);
 
-            // Calculate levels for both input and output
-            const inputLevel = Math.round(
-                inputDataArray.reduce((a, b) => a + b, 0) / inputDataArray.length,
-            );
-            const outputLevel = Math.round(
-                outputDataArray.reduce((a, b) => a + b, 0) / outputDataArray.length,
-            );
+            const inputLevel = Math.round(inputDataArray.reduce((a, b) => a + b, 0) / inputDataArray.length);
+            const outputLevel = Math.round(outputDataArray.reduce((a, b) => a + b, 0) / outputDataArray.length);
 
-            // Use the highest level from either input or output
             this.audioLevel = Math.round(((Math.max(inputLevel, outputLevel)) / 255) * 1000) / 1000;
-
-            // Call optional callback if provided
             onLevelChange?.(this.audioLevel);
         };
 
@@ -354,43 +298,27 @@ export default {
     },
 
     async startAudio() {
-        console.log('%cAUDIO START', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Starting audio...');
+        if (this.listening || this.startingAudio) return;
 
-        if (this.listening || this.startingAudio) {
-            console.log('%cAUDIO START', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Audio already starting or started, returning early');
-            return;
-        }
-
+        log.info('AUDIO', 'Starting...');
         this.startingAudio = true;
 
         try {
-            // Request microphone access immediately, before connecting
             if (!this.mediaStream) {
-                console.log('%cMICROPHONE', 'background: linear-gradient(135deg, #5f27cd, #341f97); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Requesting microphone access...');
                 try {
                     this.mediaStream = await navigator.mediaDevices.getUserMedia({
-                        audio: {
-                            channelCount: 1,
-                            sampleRate: 16000,
-                            echoCancellation: true,
-                            noiseSuppression: true,
-                            autoGainControl: true,
-                        },
+                        audio: { channelCount: 1, sampleRate: 16000, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
                     });
-                    console.log('%cMICROPHONE', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Microphone access granted');
+                    log.success('MICROPHONE', 'Access granted');
                     this.micPermissionGranted = true;
-                    console.log('granted', this.micPermissionGranted);
                 } catch (err) {
-                    console.error('%cMICROPHONE ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Microphone access denied or error:', err);
+                    log.error('MICROPHONE', 'Access denied:', err);
                     this.micPermissionGranted = false;
-                    console.log('granted', this.micPermissionGranted);
                     throw err;
                 }
             }
 
-            // Initialize Player Context (24kHz) - always create fresh context
             if (!this.audioContext || this.audioContext.state === 'closed') {
-                console.log('%cAUDIO CONTEXT', 'background: linear-gradient(135deg, #3742fa, #273bd6); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Creating new audio context for playback...');
                 const ctxClass = window.AudioContext || window.webkitAudioContext;
                 this.audioContext = new ctxClass({ sampleRate: 24000 });
                 this.analyser = this.audioContext.createAnalyser();
@@ -398,16 +326,12 @@ export default {
 
                 try {
                     await this.audioContext.audioWorklet.addModule('/js/audio-modules/pcm-player-processor.js');
-                    console.log('%cWORKLET', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Player worklet loaded successfully');
                 } catch (e) {
-                    console.error('%cWORKLET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Failed to load player worklet:', e);
                     throw new Error(`Player worklet loading failed: ${e.message}`);
                 }
             }
 
-            // Initialize Recorder Context (16kHz) - always create fresh context
             if (!this.recorderContext || this.recorderContext.state === 'closed') {
-                console.log('%cRECORDER CONTEXT', 'background: linear-gradient(135deg, #3742fa, #273bd6); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Creating new recorder context...');
                 const ctxClass = window.AudioContext || window.webkitAudioContext;
                 this.recorderContext = new ctxClass({ sampleRate: 16000 });
                 this.inputAnalyser = this.recorderContext.createAnalyser();
@@ -415,36 +339,21 @@ export default {
 
                 try {
                     await this.recorderContext.audioWorklet.addModule('/js/audio-modules/pcm-recorder-processor.js');
-                    console.log('%cWORKLET', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Recorder worklet loaded successfully');
                 } catch (e) {
-                    console.error('%cWORKLET ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Failed to load recorder worklet:', e);
                     throw new Error(`Recorder worklet loading failed: ${e.message}`);
                 }
             }
 
-            // Resume contexts if suspended
-            if (this.audioContext.state === 'suspended') {
-                console.log('%cAUDIO CONTEXT', 'background: linear-gradient(135deg, #3742fa, #273bd6); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Resuming audio context...');
-                await this.audioContext.resume();
-            }
-            if (this.recorderContext.state === 'suspended') {
-                console.log('%cRECORDER CONTEXT', 'background: linear-gradient(135deg, #3742fa, #273bd6); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Resuming recorder context...');
-                await this.recorderContext.resume();
-            }
+            if (this.audioContext.state === 'suspended') await this.audioContext.resume();
+            if (this.recorderContext.state === 'suspended') await this.recorderContext.resume();
 
-            // Create fresh audio player node
             if (!this.audioPlayerNode) {
-                console.log('%cAUDIO PLAYER', 'background: linear-gradient(135deg, #2f3542, #222831); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Creating audio player node...');
                 this.audioPlayerNode = new AudioWorkletNode(this.audioContext, 'pcm-player-processor');
                 this.audioPlayerNode.connect(this.analyser);
                 this.analyser.connect(this.audioContext.destination);
             }
 
-            // Set up audio recorder only after mediaStream is confirmed available
             if (!this.audioRecorderNode && this.mediaStream) {
-                console.log('%cAUDIO RECORDER', 'background: linear-gradient(135deg, #2f3542, #222831); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Setting up audio recorder with MediaStream...');
-                console.log('%cSAMPLE RATE', 'background: linear-gradient(135deg, #747d8c, #57606f); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Recorder Context Sample Rate:', this.recorderContext.sampleRate);
-
                 try {
                     const micSource = this.recorderContext.createMediaStreamSource(this.mediaStream);
                     this.audioRecorderNode = new AudioWorkletNode(this.recorderContext, 'pcm-recorder-processor');
@@ -459,24 +368,18 @@ export default {
                     micSource.disconnect();
                     micSource.connect(this.audioRecorderNode);
                     micSource.connect(this.inputAnalyser);
-
-                    console.log('%cAUDIO RECORDER', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Audio recorder set up successfully');
                 } catch (err) {
-                    console.error('%cAUDIO RECORDER ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Failed to set up audio recorder:', err);
+                    log.error('AUDIO', 'Failed to set up recorder:', err);
                 }
             }
 
+            log.success('AUDIO', 'Started');
             this.listening = true;
-
-            // Always start level monitoring when audio starts
             this.startLevelMonitoring();
 
-            // Connect to WebSocket after audio setup is complete
-            if (!this.connected) {
-                await this.connect();
-            }
+            if (!this.connected) await this.connect();
         } catch (error) {
-            console.error('%cAUDIO START ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Failed to start audio:', error);
+            log.error('AUDIO', 'Failed to start:', error);
             this.listening = false;
             this.connecting = false;
             throw error;
@@ -494,19 +397,16 @@ export default {
         });
 
         this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
-
-        // Add a pending agent message with empty text
-        const newMsg = {
+        this.addMessage({
             id: this.currentMessageId,
             sender: AGENT.AGENT,
             content: { text: '' },
             timestamp: new Date(),
             finished: false,
-        };
-        this.addMessage(newMsg);
+        });
 
         if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
-            console.warn('%cWEBSOCKET WARNING', 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'WebSocket not open, message added to UI but not sent.');
+            log.warn('WEBSOCKET', 'Not open, message not sent.');
             return;
         }
 

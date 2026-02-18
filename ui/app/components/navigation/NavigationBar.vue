@@ -1,11 +1,6 @@
 <template>
     <ClientOnly>
         <nav class="navigation">
-            <NavigationBarAudioButton
-                :disabled="isBusy"
-                :is-recording="isAudioRecording"
-                :loading="isBusy && isAudioRecording"
-                @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
             <NavigationBarButton
                 :active="isChatActive"
                 :disabled="isBusy"
@@ -13,6 +8,11 @@
                 @click="handleChatClick">
                 <span :class="isChatActive ? `${ROUTE.CHAT.icon}-fill` : ROUTE.CHAT.icon" ></span>
             </NavigationBarButton>
+            <NavigationBarAudioButton
+                :disabled="isBusy"
+                :is-recording="isAudioRecording"
+                :loading="isBusy && isAudioRecording"
+                @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
         </nav>
     </ClientOnly>
 </template>
