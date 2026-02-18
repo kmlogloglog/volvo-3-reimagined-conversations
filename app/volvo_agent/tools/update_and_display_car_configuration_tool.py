@@ -84,6 +84,8 @@ def update_and_display_car_configuration(
 ) -> dict:
     """
     Updates the car configuration in the session state and optionally sends a payload to the frontend to display one or more images of the specified car configuration.
+    If the car configuration provided for a specific model is not found or the configuration is incomplete, it will default to the base configuration for the model.
+
     Args:
         tool_context: The tool context containing the session state.
         car_config: The car configuration that needs to be displayed.
@@ -96,7 +98,7 @@ def update_and_display_car_configuration(
             NONE - Do not display any images and just update the configuration in the session state
         phase: The specific phase of the car configuration process. Valid options are integers from 1 to 5.
     Returns:
-        A dictionary containing the UI action to display the images and the agent context.
+        A dictionary containing the UI action to display the images and the agent context mentioning the actual configuration displayed.
     """
     # Validate phase
     if not (1 <= phase <= 5):

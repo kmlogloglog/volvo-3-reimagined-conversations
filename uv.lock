@@ -830,6 +830,15 @@ grpc = [
 ]
 
 [[package]]
+name = "googlemaps"
+version = "4.10.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fe/26/bca4d737a9acea25e94c19940a780bbf0be64a691f7caf3a68467d3a5838/googlemaps-4.10.0.tar.gz", hash = "sha256:3055fcbb1aa262a9159b589b5e6af762b10e80634ae11c59495bd44867e47d88", size = 33056 }
+
+[[package]]
 name = "graphviz"
 version = "0.21"
 source = { registry = "https://pypi.org/simple" }
@@ -2451,6 +2460,7 @@ dependencies = [
     { name = "google-adk" },
     { name = "google-cloud-firestore" },
     { name = "google-cloud-iam" },
+    { name = "googlemaps" },
     { name = "gunicorn" },
     { name = "python-dotenv" },
     { name = "python-levenshtein" },
@@ -2481,6 +2491,7 @@ requires-dist = [
     { name = "google-adk", specifier = ">=1.20.0" },
     { name = "google-cloud-firestore", specifier = ">=2.14.0" },
     { name = "google-cloud-iam", specifier = ">=2.20.0" },
+    { name = "googlemaps", specifier = ">=4.10.0" },
     { name = "gunicorn", specifier = ">=21.2.0" },
     { name = "mypy", marker = "extra == 'lint'", specifier = "~=1.18.2" },
     { name = "python-dotenv", specifier = ">=1.0.0" },

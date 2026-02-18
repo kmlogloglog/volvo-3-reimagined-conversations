@@ -8,6 +8,7 @@ PROJECT_NUMBER   := 719852784419
 PROJECT_LOCATION := europe-west4
 SERVICE_ACCOUNT  := volvo-vaen-sa@$(PROJECT_ID).iam.gserviceaccount.com
 DOMAIN           := vml.com
+DEBUG_ROOT_ENDPOINT := True
 
 # Service Names
 AGENT_SERVICE_NAME := volvo-vaen
@@ -121,6 +122,8 @@ deploy-agent: ## Deploy Volvo Agent to Cloud Run
 	--set-env-vars SERVICE_ACCOUNT=$(SERVICE_ACCOUNT) \
 	--set-env-vars HOST_URL=${SERVICE_URL} \
 	--set-env-vars USE_FIRESTORE=True \
+	--set-env-vars DEBUG_ROOT_ENDPOINT=$(DEBUG_ROOT_ENDPOINT) \
+	--set-secrets GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY:latest \
 	--min 1
 	@echo "Adding IAP binding..."
 	gcloud beta iap web add-iam-policy-binding \

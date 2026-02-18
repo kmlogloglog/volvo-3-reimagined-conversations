@@ -43,15 +43,15 @@ class CarConfiguration(BaseModel):
 
         model_data = CAR_CONFIGS.get(self.model, {})
         base_config = model_data.get("base_configuration", {})
-        available_exteriors = model_data.get("exteriors", {})
-        available_interiors = model_data.get("interiors", {})
-        available_wheels = model_data.get("wheels", {})
+        available_exteriors = model_data.get("exteriors", {}).keys()
+        available_interiors = model_data.get("interiors", {}).keys()
+        available_wheels = model_data.get("wheels", {}).keys()
 
         # 1. Set default exteriors if not provided and validate/fuzzy match if provided
         if self.exterior is None:
             self.exterior = base_config.get("exteriors")
             if not self.exterior:
-                self.exterior = next(iter(available_exteriors))
+                self.exterior = base_config.get("exteriors")
         else:
             if self.exterior not in available_exteriors:
                 logger.error(
@@ -64,7 +64,7 @@ class CarConfiguration(BaseModel):
         if self.interior is None:
             self.interior = base_config.get("interiors")
             if not self.interior:
-                self.interior = next(iter(available_interiors))
+                self.interior = base_config.get("interiors")
         else:
             if self.interior not in available_interiors:
                 logger.error(
@@ -77,7 +77,7 @@ class CarConfiguration(BaseModel):
         if self.wheels is None:
             self.wheels = base_config.get("wheels")
             if not self.wheels:
-                self.wheels = next(iter(available_wheels))
+                self.wheels = base_config.get("wheels")
         else:
             if self.wheels not in available_wheels:
                 logger.error(

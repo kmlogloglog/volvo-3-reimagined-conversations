@@ -3,25 +3,10 @@ import logging
 import os
 from pathlib import Path
 
+from google.cloud import secretmanager
 from thefuzz import process
 
-from google.cloud import secretmanager
-
 logger = logging.getLogger(__name__)
-
-
-def get_secret(secret_id: str, version_id: str = "latest") -> str | None:
-    """Fetch the secret payload from GCP Secret Manager."""
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", "vml-map-xd-volvo")
-    try:
-        client = secretmanager.SecretManagerServiceClient()
-        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-        response = client.access_secret_version(request={"name": name})
-        return response.payload.data.decode("UTF-8")
-    except Exception as e:
-        logger.error(f"Failed to fetch secret {secret_id}: {e}")
-        return None
-
 
 # Define paths to knowledge base
 KNOWLEDGE_ROOT = Path(__file__).resolve().parent.parent / "knowledge"
@@ -93,3 +78,16 @@ def fuzzy_match(selected_option: str, valid_options: list[str]) -> str:
             f"Fuzzy matched '{selected_option}' to '{match}' with low confidence (score: {score})"
         )
     return match
+
+
+def get_secret(secret_id: str, version_id: str = "latest") -> str | None:
+    """Fetch the secret payload from GCP Secret Manager."""
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", "vml-map-xd-volvo")
+    try:
+        client = secretmanager.SecretManagerServiceClient()
+        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+        response = client.access_secret_version(request={"name": name})
+        return response.payload.data.decode("UTF-8")
+    except Exception as e:
+        logger.error(f"Failed to fetch secret {secret_id}: {e}")
+        return None

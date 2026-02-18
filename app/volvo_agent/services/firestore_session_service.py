@@ -9,6 +9,7 @@ from google.adk.sessions.base_session_service import (
 )
 from google.adk.sessions.session import Session
 from google.cloud import firestore  # type: ignore[attr-defined]
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 logger = logging.getLogger(__name__)
 
@@ -151,7 +152,7 @@ class FirestoreSessionService(BaseSessionService):
         if user_id:
             # Efficient: List only sessions for this user
             sessions_ref = self.root_collection.document(user_id).collection("sessions")
-            query = sessions_ref.where("app_name", "==", app_name)
+            query = sessions_ref.where(filter=FieldFilter("app_name", "==", app_name))
             docs = query.limit(50).stream()
         else:
             # Less efficient: Query all sessions via Collection Group
