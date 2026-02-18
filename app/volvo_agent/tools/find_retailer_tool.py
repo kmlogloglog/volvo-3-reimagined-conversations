@@ -3,6 +3,7 @@ import os
 import googlemaps
 
 from google.adk.tools import FunctionTool, ToolContext
+from ..schemas.test_drive import Location, Retailer
 from ..utils.utils import get_secret
 
 logger = logging.getLogger(__name__)
@@ -19,20 +20,19 @@ if api_key:
     except Exception as e:
         logger.error(f"Failed to initialize Google Maps client: {e}")
 
-def find_retailer(tool_context: ToolContext, location: str) -> dict:
+def find_retailer(tool_context: ToolContext, location: Location) -> dict:
     """
     Finds the closest Volvo retailer to the specified location.
 
-    Use this tool when the user provides their location or city to find where they can
-    take a test drive. Do not call this tool with a guessed location. Only use this tool
-    if the user has explicitly stated their location.
+    Use this tool when the user provides their location (city/nation) to find where they can
+    take a test drive.
 
     Args:
         tool_context: The tool context.
-        location: The user's city or location (e.g. "Gothenburg", "London").
+        location: The user's location details.
 
     Returns:
-        A dictionary containing the UI action to display the map/retailer info.
+        A dictionary containing the UI action to display the map/retailer info and the Retailer object.
     """
     logger.info(f"Tool find_retailer called with location: {location}")
     
@@ -42,10 +42,15 @@ def find_retailer(tool_context: ToolContext, location: str) -> dict:
     retailer_id = "ChIJ7T2iO1ydX0YRr1o4J5h46OQ"
     lat = 59.330833
     lng = 18.073611
+    
+    query = f"{location.city}, {location.nation}"
+    if location.street:
+        query = f"{location.street}, {query}"
 
     if gmaps_client:
         try:
-            geocode_result = gmaps_client.geocode(location)
+            # First try geocoding the specific query
+            geocode_result = gmaps_client.geocode(query)
             if geocode_result:
                 latlng = geocode_result[0]['geometry']['location']
                 places_result = gmaps_client.places_nearby(
@@ -63,14 +68,21 @@ def find_retailer(tool_context: ToolContext, location: str) -> dict:
         except Exception as e:
             logger.error(f"Error fetching from Google Maps API: {e}")
 
+    # Construct Retailer object
+    retailer = Retailer(
+        id=retailer_id,
+        name=retailer_name,
+        location=Location(
+            city=location.city, # simplified, ideally would parse from address
+            nation=location.nation,
+            street=address,
+            lat=lat,
+            lng=lng
+        )
+    )
+
     # Save to session state
-    tool_context.state["selected_retailer"] = {
-        "name": retailer_name,
-        "address": address,
-        "id": retailer_id,
-        "lat": float(lat),
-        "lng": float(lng)
-    }
+    tool_context.state["selected_retailer"] = retailer.model_dump()
     logger.info(f"Saved selected_retailer to state: {tool_context.state['selected_retailer']}")
 
     return {
@@ -78,15 +90,16 @@ def find_retailer(tool_context: ToolContext, location: str) -> dict:
             "action": "display_component",
             "component_name": "maps_view.html",
             "data": {
-                "location": location,
-                "retailer_name": retailer_name,
-                "address": address,
-                "retailer_id": retailer_id,
-                "retailer_lat": float(lat),
-                "retailer_lng": float(lng),
+                "location": query,
+                "retailer_name": retailer.name,
+                "address": retailer.location.street,
+                "retailer_id": retailer.id,
+                "retailer_lat": retailer.location.lat,
+                "retailer_lng": retailer.location.lng,
             },
         },
-        "agent_context": f"Found closest retailer: {retailer_name} at {address}. The retailer details have been saved to the session.",
+        "agent_context": f"Found retailer: {retailer.name} at {retailer.location.street}. "
+        f"Retailer details saved. Now ask the user for their name, email, and preferred time to book a test drive.",
     }
 
 # Create the tool instance

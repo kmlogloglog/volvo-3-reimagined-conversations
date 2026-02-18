@@ -1,94 +1,80 @@
 import logging
-
 from google.adk.tools import FunctionTool, ToolContext
 
-from ..schemas.test_drive import TestDriveRequest
+from ..schemas.test_drive import Retailer, UserInfo, AppointmentSlot
 
 logger = logging.getLogger(__name__)
 
 
 def book_test_drive(
     tool_context: ToolContext,
-    request: TestDriveRequest,
+    retailer: Retailer,
+    user_info: UserInfo,
+    appointment_slot: AppointmentSlot,
 ) -> dict:
     """
-    Checks availability or submits a test drive booking request for the user's configured Volvo.
+    Books a test drive for the user's configured Volvo.
 
-    Use this tool either to check the availability of a retailer at a specific date and time,
-    or to actually book the test drive after availability has been checked and the user has
-    provided their name and email. Make sure to call this tool if the action is merely checking
-    availability or booking.
+    Use this tool to finalize the booking after the user has selected a retailer,
+    provided their personal information (name, email), and preferred appointment slot.
 
     Args:
         tool_context: The tool context.
-        request: The test drive request containing user details and preferences.
+        retailer: The selected retailer.
+        user_info: The user's information.
+        appointment_slot: The desired appointment slot.
 
     Returns:
         A dictionary containing the UI action for the frontend and the agent context.
     """
-    tool_context.state["user:test_drive_request"] = request
-
-    first_name = request.first_name
-    email = request.email
-    location = request.location
-    preferred_date_time = request.preferred_date_time
-    retailer_name = request.retailer_name
-    retailer_address = request.retailer_address
-    retailer_id = request.retailer_id
-    retailer_lat = request.retailer_lat
-    retailer_lng = request.retailer_lng
-    height = request.height
-    music_preference = request.music_preference
-    ambience_preference = request.ambience_preference
-    action = request.action
-
     logger.info(
-        f"book_test_drive called: action={action}, first_name={first_name}, email={email}, "
-        f"location={location}, preferred_date_time={preferred_date_time}, retailer={retailer_name}, "
-        f"retailer_address={retailer_address}, (lat, lng)=({retailer_lat}, {retailer_lng}), "
-        f"height={height}, music={music_preference}, ambience={ambience_preference}"
+        f"book_test_drive called: user={user_info.name}, email={user_info.email}, "
+        f"retailer={retailer.name}, date={appointment_slot.date}, time={appointment_slot.time}"
     )
 
-    if action == "check":
+    # Persist data to state
+    tool_context.state["user:test_drive_request"] = {
+        "retailer": retailer.model_dump(),
+        "user_info": user_info.model_dump(),
+        "appointment_slot": appointment_slot.model_dump()
+    }
+
+    # Mock Availability Check
+    # In a real app, this would query the retailer's booking system
+    is_available = True 
+
+    if not is_available:
+        # If not available, return alternative slots
         return {
-            "agent_context": f"Availability confirmed for {retailer_name} at {preferred_date_time}. "
-            f"Context: The user wants to test drive at {retailer_name}. "
-            f"Ask for their first name and email to proceed with booking.",
+            "agent_context": f"The slot {appointment_slot.date} at {appointment_slot.time} is not available at {retailer.name}. "
+            "Available slots provided by the system are: 10:00, 14:00, 16:00. Please ask the user to choose one of these times.",
         }
 
-    # Validation: Ensure name and email are present for booking
-    if not first_name or not email:
-        return {
-            "agent_context": "Missing user details. Please ask the user for their first name and email before finalizing the booking.",
-        }
-
-    # If booking
+    # If available, confirm booking
     payload = {
         "ui_action": {
             "action": "display_component",
-            "component_name": "test_drive_confirmation",
+            "component_name": "test_drive_confirmation", # removed .html based on previous code
             "data": {
-                "first_name": first_name,
-                "email": email,
-                "location": location,
-                "preferred_date_time": preferred_date_time,
-                "retailer_name": retailer_name,
-                "retailer_address": retailer_address,
-                "retailer_id": retailer_id,
-                "coordinates": {
-                    "lat": retailer_lat,
-                    "lng": retailer_lng,
+                "user_name": user_info.name,
+                "user_email": user_info.email,
+                "retailer_name": retailer.name,
+                "retailer_address": retailer.location.street,
+                "date": appointment_slot.date,
+                "time": appointment_slot.time,
+                "retailer_location": {
+                    "lat": retailer.location.lat,
+                    "lng": retailer.location.lng,
                 },
                 "preferences": {
-                    "height": height,
-                    "music": music_preference,
-                    "ambience": ambience_preference,
+                    "height": user_info.height,
+                    "music": user_info.music,
+                    "light": user_info.light,
                 },
             },
         },
-        "agent_context": f"Test drive booked for {first_name} at {retailer_name} on {preferred_date_time}. "
-        f"Preferences recorded: Height: {height}, Music: {music_preference}, Ambience: {ambience_preference}. "
-        f"Confirmation displayed to user.",
+        "agent_context": f"Test drive booked for {user_info.name} at {retailer.name} on {appointment_slot.date} at {appointment_slot.time}. "
+        f"Preferences recorded. Confirmation displayed to user.",
     }
 
     return payload

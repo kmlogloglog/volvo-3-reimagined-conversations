@@ -1,46 +1,44 @@
-from typing import Literal, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
 
-class TestDriveRequest(BaseModel):
+class Location(BaseModel):
     """
-    Represents the parameters for booking a test drive or checking availability.
+    Represents a geographical location.
     """
+    city: str = Field(..., description="The city name.")
+    nation: str = Field(..., description="The country or nation name.")
+    street: Optional[str] = Field(default=None, description="The street address (optional).")
+    lat: Optional[float] = Field(default=None, description="Latitude (optional).")
+    lng: Optional[float] = Field(default=None, description="Longitude (optional).")
 
-    first_name: str = Field(..., description="The first name of the user.")
-    email: Optional[str] = Field(default=None, description="The email address of the user.")
-    location: str = Field(
-        ..., description="The location where the user wants to test drive."
-    )
-    preferred_date_time: str = Field(
-        ..., description="The preferred date and time for the test drive."
-    )
-    retailer_name: str = Field(
-        default="", description="The name of the retailer (optional)."
-    )
-    retailer_address: str = Field(
-        default="", description="The address of the retailer (optional)."
-    )
-    retailer_id: str = Field(
-        default="", description="The ID of the retailer (optional)."
-    )
-    retailer_lat: float = Field(
-        default=0.0, description="The latitude of the retailer (optional)."
-    )
-    retailer_lng: float = Field(
-        default=0.0, description="The longitude of the retailer (optional)."
-    )
-    height: str = Field(
-        default="", description="The user's height preference (optional)."
-    )
-    music_preference: str = Field(
-        default="", description="The user's music preference (optional)."
-    )
-    ambience_preference: str = Field(
-        default="", description="The user's ambience preference (optional)."
-    )
-    action: Literal["check", "book"] = Field(
-        default="book",
-        description="The action to perform: 'check' for availability or 'book' for booking.",
-    )
+
+class Retailer(BaseModel):
+    """
+    Represents a Volvo retailer/dealership.
+    """
+    id: str = Field(..., description="The unique identifier of the retailer.")
+    name: str = Field(..., description="The name of the retailer.")
+    location: Location = Field(..., description="The location of the retailer.")
+    phone: Optional[str] = Field(default=None, description="The retailer's phone number (optional).")
+
+
+class UserInfo(BaseModel):
+    """
+    Represents user information for booking.
+    """
+    name: str = Field(..., description="The user's full name.")
+    email: str = Field(..., description="The user's email address.")
+    height: Optional[str] = Field(default=None, description="The user's height preference (optional).")
+    music: Optional[str] = Field(default=None, description="The user's music preference (optional).")
+    light: Optional[str] = Field(default=None, description="The user's lighting/ambience preference (optional).")
+
+
+class AppointmentSlot(BaseModel):
+    """
+    Represents a specific appointment slot.
+    """
+    date: str = Field(..., description="The date of the appointment (e.g., YYYY-MM-DD).")
+    time: str = Field(..., description="The time of the appointment (e.g., HH:MM).")
+    duration: Optional[str] = Field(default=None, description="Duration of the appointment (optional).")
