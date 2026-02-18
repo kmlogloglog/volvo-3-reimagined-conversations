@@ -46,15 +46,14 @@ def book_test_drive(
     if not is_available:
         # If not available, return alternative slots
         return {
-            "agent_context": f"The slot {appointment_slot.date} at {appointment_slot.time} is not available at {retailer.name}. "
-            "Available slots provided by the system are: 10:00, 14:00, 16:00. Please ask the user to choose one of these times.",
+            "agent_context": f"The slot {appointment_slot.date} at {appointment_slot.time} is not available at {retailer.name}."
         }
 
     # If available, confirm booking
     payload = {
         "ui_action": {
             "action": "display_component",
-            "component_name": "test_drive_confirmation", # removed .html based on previous code
+            "component_name": "test_drive_confirmation",
             "data": {
                 "user_name": user_info.name,
                 "user_email": user_info.email,

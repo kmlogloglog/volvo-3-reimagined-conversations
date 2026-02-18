@@ -98,8 +98,7 @@ def find_retailer(tool_context: ToolContext, location: Location) -> dict:
                 "retailer_lng": retailer.location.lng,
             },
         },
-        "agent_context": f"Found retailer: {retailer.name} at {retailer.location.street}. "
-        f"Retailer details saved. Now ask the user for their name, email, and preferred time to book a test drive.",
+        "agent_context": f"Found retailer: {retailer.name} at {retailer.location.street}. Retailer details saved.",
     }
 
 # Create the tool instance
