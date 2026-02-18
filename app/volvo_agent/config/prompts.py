@@ -24,6 +24,7 @@ PROMPT_V0 = """
 
 <knowledge-base>
     The available car models and details you have access to are these: {app:car_configurations}
+    The conversation with the user started at {temp:current_datetime}. This time is in UTC.
 </knowledge-base>
 
 <taskflow>
@@ -142,7 +143,8 @@ PROMPT = r"""
 </constraints>
 
 <knowledge-base>
-    {app:car_configurations}
+    Available car configurations: {app:car_configurations}
+    The conversation with the user started at {temp:current_datetime}. This time is in UTC.
 </knowledge-base>
 
 <memory>
