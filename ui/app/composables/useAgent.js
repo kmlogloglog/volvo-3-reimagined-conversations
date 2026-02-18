@@ -10,13 +10,11 @@ export function useAgent(options = {}) {
     const connectionBus = useEventBus(BUS.AGENT_CONNECTION);
     const microphoneBus = useEventBus(BUS.MICROPHONE);
 
-    // Starts audio recording with microphone access and event bus notifications
     async function startAudio() {
         try {
             microphoneBus.emit({ requesting: true, granted: false, denied: false });
             await agentStore.startAudio();
 
-            // Restart level monitoring with callback if provided
             if (onLevelChange && agentStore.inputAnalyser && agentStore.analyser) {
                 if (agentStore.animationId) {
                     cancelAnimationFrame(agentStore.animationId);
@@ -31,14 +29,12 @@ export function useAgent(options = {}) {
         }
     }
 
-    // Stops audio recording and notifies event bus
     function stopAudio() {
         agentStore.stopAudio();
-        microphoneBus.emit({ requesting: false, granted: agentStore.micPermissionGranted, denied: false, ready: false });
+        microphoneBus.emit({ requesting: false, ready: false });
         onLevelChange?.(0);
     }
 
-    // Connects to the agent WebSocket with event bus integration
     async function connect() {
         try {
             connectionBus.emit({ connecting: true, connected: false });
@@ -50,15 +46,12 @@ export function useAgent(options = {}) {
         }
     }
 
-    // Disconnects from the agent WebSocket
     function disconnect() {
         agentStore.disconnect();
         connectionBus.emit({ connecting: false, connected: false });
     }
 
-    // Sends a text message to the agent
     const sendMessage = (text) => agentStore.sendMessage(text);
-    // Clears the conversation history
     const clearMessages = () => agentStore.clearMessages();
 
     return {

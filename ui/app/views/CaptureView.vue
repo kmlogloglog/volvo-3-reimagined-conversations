@@ -4,19 +4,18 @@
         <BackgroundImagesCarousel
             :src="agentStore.backgroundImages" />
         <div
-            class="base-view"
-            :class="{ 'full-height': isFullHeightPage }">
+            class="base-view">
             <NuxtLoadingIndicator
                 color="var(--color-white)" />
             <div
                 v-show="!isLoading"
                 class="base-view-inner">
-                <slot></slot>
             </div>
         </div>
 
         <NavigationBar
-            @[EMITS.NAVIGATION_CHANGE]="onNavigate" />
+            v-model="activeNavItem"
+            @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
 
         <!-- Hidden file upload component -->
         <FileUpload
@@ -24,43 +23,27 @@
             @[EMITS.FILE_UPLOADED]="handleFileUploaded"
             @[EMITS.UPLOAD_ERROR]="handleUploadError" />
 
-        <!--
-        Do not use AudioCaptureCircles together with full screen background image.
-        AudioCaptureCircles breaks iOS Safari's background rendering behind browser chrome
-        -->
-        <AudioCaptureWaves
-            v-if="route.name === ROUTE.AUDIO.name"
-            class="audio-waves"
+        <AudioCaptureMeter
             :level="agentStore.audioLevel" />
-        <AudioCaptureCircles
-            :enabled="!agentStore.backgroundImages" />
+        <AudioCaptureBlob
+            :intensity="agentStore.audioLevel" />
     </div>
 </template>
 
 <script setup>
     import { EMITS } from '@/constants/emits.js';
-    import { ROUTE } from '@/constants/route';
-    import { navigateTo, useRoute } from '#app';
     import { useAgentStore } from '@/stores/agent';
     import BackgroundImagesCarousel from '@/components/backgroundImage/BackgroundImagesCarousel.vue';
-    import AudioCaptureCircles from '@/components/animations/AudioCaptureCircles.vue';
-    import AudioCaptureWaves from '@/components/animations/AudioCaptureWaves.vue';
+    import AudioCaptureBlob from '@/components/animations/AudioCaptureBlob.vue';
+    import AudioCaptureMeter from '@/components/animations/AudioCaptureMeter.vue';
     import FileUpload from '@/components/upload/FileUpload.vue';
+    import { useAgent } from '@/composables/useAgent';
 
     const agentStore = useAgentStore();
-    const route = useRoute();
-    const fileUploadRef = ref(null);
+
+    const activeNavItem = ref(null);
 
     const { isLoading } = useLoadingIndicator();
-
-    function onNavigate(name) {
-        // If camera is clicked, trigger file upload instead of navigation
-        if (name === ROUTE.CAMERA.name) {
-            fileUploadRef.value?.triggerFileSelect();
-            return;
-        }
-        navigateTo(`/${name}`);
-    }
 
     function handleFileUploaded(files) {
         console.log('Files uploaded:', files);
@@ -70,9 +53,16 @@
         console.error('File upload error:', error);
     }
 
-    const isFullHeightPage = computed(() => {
-        return [ROUTE.CAMERA.name, 'index'].includes(route.name);
-    });
+    const agent = useAgent();
+    function handleMicrophoneClick(enabled) {
+        if (enabled) {
+            agent.startAudio();
+
+            return;
+        }
+
+        agent.stopAudio();
+    }
 
 </script>
 

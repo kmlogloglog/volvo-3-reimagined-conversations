@@ -344,7 +344,7 @@ export default {
             );
 
             // Use the highest level from either input or output
-            this.audioLevel = Math.max(inputLevel, outputLevel);
+            this.audioLevel = Math.round(((Math.max(inputLevel, outputLevel)) / 255) * 1000) / 1000;
 
             // Call optional callback if provided
             onLevelChange?.(this.audioLevel);
@@ -379,9 +379,11 @@ export default {
                     });
                     console.log('%cMICROPHONE', 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', 'Microphone access granted');
                     this.micPermissionGranted = true;
+                    console.log('granted', this.micPermissionGranted);
                 } catch (err) {
                     console.error('%cMICROPHONE ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Microphone access denied or error:', err);
                     this.micPermissionGranted = false;
+                    console.log('granted', this.micPermissionGranted);
                     throw err;
                 }
             }
@@ -477,6 +479,7 @@ export default {
             console.error('%cAUDIO START ERROR', 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', 'Failed to start audio:', error);
             this.listening = false;
             this.connecting = false;
+            throw error;
         } finally {
             this.startingAudio = false;
         }

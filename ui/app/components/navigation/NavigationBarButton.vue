@@ -1,6 +1,6 @@
 <template>
     <button
-        class="button-reset"
+        class="nav-button"
         :class="{ active }"
         :style="{ fontSize }"
         :disabled="disabled"
@@ -17,69 +17,67 @@
                     stroke-dasharray="209 251" />
             </svg>
         </span>
-        <span
-            v-else
-            :class="iconClass"></span>
+        <slot v-else ></slot>
     </button>
 </template>
 
 <script setup>
-    import { EMITS } from '@/constants/emits';
-    const props = defineProps({
-        icon: {
-            type: String,
-            required: true,
-        },
+    defineProps({
         active: {
             type: Boolean,
             default: false,
         },
         fontSize: {
             type: String,
-            default: '1.15rem',
+            default: '1.75rem',
         },
         loading: {
             type: Boolean,
             default: false,
         },
-        disabled : {
+        disabled: {
             type: Boolean,
             default: false,
         },
     });
 
-    defineEmits([EMITS.CLICK]);
-
-    const iconClass = computed(() => props.active ? `${props.icon}-fill` : props.icon);
+    defineEmits(['click']);
 </script>
 
 <style scoped lang="scss">
-button {
-    background-color: var(--navigation-button-color-background);
+.nav-button {
+    all: unset;
+    position: relative;
     border-radius: 9999px;
     box-sizing: border-box;
-    color: var(--navigation-button-color-font);
     cursor: pointer;
-    flex: 1;
-    height: 100%;
+    height: 4.625rem;
     line-height: 0;
     text-align: center;
-    width: 5.5rem;
+    width: 4.625rem;
+
+    // Default: flat semi-transparent, no glass
+    background: var(--navigation-button-color-background);
+    color: var(--navigation-button-color-font);
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
 
     &:active:not(:disabled),
     &.active {
-        background-color: var(--navigation-button-active-color-background);
+        background: var(--navigation-button-active-color-background);
         color: var(--navigation-button-active-color-font);
     }
 
     &.active:disabled {
-        background-color: var(--navigation-button-disabled-color-background);
+        background: var(--navigation-button-disabled-color-background);
         color: var(--navigation-button-disabled-color-font);
     }
 
     &:disabled {
         cursor: default;
         color: var(--navigation-button-disabled-color-font);
+        opacity: 0.5;
     }
 }
 
@@ -90,11 +88,7 @@ button {
 }
 
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 </style>
