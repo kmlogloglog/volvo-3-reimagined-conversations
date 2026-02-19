@@ -64,7 +64,7 @@
 
     const isConnected = ref(false);
 
-    busConnection.on(async(payload) => {
+    busConnection.on(async (payload) => {
         isConnected.value = !payload.connecting && payload.connected;
     });
 

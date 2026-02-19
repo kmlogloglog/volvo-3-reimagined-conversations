@@ -62,6 +62,8 @@
     busConnection.on((payload) => {
         connected.value = payload.connected ?? connected.value;
         connecting.value = payload.connecting ?? connecting.value;
+
+        isAudioRecording.value = connected.value;
     });
 
     busMicrophone.on((payload) => {
@@ -82,7 +84,7 @@
 .navigation {
     display: flex;
     justify-content: space-between;
-    padding: 0 1.25rem 1.25rem;
+    padding: 0 1.875rem 1.25rem;
     width: min(100vw, 768px);
     z-index: 99;
 }
