@@ -3,7 +3,6 @@
         v-for="(message) in chatFiltered"
         :key="message.id">
         <ChatSpeechBubble
-            :id="message.id"
             :align-bubble="message.sender"
             :text="message.content?.text || ''"
             :finished="message.finished"

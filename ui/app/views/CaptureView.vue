@@ -18,9 +18,6 @@
             ref="fileUploadRef"
             @[EMITS.FILE_UPLOADED]="handleFileUploaded"
             @[EMITS.UPLOAD_ERROR]="handleUploadError" />
-
-        <AudioCaptureMeter
-            :level="agentStore.audioLevel" />
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel" />
     </div>
@@ -35,7 +32,6 @@
     import { useAgentStore } from '@/stores/agent';
     import { useEventBus } from '@vueuse/core';
     import AudioCaptureBlob from '@/components/animations/AudioCaptureBlob.vue';
-    import AudioCaptureMeter from '@/components/animations/AudioCaptureMeter.vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
     import FileUpload from '@/components/upload/FileUpload.vue';
 
