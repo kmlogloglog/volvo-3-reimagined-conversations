@@ -38,7 +38,7 @@
 
         // Morph speed
         idleMorphSpeed: 0.5,
-        maxMorphSpeedBoost: 0.15,
+        maxMorphSpeedBoost: 0.1,
 
         // Blob shape
         baseSize: 0.2,
@@ -58,8 +58,8 @@
 
         // Max boost at intensity = 1 (added to idle)
         maxMorphIntensityBoost: 0.015,
-        maxPulseAmountBoost: 0.25,
-        maxSizeMultiplierBoost: 1.8,
+        maxPulseAmountBoost: 0.3,
+        maxSizeMultiplierBoost: 2.5,
         maxFlareIntensityBoost: 1.0,
 
         // Lens flare
@@ -502,6 +502,7 @@ $blob-blur: 15px;
     filter: blur($blob-blur);
     will-change: filter;
     transform: translateZ(0);
+    pointer-events: none;
 }
 
 .gradient-blob canvas {

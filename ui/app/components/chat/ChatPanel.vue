@@ -11,6 +11,7 @@
         </div>
         <div class="chat-input">
             <BaseChatTextArea
+                ref="chatTextareaRef"
                 v-model="chatMessage"
                 :disabled="!agentStore.connected"
                 @submit="handleChatSubmit" />
@@ -28,6 +29,7 @@
     const agentStore = useAgentStore();
 
     const chatMessage = ref('');
+    const chatTextareaRef = useTemplateRef('chatTextareaRef');
 
     async function handleChatSubmit(message) {
         chatMessage.value = '';
@@ -73,12 +75,14 @@
 
     const show = ref(false);
 
-    onMounted(() => {
+    onMounted(async() => {
         show.value = true;
 
         setScrollToBottom();
 
-        agentStore.connect();
+        await agentStore.connect();
+
+        chatTextareaRef.value.focus();
     });
 </script>
 
@@ -103,7 +107,6 @@
                 display: flex;
                 flex-direction: column;
                 overflow: auto;
-                padding: 1.25rem 1.25rem 0;
                 row-gap: 1rem;
                 overflow-anchor: none;
                 visibility: hidden;
@@ -112,10 +115,6 @@
                     visibility: visible;
                 }
             }
-        }
-
-        .chat-input {
-            padding: 0 1.25rem;
         }
     }
 </style>

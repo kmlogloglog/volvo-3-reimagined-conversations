@@ -51,10 +51,13 @@
     border-radius: 9999px;
     box-sizing: border-box;
     cursor: pointer;
-    height: 4.625rem;
+    aspect-ratio: 1 / 1;
     line-height: 0;
     text-align: center;
     width: 4.625rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 
     // Default: flat semi-transparent, no glass
     background: var(--navigation-button-color-background);

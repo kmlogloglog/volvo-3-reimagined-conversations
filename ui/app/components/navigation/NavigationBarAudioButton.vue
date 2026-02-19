@@ -101,7 +101,11 @@
 
     &.disabled {
         cursor: default;
-        opacity: 0.5;
+
+        .mic-inner {
+            background: var(--navigation-button-record-disabled-color-background);
+            color: var(--navigation-button-record-disabled-color-font);
+        }
     }
 }
 
@@ -114,9 +118,9 @@
     align-items: center;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: var(--color-red);
+    background: var(--navigation-button-record-color-background);
     border-radius: 1.51rem;
-    color: var(--color-white);
+    color: var(--navigation-button-record-color-font);
     display: flex;
     font-size: 1.3rem;
     height: 3.25rem;

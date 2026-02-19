@@ -2,6 +2,7 @@
     <div class="chat-text-input-wrapper">
         <textarea
             :id="id"
+            ref="textareaRef"
             v-model="vModel"
             type="text"
             class="chat-text-input"
@@ -33,6 +34,8 @@
         default: '',
     });
 
+    const textareaRef = useTemplateRef('textareaRef');
+
     const id = useId();
 
     const emit = defineEmits([EMITS.SUBMIT]);
@@ -49,6 +52,17 @@
         emit(EMITS.SUBMIT, vModel.value);
         vModel.value = '';
     }
+
+    function focus() {
+        const textarea = textareaRef.value;
+        if (textarea) {
+            textarea.focus();
+        }
+    }
+
+    defineExpose({
+        focus,
+    });
 
 </script>
 

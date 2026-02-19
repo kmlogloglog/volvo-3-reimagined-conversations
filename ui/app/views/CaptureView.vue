@@ -1,6 +1,8 @@
 <template>
     <div
         class="view">
+        <BackgroundImagesCarousel
+            :src="agentStore.backgroundImages" />
         <div
             class="base-view">
             <div
@@ -18,6 +20,9 @@
             ref="fileUploadRef"
             @[EMITS.FILE_UPLOADED]="handleFileUploaded"
             @[EMITS.UPLOAD_ERROR]="handleUploadError" />
+
+        <AudioCaptureMeter
+            :level="agentStore.audioLevel" />
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel" />
     </div>
@@ -34,6 +39,8 @@
     import AudioCaptureBlob from '@/components/animations/AudioCaptureBlob.vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
     import FileUpload from '@/components/upload/FileUpload.vue';
+    import BackgroundImagesCarousel from '@/components/backgroundImage/BackgroundImagesCarousel.vue';
+    import AudioCaptureMeter from '@/components/animations/AudioCaptureMeter.vue';
 
     const agentStore = useAgentStore();
 
@@ -104,6 +111,7 @@
         z-index: 10;
         overflow: hidden;
         -webkit-overflow-scrolling: touch;
+        padding: 0 1.875rem;
 
         &.full-height {
             flex: 1;

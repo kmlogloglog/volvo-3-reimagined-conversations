@@ -156,6 +156,7 @@
         padding: 1rem;
         left: 0;
         z-index: 99;
+        pointer-events: none;
     }
 
     .meter {

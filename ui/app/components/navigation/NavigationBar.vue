@@ -1,13 +1,10 @@
 <template>
     <ClientOnly>
         <nav class="navigation">
-            <NavigationBarButton
-                :active="isChatActive"
-                :disabled="isBusy"
-                :loading="connecting && !isAudioRecording"
-                @click="handleChatClick">
-                <span :class="isChatActive ? `${ROUTE.CHAT.icon}-fill` : ROUTE.CHAT.icon" ></span>
-            </NavigationBarButton>
+            <NavigationBarFoldOut
+                :options="foldOutOptions"
+                direction="up-right"
+                @select="handleFoldOutSelect" />
             <NavigationBarAudioButton
                 :disabled="isBusy"
                 :is-recording="isAudioRecording"
@@ -18,8 +15,8 @@
 </template>
 
 <script setup>
-    import NavigationBarButton from './NavigationBarButton.vue';
     import NavigationBarAudioButton from './NavigationBarAudioButton.vue';
+    import NavigationBarFoldOut from './NavigationBarFoldOut.vue';
     import { useAgentStore } from '@/stores/agent';
     import { ROUTE } from '@/constants/route';
     import { EMITS } from '@/constants/emits.js';
@@ -27,7 +24,7 @@
     import { useEventBus } from '@vueuse/core';
     import { storeToRefs } from 'pinia';
 
-    const emits = defineEmits([EMITS.RECORD_CLICK, EMITS.CHAT_CLICK]);
+    const emits = defineEmits([EMITS.RECORD_CLICK, EMITS.CHAT_CLICK, EMITS.CAMERA_CLICK]);
 
     const busMicrophone = useEventBus(BUS.MICROPHONE);
     const busConnection = useEventBus(BUS.AGENT_CONNECTION);
@@ -38,8 +35,23 @@
     const micDenied = ref(false);
     const isAudioRecording = ref(false);
     const isChatActive = ref(false);
+    const isCameraActive = ref(false);
 
     const isBusy = computed(() => connecting.value || micRequesting.value);
+
+    const foldOutOptions = computed(() => [
+        {
+            id: ROUTE.CHAT.id,
+            label: ROUTE.CHAT.label,
+            icon: ROUTE.CHAT.icon,
+            active: isChatActive.value,
+        },
+        {
+            id: ROUTE.CAMERA.id,
+            label: ROUTE.CAMERA.label,
+            icon: ROUTE.CAMERA.icon,
+        },
+    ]);
 
     onMounted(() => {
         const agentStore = useAgentStore();
@@ -50,15 +62,18 @@
         });
     });
 
-    async function handleChatClick() {
-        isChatActive.value = !isChatActive.value;
-        emits(EMITS.CHAT_CLICK, isChatActive.value);
+    function handleFoldOutSelect(option) {
+        if (option.id === ROUTE.CHAT.id) {
+            isChatActive.value = !isChatActive.value;
+            emits(EMITS.CHAT_CLICK, isChatActive.value);
+        } else if (option.id === ROUTE.CAMERA.id) {
+            isCameraActive.value = !isCameraActive.value;
+            emits(EMITS.CAMERA_CLICK, isCameraActive.value);
+        }
     }
 
     async function handleMicrophoneClick() {
-        if (micDenied.value) {
-            return;
-        }
+        if (micDenied.value) return;
 
         isAudioRecording.value = !isAudioRecording.value;
         await nextTick();
