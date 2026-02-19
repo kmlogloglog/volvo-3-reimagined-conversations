@@ -3,6 +3,7 @@
         ref="speechBubbleRef"
         :align-bubble="alignBubble"
         padding="small">
+        <span>{{ id }}</span>
         <ChatTypeIndicator v-if="!finished" />
         <template v-else>
             <!-- eslint-disable vue/no-v-html -->
@@ -27,9 +28,13 @@
     import { EMITS } from '@/constants/emits';
     import { AGENT } from '@/constants/agent';
     import DOMPurify from 'isomorphic-dompurify';
-    import ChatTypeIndicator from './ChatTypeIndicator.vue';
+    import ChatTypeIndicator from '@/components/chat/ChatTypeIndicator.vue';
 
     const props = defineProps({
+        id: {
+            type: [String, Number],
+            required: true,
+        },
         text: {
             type: String,
             required: true,

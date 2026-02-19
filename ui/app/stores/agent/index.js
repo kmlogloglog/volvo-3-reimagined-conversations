@@ -4,6 +4,7 @@ import getters from './_getters';
 
 export const useAgentStore = defineStore('agentStore', {
     state: () => ({
+        userName: null,
         conversation: [],
         audioLevel: 0,
         backgroundImages: null,

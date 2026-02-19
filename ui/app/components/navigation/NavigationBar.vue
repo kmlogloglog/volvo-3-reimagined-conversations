@@ -20,10 +20,12 @@
 <script setup>
     import NavigationBarButton from './NavigationBarButton.vue';
     import NavigationBarAudioButton from './NavigationBarAudioButton.vue';
+    import { useAgentStore } from '@/stores/agent';
     import { ROUTE } from '@/constants/route';
     import { EMITS } from '@/constants/emits.js';
     import { BUS } from '@/constants/bus.js';
     import { useEventBus } from '@vueuse/core';
+    import { storeToRefs } from 'pinia';
 
     const emits = defineEmits([EMITS.RECORD_CLICK, EMITS.CHAT_CLICK]);
 
@@ -39,20 +41,24 @@
 
     const isBusy = computed(() => connecting.value || micRequesting.value);
 
+    onMounted(() => {
+        const agentStore = useAgentStore();
+        const { listening } = storeToRefs(agentStore);
+
+        watch(listening, (val) => {
+            isAudioRecording.value = val;
+        });
+    });
+
     async function handleChatClick() {
         isChatActive.value = !isChatActive.value;
-
-        if (isChatActive.value && isAudioRecording.value) {
-            isAudioRecording.value = false;
-            await nextTick();
-            emits(EMITS.RECORD_CLICK, false);
-        }
-
         emits(EMITS.CHAT_CLICK, isChatActive.value);
     }
 
     async function handleMicrophoneClick() {
-        if (micDenied.value) return;
+        if (micDenied.value) {
+            return;
+        }
 
         isAudioRecording.value = !isAudioRecording.value;
         await nextTick();
@@ -62,8 +68,6 @@
     busConnection.on((payload) => {
         connected.value = payload.connected ?? connected.value;
         connecting.value = payload.connecting ?? connecting.value;
-
-        isAudioRecording.value = connected.value;
     });
 
     busMicrophone.on((payload) => {

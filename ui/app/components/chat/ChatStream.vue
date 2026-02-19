@@ -3,6 +3,7 @@
         v-for="(message) in chatFiltered"
         :key="message.id">
         <ChatSpeechBubble
+            :id="message.id"
             :align-bubble="message.sender"
             :text="message.content?.text || ''"
             :finished="message.finished"
@@ -30,7 +31,11 @@
     });
 
     const chatFiltered = computed(() => {
-        const chatArr = Array.isArray(props.chat) ? props.chat : [];
+        const arr = Array.isArray(props.chat) ? props.chat : [];
+        const chatArr = arr.filter(e => e?.content?.text !== AGENT.INTRODUCTION);
+
+        // sort chatArr by timestamp
+        chatArr.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
         if (props.filterFromLast === AGENT.USER) {
             const index = [...chatArr].reverse().findIndex(e => e?.sender === AGENT.USER);

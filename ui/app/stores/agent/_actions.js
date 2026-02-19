@@ -86,6 +86,9 @@ export default {
             msg.content.text = `${currentText}${text}`;
         }
 
+        // from this.conversation array remove all where id is not currentMessageId and sender is AGENT and finished is false
+        this.conversation = this.conversation.filter(msg => msg.id === this.currentMessageId || msg.sender !== AGENT.AGENT || msg.finished);
+
         if (finished) {
             this.currentMessageId = null;
         }
@@ -199,7 +202,7 @@ export default {
         const { $router } = useNuxtApp();
 
         this.connectionPromise = new Promise((resolve, reject) => {
-            const userIdFromQuery = $router.currentRoute.value.query.user || 'demo-user';
+            const userIdFromQuery = $router.currentRoute.value.query.user || this.userName;
             const sessionIdFromQuery = $router.currentRoute.value.query.session || crypto.randomUUID();
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const url = `${protocol}//${window.location.host}/ws/${userIdFromQuery}/${sessionIdFromQuery}`;
@@ -393,6 +396,8 @@ export default {
     },
 
     sendMessage(text) {
+        // in conversation remove all messages where finished is false
+
         this.addMessage({
             id: `${Date.now().toString()}_${AGENT.USER}`,
             sender: AGENT.USER,
@@ -401,6 +406,7 @@ export default {
         });
 
         this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
+
         this.addMessage({
             id: this.currentMessageId,
             sender: AGENT.AGENT,
@@ -419,5 +425,9 @@ export default {
 
     clearMessages() {
         this.conversation.length = 0;
+    },
+
+    set_userName(name) {
+        this.userName = name;
     },
 };

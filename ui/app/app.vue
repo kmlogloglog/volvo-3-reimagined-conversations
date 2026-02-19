@@ -5,17 +5,17 @@
 </template>
 
 <script setup>
-    import { preloadRouteComponents } from '#app';
     import CaptureView from '@/views/CaptureView.vue';
     import { useAgentStore } from '@/stores/agent';
-
-    preloadRouteComponents('/');
-    preloadRouteComponents('/ChatView');
-    preloadRouteComponents('/AudioView');
-    preloadRouteComponents('/PhotoView');
+    import { useBackground } from '@/composables/useBackground';
+    import { AGENT } from '@/constants/agent.js';
 
     const agentStore = useAgentStore();
     const { backgroundStyle } = useBackground(agentStore);
+
+    onMounted(() => {
+        agentStore.set_userName(`${AGENT.DEFAULT_USER_NAME}_${crypto.randomUUID()}`);
+    });
 </script>
 
 <style scoped lang="scss">
