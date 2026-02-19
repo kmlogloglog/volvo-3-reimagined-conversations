@@ -68,6 +68,7 @@ setup-sa: ## Create or Update Service Account and grant necessary roles
 	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/logging.logWriter" --condition=None --quiet >/dev/null
 	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/run.invoker" --condition=None --quiet >/dev/null
 	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/run.serviceAgent" --condition=None --quiet >/dev/null
+	@gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$(SERVICE_ACCOUNT)" --role="roles/secretmanager.secretAccessor" --condition=None --quiet >/dev/null
 	@echo "Done."
 
 lint: ## Run linting and type checking

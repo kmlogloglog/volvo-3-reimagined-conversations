@@ -15,12 +15,15 @@ class CarConfiguration(BaseModel):
 
     model: Literal["EX30", "EX60", "EX90"] = Field(..., description="The car model.")
     exterior: Optional[str] = Field(
+        default=None,
         description="The selected exterior color for the car configuration (e.g. vapour_grey, onyx_black).",
     )
     interior: Optional[str] = Field(
+        default=None,
         description="The selected interior for the car configuration (e.g. nordico_charcoal, nappa_cardamom).",
     )
     wheels: Optional[str] = Field(
+        default=None,
         description="The selected wheels type for the car configuration (e.g. 20, 21, 22Y).",
     )
 

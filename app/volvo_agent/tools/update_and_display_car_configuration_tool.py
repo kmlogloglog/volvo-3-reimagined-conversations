@@ -76,44 +76,42 @@ def _get_image_data_from_config(config: CarConfiguration) -> dict | None:
     }
 
 
-def display_model_image(
+def update_and_display_car_configuration(
     tool_context: ToolContext,
     car_config: CarConfiguration,
-    detail: Literal["ALL", "EXTERIOR", "INTERIOR", "WHEELS", "BRAND"],
+    display_type: Literal["ALL", "EXTERIOR", "INTERIOR", "WHEELS", "BRAND", "NONE"],
+    phase: int,
 ) -> dict:
     """
-    Displays one or more images of the specified car configuration and
-    updates the current configuration in the session state.
-
+    Updates the car configuration in the session state and optionally sends a payload to the frontend to display one or more images of the specified car configuration.
     Args:
-        context: The tool context containing the session state.
+        tool_context: The tool context containing the session state.
         car_config: The car configuration that needs to be displayed.
-        detail: The specific images of the car. Valid options are
-            "ALL" for displaying all images available,
-            "EXTERIOR" to show the outer color of the car
-            "INTERIOR" to show the interior of the car
-            "WHEELS" to show an image of the wheel in the selected configuration
-            "BRAND" to show multiple exterior images of the car on a branded background
-
+        display_type: The type of images to display. Valid options are
+            ALL - Display all images of the car
+            EXTERIOR - Display exterior images of the car
+            INTERIOR - Display interior images of the car
+            WHEELS - Display wheel images of the car
+            BRAND - Display exterior images of the car on a branded background
+            NONE - Do not display any images and just update the configuration in the session state
+        phase: The specific phase of the car configuration process. Valid options are integers from 1 to 5.
     Returns:
-        UI action dictionary.
+        A dictionary containing the UI action to display the images and the agent context.
     """
-    if isinstance(car_config, dict):
-        try:
-            car_config = CarConfiguration(**car_config)
-        except Exception as e:
-            logger.error(f"Error parsing car_config: {e}")
-            return {"agent_context": f"Invalid configuration details provided. {str(e)}"}
-            
+    # Validate phase
+    if not (1 <= phase <= 5):
+        logger.error(f"Invalid phase: {phase}")
+        phase = -1
+
     model_name = car_config.model
     exterior = car_config.exterior
     interior = car_config.interior
     wheels = car_config.wheels
 
-    tool_context.state["current_config"] = car_config
+    tool_context.state["user:car_config"] = car_config
 
     logger.info(
-        f"display_model_image called: model={model_name}, exterior={exterior}, interior={interior}, wheels={wheels}"
+        f"update_config_and_display_model_image called: model={model_name}, exterior={exterior}, interior={interior}, wheels={wheels}"
     )
 
     image_data = _get_image_data_from_config(car_config)
@@ -132,27 +130,30 @@ def display_model_image(
     wheels_display_name = image_data.get("wheels_metadata", {}).get("display_name", "")
 
     images = []
+    caption = f"Volvo {model_name}"
 
-    if detail == "ALL":
+    if display_type == "ALL":
         images.extend(image_data.get("exterior_images", {}).values())
         images.extend(image_data.get("interior_images", {}).values())
-        caption = f"Volvo {model_name} in {exterior_display_name} with {wheels_display_name} wheels and {interior_display_name}"
-    elif detail == "EXTERIOR":
+        caption = f"{caption} in {exterior_display_name} with {wheels_display_name} wheels and {interior_display_name}"
+    elif display_type == "EXTERIOR":
         images.extend(image_data.get("exterior_images", {}).values())
-        caption = f"Volvo {model_name} in {exterior_display_name} with {wheels_display_name} wheels"
-    elif detail == "INTERIOR":
+        caption = (
+            f"{caption} in {exterior_display_name} with {wheels_display_name} wheels"
+        )
+    elif display_type == "INTERIOR":
         images.extend(image_data.get("interior_images", {}).values())
-        caption = f"Volvo {model_name} with {interior_display_name}"
-    elif detail == "WHEELS":
+        caption = f"{caption} with {interior_display_name}"
+    elif display_type == "WHEELS":
         images.append(image_data.get("exterior_images", {}).get("wheel_view", ""))
         caption = wheels_display_name
-    elif detail == "BRAND":
+    elif display_type == "BRAND":
         images.append(image_data.get("exterior_images", {}).get("brand_view_1", ""))
         images.append(image_data.get("exterior_images", {}).get("brand_view_2", ""))
         images.append(image_data.get("exterior_images", {}).get("brand_view_3", ""))
-        caption = f"Volvo {model_name} in {exterior_display_name} with {wheels_display_name} wheels and {interior_display_name}"
+        caption = f"{caption} in {exterior_display_name} with {wheels_display_name} wheels and {interior_display_name}"
 
-    return {
+    payload = {
         "ui_action": {
             "action": "display_component",
             "component_name": "display_images",
@@ -160,9 +161,19 @@ def display_model_image(
                 "images": images,
                 "caption": caption,
             },
+            "phase": phase,
         },
-        "agent_context": f"Displayed images of the {caption}.",
+        "agent_context": f"Configuration updated to {car_config.model} {car_config.exterior} {car_config.interior} {car_config.wheels} and images displayed to the user.",
     }
 
+    if display_type == "NONE" or phase == -1:
+        payload = {
+            "agent_context": f"Configuration updated to {car_config.model} {car_config.exterior} {car_config.interior} {car_config.wheels} and no images displayed to the user.",
+        }
 
-display_model_image_tool = FunctionTool(display_model_image)
+    return payload
+
+
+update_and_display_car_configuration_tool = FunctionTool(
+    update_and_display_car_configuration
+)
