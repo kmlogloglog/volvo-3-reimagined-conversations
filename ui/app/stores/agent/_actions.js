@@ -353,16 +353,22 @@ export default {
                 this.analyser.connect(this.audioContext.destination);
             }
 
+            // Connect to WebSocket before setting up the recorder so no
+            // chunks are dropped while this.connected is still false
+            if (!this.connected) await this.connect();
+
             if (!this.audioRecorderNode && this.mediaStream) {
                 try {
                     const micSource = this.recorderContext.createMediaStreamSource(this.mediaStream);
                     this.audioRecorderNode = new AudioWorkletNode(this.recorderContext, 'pcm-recorder-processor');
 
                     this.audioRecorderNode.port.onmessage = (event) => {
-                        if (this.connected && this.websocket && this.websocket.readyState === WebSocket.OPEN) {
-                            const int16Data = this.float32ToInt16(event.data);
-                            this.websocket.send(int16Data.buffer);
+                        if (!this.connected || !this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
+                            log.warn('AUDIO', 'Chunk skipped — connected:', this.connected, 'readyState:', this.websocket?.readyState);
+                            return;
                         }
+                        const int16Data = this.float32ToInt16(event.data);
+                        this.websocket.send(int16Data.buffer);
                     };
 
                     micSource.disconnect();
@@ -376,8 +382,6 @@ export default {
             log.success('AUDIO', 'Started');
             this.listening = true;
             this.startLevelMonitoring();
-
-            if (!this.connected) await this.connect();
         } catch (error) {
             log.error('AUDIO', 'Failed to start:', error);
             this.listening = false;
