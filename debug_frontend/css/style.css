@@ -160,7 +160,7 @@ h1 {
 .main-layout {
   flex: 1;
   display: flex;
-  max-width: 1800px;
+  max-width: 100%;
   width: 100%;
   margin: 0 auto;
   overflow: hidden;
@@ -331,6 +331,19 @@ h1 {
   object-fit: contain;
 }
 
+/* Component bubble styling */
+.bubble.component-bubble {
+  padding: 1rem 1.25rem;
+  max-width: 85%;
+  min-width: 250px;
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+.message.agent .bubble.component-bubble {
+  color: #333;
+}
 /* Input Form */
 .input-container {
   border-top: 1px solid var(--border-color);

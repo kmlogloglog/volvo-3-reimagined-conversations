@@ -8,13 +8,17 @@ from ..utils import load_car_configurations, load_car_images
 
 logger = logging.getLogger(__name__)
 
+# Load once at module level to avoid repeated disk reads
+CAR_IMAGES = load_car_images()
+CAR_CONFIGS = load_car_configurations()
+
 
 def _get_image_data_from_config(config: CarConfiguration) -> dict | None:
     """
     Resolves configuration and returns a dictionary with image URL and caption using CarConfiguration.
     """
-    images_data = load_car_images()
-    config_data = load_car_configurations()
+    images_data = CAR_IMAGES
+    config_data = CAR_CONFIGS
 
     model_key = config.model
     exterior_key = config.exterior
@@ -84,6 +88,8 @@ def update_and_display_car_configuration(
 ) -> dict:
     """
     Updates the car configuration in the session state and optionally sends a payload to the frontend to display one or more images of the specified car configuration.
+    If the car configuration provided for a specific model is not found or the configuration is incomplete, it will default to the base configuration for the model.
+
     Args:
         tool_context: The tool context containing the session state.
         car_config: The car configuration that needs to be displayed.
@@ -96,7 +102,7 @@ def update_and_display_car_configuration(
             NONE - Do not display any images and just update the configuration in the session state
         phase: The specific phase of the car configuration process. Valid options are integers from 1 to 5.
     Returns:
-        A dictionary containing the UI action to display the images and the agent context.
+        A dictionary containing the UI action to display the images and the agent context mentioning the actual configuration displayed.
     """
     # Validate phase
     if not (1 <= phase <= 5):
@@ -108,7 +114,7 @@ def update_and_display_car_configuration(
     interior = car_config.interior
     wheels = car_config.wheels
 
-    tool_context.state["user:car_config"] = car_config
+    tool_context.state["user:car_config"] = car_config.model_dump()
 
     logger.info(
         f"update_config_and_display_model_image called: model={model_name}, exterior={exterior}, interior={interior}, wheels={wheels}"

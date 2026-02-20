@@ -1,9 +1,11 @@
+import logging
 from typing import Literal, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
-from ..utils import load_car_configurations
+from ..utils import fuzzy_match, load_car_configurations
 
+logger = logging.getLogger(__name__)
 CAR_CONFIGS = load_car_configurations()
 
 
@@ -29,66 +31,59 @@ class CarConfiguration(BaseModel):
 
     @model_validator(mode="after")
     def set_defaults_and_validate(self) -> "CarConfiguration":
-        model_key = self.model
-        model_data = CAR_CONFIGS.get(model_key)
+        available_models = list(CAR_CONFIGS.keys())
 
-        if not model_data:
-            raise ValueError(
-                f"Invalid model '{model_key}'. Valid options: {list(CAR_CONFIGS.keys())}"
+        if self.model not in available_models:
+            # We default to the closest match to avoid disrupting the agent's flow
+            logger.error(
+                f"Invalid model '{self.model}'. Valid options: {available_models}"
             )
+            matched_model = fuzzy_match(self.model, available_models)
+            self.model = matched_model  # type: ignore[assignment]
 
+        model_data = CAR_CONFIGS.get(self.model, {})
         base_config = model_data.get("base_configuration", {})
+        available_exteriors = model_data.get("exteriors", {}).keys()
+        available_interiors = model_data.get("interiors", {}).keys()
+        available_wheels = model_data.get("wheels", {}).keys()
 
-        # 1. Set default exteriors
+        # 1. Set default exteriors if not provided and validate/fuzzy match if provided
         if self.exterior is None:
             self.exterior = base_config.get("exteriors")
             if not self.exterior:
-                # Fallback to first available exteriors
-                available_exteriors = model_data.get("exteriors", {})
-                if available_exteriors:
-                    self.exterior = next(iter(available_exteriors))
+                self.exterior = next(iter(available_exteriors), None)
+        else:
+            if self.exterior not in available_exteriors:
+                logger.error(
+                    f"Invalid exterior '{self.exterior}'. Valid options: {available_exteriors}"
+                )
+                # We default to the closest match to avoid disrupting the agent's flow
+                self.exterior = fuzzy_match(self.exterior, available_exteriors)
 
-        # 2. Set default interiors
+        # 2. Set default interiors if not provided and validate/fuzzy match if provided
         if self.interior is None:
             self.interior = base_config.get("interiors")
             if not self.interior:
-                # Fallback to first available interiors
-                available_interiors = model_data.get("interiors", {})
-                if available_interiors:
-                    self.interior = next(iter(available_interiors))
+                self.interior = next(iter(available_interiors), None)
+        else:
+            if self.interior not in available_interiors:
+                logger.error(
+                    f"Invalid interior '{self.interior}'. Valid options: {available_interiors}"
+                )
+                # We default to the closest match to avoid disrupting the agent's flow
+                self.interior = fuzzy_match(self.interior, available_interiors)
 
-        # 3. Set default wheels
+        # 3. Set default wheels if not provided and validate/fuzzy match if provided
         if self.wheels is None:
             self.wheels = base_config.get("wheels")
             if not self.wheels:
-                # Fallback to first available wheels
-                available_wheels = model_data.get("wheels", {})
-                if available_wheels:
-                    self.wheels = next(iter(available_wheels))
-
-        # 4. Validate Exteriors
-        if self.exterior:
-            valid_exteriors = model_data.get("exteriors", {})
-            if self.exterior not in valid_exteriors:
-                # For an agent, strict validation prevents hallucinations.
-                raise ValueError(
-                    f"Invalid exteriors '{self.exterior}' for model {self.model}. Valid options: {list(valid_exteriors.keys())}"
+                self.wheels = next(iter(available_wheels), None)
+        else:
+            if self.wheels not in available_wheels:
+                logger.error(
+                    f"Invalid wheels '{self.wheels}'. Valid options: {available_wheels}"
                 )
-
-        # 5. Validate Interiors
-        if self.interior:
-            valid_interiors = model_data.get("interiors", {})
-            if self.interior not in valid_interiors:
-                raise ValueError(
-                    f"Invalid interior '{self.interior}' for model {self.model}. Valid options: {list(valid_interiors.keys())}"
-                )
-
-        # 6. Validate Wheels
-        if self.wheels:
-            valid_wheels = model_data.get("wheels", {})
-            if str(self.wheels) not in valid_wheels:
-                raise ValueError(
-                    f"Invalid wheels '{self.wheels}' for model {self.model}. Valid options: {list(valid_wheels.keys())}"
-                )
+                # We default to the closest match to avoid disrupting the agent's flow
+                self.wheels = fuzzy_match(str(self.wheels), available_wheels)
 
         return self

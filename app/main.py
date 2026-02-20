@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import warnings
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -50,7 +51,7 @@ APP_NAME = "volvo-vaen"
 app = FastAPI()
 
 # Mount static files
-static_dir = Path(__file__).parent.parent / "frontend"
+static_dir = Path(__file__).parent.parent / "debug_frontend"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
@@ -78,25 +79,6 @@ runner = Runner(
 )
 
 # ========================================
-# HTTP Endpoints
-# ========================================
-
-
-@app.get("/old_ui")
-async def root() -> FileResponse:
-    """Serve the Voice First UI."""
-    return FileResponse(Path(__file__).parent.parent / "frontend" / "index.html")
-
-
-@app.get("/debug")
-async def debug_ui() -> FileResponse:
-    """Serve the a debug UI to see the different payloads."""
-    return FileResponse(
-        Path(__file__).parent.parent / "frontend" / "debug" / "index.html"
-    )
-
-
-# ========================================
 # WebSocket Endpoint
 # ========================================
 
@@ -106,8 +88,8 @@ async def websocket_endpoint(
     websocket: WebSocket,
     user_id: str,
     session_id: str,
-    proactivity: bool = False,
-    affective_dialog: bool = False,
+    proactivity: bool = True,
+    affective_dialog: bool = True,
 ) -> None:
     """WebSocket endpoint for bidirectional streaming with ADK.
 
@@ -182,7 +164,7 @@ async def websocket_endpoint(
                 f"These settings will be ignored."
             )
     logger.debug(f"RunConfig created: {run_config}")
-
+    current_datetime = datetime.now().astimezone(UTC).strftime("%Y-%m-%d %H:%M:%S")
     # Get or create session (handles both new sessions and reconnections)
     session = await session_service.get_session(
         app_name=APP_NAME,
@@ -190,19 +172,26 @@ async def websocket_endpoint(
         session_id=session_id,
     )
     if session:
+        update_session = False
         if not session.state.get("app:car_configurations"):
             car_configs = load_car_configurations()
-            if car_configs:
-                session.state["app:car_configurations"] = car_configs
-                logger.info("Loaded car configurations into session state.")
-
-                # Persist state update if service supports it
-                if hasattr(session_service, "update_session"):
-                    await session_service.update_session(session)
+            session.state["app:car_configurations"] = car_configs
+            update_session = True
+        if not session.state.get("temp:current_datetime"):
+            session.state["temp:current_datetime"] = current_datetime
+            update_session = True
+        # Persist state update if service supports it
+        if update_session:
+            if hasattr(session_service, "update_session"):
+                await session_service.update_session(session)
+                logger.debug("Session state updated.")
             else:
-                logger.error("Failed to load car configurations.")
+                logger.error("Failed to update session state.")
     else:
-        initial_state = {"app:car_configurations": load_car_configurations()}
+        initial_state = {
+            "app:car_configurations": load_car_configurations(),
+            "temp:current_datetime": current_datetime,
+        }
         await session_service.create_session(
             app_name=APP_NAME,
             user_id=user_id,
@@ -301,6 +290,28 @@ async def websocket_endpoint(
         live_request_queue.close()
 
 
-# Mount Nuxt UI at root (Must be last to avoid capturing other routes)
-ui_public_dir = Path(__file__).parent.parent / "ui" / ".output" / "public"
-app.mount("/", StaticFiles(directory=ui_public_dir, html=True), name="ui")
+# ========================================
+# HTTP Endpoints
+# ========================================
+DEBUG_ROOT_ENDPOINT = os.getenv("DEBUG_ROOT_ENDPOINT", "false").lower() == "true"
+
+if DEBUG_ROOT_ENDPOINT:
+
+    @app.get("/")
+    async def debug_ui() -> FileResponse:
+        """Serve the a debug UI to see the different payloads."""
+        return FileResponse(
+            Path(__file__).parent.parent / "debug_frontend" / "index.html"
+        )
+else:
+
+    @app.get("/debug")
+    async def debug_ui() -> FileResponse:
+        """Serve the a debug UI to see the different payloads."""
+        return FileResponse(
+            Path(__file__).parent.parent / "debug_frontend" / "index.html"
+        )
+
+    # Mount Nuxt UI at root (Must be last to avoid capturing other routes)
+    ui_public_dir = Path(__file__).parent.parent / "ui" / ".output" / "public"
+    app.mount("/", StaticFiles(directory=ui_public_dir, html=True), name="ui")
