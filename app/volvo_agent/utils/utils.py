@@ -62,14 +62,17 @@ def fuzzy_match(selected_option: str, valid_options: list[str]) -> str:
     Fuzzy match tries to match the selected option to the closest valid option.
 
     Args:
-        selected_option (str): The value to match.
-        valid_options (list[str]): The valid options to match against.
+        selected_option (str): The value to match. Must be a non-empty string.
+        valid_options (list[str]): The valid options to match against. Must be a non-empty list.
 
     Returns:
         str: The closest option to the selection.
     """
-    # We assume selected_option is not empty
-    assert selected_option
+    if not selected_option:
+        raise ValueError("selected_option must be a non-empty string")
+    if not valid_options:
+        raise ValueError("valid_options must be a non-empty list")
+
     match, score = process.extractOne(selected_option, valid_options)
     if score >= 75:  # threshold for fuzzy matching
         logger.info(f"Fuzzy matched '{selected_option}' to '{match}' (score: {score})")
@@ -81,7 +84,16 @@ def fuzzy_match(selected_option: str, valid_options: list[str]) -> str:
 
 
 def get_secret(secret_id: str, version_id: str = "latest") -> str | None:
-    """Fetch the secret payload from GCP Secret Manager."""
+    """
+    Fetch the secret payload from GCP Secret Manager.
+
+    Args:
+        secret_id (str): The ID of the secret to fetch.
+        version_id (str): The version of the secret to fetch. Defaults to "latest".
+
+    Returns:
+        str | None: The secret payload if found, None otherwise.
+    """
     project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", "vml-map-xd-volvo")
     try:
         client = secretmanager.SecretManagerServiceClient()

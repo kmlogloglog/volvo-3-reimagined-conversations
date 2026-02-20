@@ -293,7 +293,7 @@ async def websocket_endpoint(
 # ========================================
 # HTTP Endpoints
 # ========================================
-DEBUG_ROOT_ENDPOINT = os.getenv("DEBUG_ROOT_ENDPOINT", False)
+DEBUG_ROOT_ENDPOINT = os.getenv("DEBUG_ROOT_ENDPOINT", "false").lower() == "true"
 
 if DEBUG_ROOT_ENDPOINT:
 

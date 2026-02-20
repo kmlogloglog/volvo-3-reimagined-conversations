@@ -51,7 +51,7 @@ class CarConfiguration(BaseModel):
         if self.exterior is None:
             self.exterior = base_config.get("exteriors")
             if not self.exterior:
-                self.exterior = base_config.get("exteriors")
+                self.exterior = next(iter(available_exteriors), None)
         else:
             if self.exterior not in available_exteriors:
                 logger.error(
@@ -64,7 +64,7 @@ class CarConfiguration(BaseModel):
         if self.interior is None:
             self.interior = base_config.get("interiors")
             if not self.interior:
-                self.interior = base_config.get("interiors")
+                self.interior = next(iter(available_interiors), None)
         else:
             if self.interior not in available_interiors:
                 logger.error(
@@ -77,7 +77,7 @@ class CarConfiguration(BaseModel):
         if self.wheels is None:
             self.wheels = base_config.get("wheels")
             if not self.wheels:
-                self.wheels = base_config.get("wheels")
+                self.wheels = next(iter(available_wheels), None)
         else:
             if self.wheels not in available_wheels:
                 logger.error(

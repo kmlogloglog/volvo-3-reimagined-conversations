@@ -8,13 +8,17 @@ from ..utils import load_car_configurations, load_car_images
 
 logger = logging.getLogger(__name__)
 
+# Load once at module level to avoid repeated disk reads
+CAR_IMAGES = load_car_images()
+CAR_CONFIGS = load_car_configurations()
+
 
 def _get_image_data_from_config(config: CarConfiguration) -> dict | None:
     """
     Resolves configuration and returns a dictionary with image URL and caption using CarConfiguration.
     """
-    images_data = load_car_images()
-    config_data = load_car_configurations()
+    images_data = CAR_IMAGES
+    config_data = CAR_CONFIGS
 
     model_key = config.model
     exterior_key = config.exterior
@@ -110,7 +114,7 @@ def update_and_display_car_configuration(
     interior = car_config.interior
     wheels = car_config.wheels
 
-    tool_context.state["user:car_config"] = car_config
+    tool_context.state["user:car_config"] = car_config.model_dump()
 
     logger.info(
         f"update_config_and_display_model_image called: model={model_name}, exterior={exterior}, interior={interior}, wheels={wheels}"
