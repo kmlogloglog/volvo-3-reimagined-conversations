@@ -3,7 +3,6 @@
         ref="containerRef"
         class="fold-out-wrapper">
 
-        <!-- Trigger button -->
         <NavigationBarButton
             :active="isOpen"
             @click="isOpen = !isOpen">
@@ -14,7 +13,6 @@
             </span>
         </NavigationBarButton>
 
-        <!-- Menu panel — opens up and to the right -->
         <Transition name="menu">
             <ul
                 v-if="isOpen"
@@ -24,7 +22,7 @@
                     v-for="option in options"
                     :key="option.id"
                     class="menu-item"
-                    :class="{ active: option.active === true }"
+                    :class="{ active: option.active === true, disabled: option.disabled === true }"
                     @click="handleSelect(option)">
                     <span
                         v-if="option.icon"
@@ -92,6 +90,7 @@
     });
 
     function handleSelect(option) {
+        if (option.disabled) return;
         emit('select', option);
         isOpen.value = false;
     }
@@ -133,7 +132,6 @@
     position: absolute;
     transform-origin: var(--menu-transform-origin, bottom left);
 
-    // Rim highlight matching the audio button style
     &::before {
         content: '';
         position: absolute;
@@ -183,6 +181,12 @@
             opacity: 1;
         }
     }
+
+    &.disabled {
+        cursor: default;
+        opacity: 0.35;
+        pointer-events: none;
+    }
 }
 
 .menu-item-icon {
@@ -196,7 +200,6 @@
     flex: 1;
 }
 
-// Transition
 .menu-enter-active,
 .menu-leave-active {
     transition:

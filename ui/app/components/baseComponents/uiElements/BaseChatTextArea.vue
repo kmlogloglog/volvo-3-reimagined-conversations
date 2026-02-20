@@ -1,20 +1,33 @@
 <template>
-    <div class="chat-text-input-wrapper">
+    <div class="chat-text-input-wrapper" :class="{ loading }">
         <textarea
             :id="id"
             ref="textareaRef"
             v-model="vModel"
             type="text"
             class="chat-text-input"
-            :disabled="disabled"
+            :disabled="disabled || loading"
             :placeholder="placeholderTxt"
             @keydown.enter.prevent="onSubmit"></textarea>
         <button
             type="button"
             class="button-reset chat-text-button"
-            :disabled="disabled"
+            :disabled="disabled || loading"
             @click="onSubmit">
             <span
+                v-if="loading"
+                class="spinner">
+                <svg viewBox="0 0 100 100">
+                    <circle
+                        cx="50" cy="50" r="40"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="4"
+                        stroke-dasharray="209 251" />
+                </svg>
+            </span>
+            <span
+                v-else
                 class="chat-text-button-icon"
                 :class="[vModel === '' ? 'icon-paper-plane dimmed' : 'icon-paper-plane-fill']"></span>
         </button>
@@ -25,6 +38,10 @@
 
     defineProps({
         disabled: {
+            type: Boolean,
+            default: false,
+        },
+        loading: {
             type: Boolean,
             default: false,
         },
@@ -97,7 +114,8 @@
                 color: var(--input-color-font-placeholder);
             }
 
-            &:disabled {
+            &:disabled,
+            &.loading {
                 &::placeholder {
                     color: var(--input-color-font-placeholder-disabled);
                 }
@@ -105,7 +123,10 @@
         }
 
         &-button {
+            align-items: center;
             bottom: .55rem;
+            display: flex;
+            min-height: 1.5rem;
             position: absolute;
             right: .75rem;
             z-index: 1;
@@ -114,11 +135,24 @@
                 color: var(--input-color-font-placeholder);
             }
 
-            &:disabled {
+            &:disabled,
+            &.loading {
                 & .chat-text-button-icon {
                     color: var(--input-color-font-placeholder-disabled);
                 }
             }
         }
+    }
+
+    .spinner {
+        animation: spin 1s linear infinite;
+        color: var(--input-color-font-placeholder);
+        display: inline-block;
+        width: 20px;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
     }
 </style>

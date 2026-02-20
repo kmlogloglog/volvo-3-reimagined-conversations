@@ -396,6 +396,7 @@ export default {
     },
 
     sendMessage(text) {
+        console.log(text);
         // in conversation remove all messages where finished is false
 
         this.addMessage({

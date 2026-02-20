@@ -1,7 +1,7 @@
 <template>
     <div
         class="view">
-        <BackgroundImagesCarousel
+        <BackgroundImages
             :src="agentStore.backgroundImages" />
         <div
             class="base-view">
@@ -39,7 +39,7 @@
     import AudioCaptureBlob from '@/components/animations/AudioCaptureBlob.vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
     import FileUpload from '@/components/upload/FileUpload.vue';
-    import BackgroundImagesCarousel from '@/components/backgroundImage/BackgroundImagesCarousel.vue';
+    import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
     import AudioCaptureMeter from '@/components/animations/AudioCaptureMeter.vue';
 
     const agentStore = useAgentStore();
@@ -73,13 +73,16 @@
     });
 
     const { listening: isListening } = storeToRefs(agentStore);
-
-    watch([isConnected, isListening], ([newConnectedVal, newListeningVal], [oldConnectedVal]) => {
-        if (oldConnectedVal){
-            return;
+    // Watch specifically for audio listening starting
+    watch(isListening, (newVal) => {
+        if (newVal && !isChatActive.value) {
+            agent.sendMessage(AGENT.INTRODUCTION);
         }
+    });
 
-        if (newConnectedVal && newListeningVal || (newConnectedVal && isChatActive.value)) {
+    // Watch specifically for connection in chat mode
+    watch(isConnected, (newVal) => {
+        if (newVal && isChatActive.value) {
             agent.sendMessage(AGENT.INTRODUCTION);
         }
     });

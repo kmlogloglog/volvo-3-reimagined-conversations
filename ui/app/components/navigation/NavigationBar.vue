@@ -15,8 +15,8 @@
 </template>
 
 <script setup>
-    import NavigationBarAudioButton from './NavigationBarAudioButton.vue';
-    import NavigationBarFoldOut from './NavigationBarFoldOut.vue';
+    import NavigationBarAudioButton from '@/components/navigation/NavigationBarAudioButton.vue';
+    import NavigationBarFoldOut from '@/components/navigation/NavigationBarFoldout.vue';
     import { useAgentStore } from '@/stores/agent';
     import { ROUTE } from '@/constants/route';
     import { EMITS } from '@/constants/emits.js';
@@ -50,6 +50,7 @@
             id: ROUTE.CAMERA.id,
             label: ROUTE.CAMERA.label,
             icon: ROUTE.CAMERA.icon,
+            disabled: true,
         },
     ]);
 

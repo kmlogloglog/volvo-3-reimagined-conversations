@@ -14,6 +14,7 @@
                 ref="chatTextareaRef"
                 v-model="chatMessage"
                 :disabled="!agentStore.connected"
+                :loading="agentStore.connecting"
                 @submit="handleChatSubmit" />
         </div>
     </div>

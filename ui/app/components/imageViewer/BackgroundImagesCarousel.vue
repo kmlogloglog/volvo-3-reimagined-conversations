@@ -5,7 +5,6 @@
             drop-shadow="var(--color-black)"
             class="logo" />
 
-        <!-- Horizontal slider -->
         <div
             v-if="safeImageCount > 0"
             class="carousel-slider"
@@ -21,7 +20,6 @@
             </div>
         </div>
 
-        <!-- Navigation arrows -->
         <div v-if="safeImageCount > 1" class="carousel-navigation">
             <button
                 :disabled="currentIndex === 0"
@@ -41,8 +39,9 @@
         </div>
     </div>
 </template>
+
 <script setup>
-    import { ref, watch, onMounted, computed } from 'vue';
+    import { ref, computed } from 'vue';
     import { useSwipe } from '@vueuse/core';
     import VolvoLogo from '@/components/logo/VolvoLogo.vue';
 
@@ -57,63 +56,35 @@
     const currentIndex = ref(0);
     const containerRef = ref(null);
 
-    // Safe array access with null checks
-    const safeImageArray = computed(() => {
-        return Array.isArray(props.src) ? props.src : [];
-    });
+    const safeImageArray = computed(() => Array.isArray(props.src) ? props.src : []);
+    const safeImageCount = computed(() => safeImageArray.value.length);
 
-    const safeImageCount = computed(() => {
-        return safeImageArray.value?.length ?? 0;
-    });
-
-    // Navigation functions
     function nextImage() {
-        const maxIndex = safeImageCount.value - 1;
-        if (currentIndex.value < maxIndex) {
-            currentIndex.value++;
-        }
-    };
+        if (currentIndex.value < safeImageCount.value - 1) currentIndex.value++;
+    }
 
-    function previousImage () {
-        if (currentIndex.value > 0) {
-            currentIndex.value--;
-        }
-    };
+    function previousImage() {
+        if (currentIndex.value > 0) currentIndex.value--;
+    }
 
-    // Reset when src changes
-    watch(() => props.src, () => {
-        currentIndex.value = 0;
-    });
-
-    // Client-side initialization
-    onMounted(() => {
-        // Swipe gesture handling
-        if (containerRef.value) {
-            const { lengthX } = useSwipe(containerRef, {
-                threshold: 50,
-                onSwipeEnd() {
-                    if (lengthX.value > 50) {
-                        previousImage();
-                    } else if (lengthX.value < -50) {
-                        nextImage();
-                    }
-                },
-            });
-        }
-    });
-
-    // Arrow click handler
     const handleArrowClick = (direction) => {
-        if (direction === 'prev') {
-            previousImage();
-        } else if (direction === 'next') {
-            nextImage();
-        }
+        if (direction === 'prev') previousImage();
+        else if (direction === 'next') nextImage();
     };
+
+    if (import.meta.client) {
+        const { lengthX } = useSwipe(containerRef, {
+            threshold: 50,
+            onSwipeEnd() {
+                if (lengthX.value > 50) previousImage();
+                else if (lengthX.value < -50) nextImage();
+            },
+        });
+    }
 </script>
+
 <style lang="scss" scoped>
 .image-container {
-    display: flex;
     height: 100%;
     left: 0;
     overflow: hidden;
@@ -184,16 +155,8 @@
     transition: all .3s ease;
     width: 2.5rem;
 
-    &.disabled {
-        opacity: 0.5;
-    }
-
-    &-left {
-        margin-left: -0.1875rem;
-    }
-
-    &-right {
-        margin-left: 0.1875rem;
-    }
+    &.disabled { opacity: 0.5; }
+    &-left     { margin-left: -0.1875rem; }
+    &-right    { margin-left:  0.1875rem; }
 }
 </style>
