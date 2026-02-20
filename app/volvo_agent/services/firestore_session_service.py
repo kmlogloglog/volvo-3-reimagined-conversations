@@ -1,3 +1,9 @@
+import os
+
+# Suppress verbose gRPC C++ logs from the async Firestore client
+os.environ.setdefault("GRPC_VERBOSITY", "ERROR")
+os.environ.setdefault("GRPC_ENABLE_FORK_SUPPORT", "0")
+
 import logging
 from typing import Any, Optional
 
@@ -8,7 +14,7 @@ from google.adk.sessions.base_session_service import (
     ListSessionsResponse,
 )
 from google.adk.sessions.session import Session
-from google.cloud import firestore  # type: ignore[attr-defined]
+from google.cloud.firestore_v1.async_client import AsyncClient
 from google.cloud.firestore_v1.base_query import FieldFilter
 
 logger = logging.getLogger(__name__)
@@ -34,7 +40,7 @@ class FirestoreSessionService(BaseSessionService):
     ):
         # uses GOOGLE_APPLICATION_CREDENTIALS or gcloud auth
         try:
-            self.db = firestore.Client(project=project_id, database=database)
+            self.db = AsyncClient(project=project_id, database=database)
             self.root_collection = self.db.collection(root_collection)
             logger.info(
                 f"FirestoreSessionService initialized. Project: {self.db.project}, Root: {root_collection}"
@@ -61,7 +67,7 @@ class FirestoreSessionService(BaseSessionService):
     ) -> Session | None:
         """Retrieves a session from Firestore, including its events."""
         session_ref = self._get_session_ref(user_id, session_id)
-        session_doc = session_ref.get()
+        session_doc = await session_ref.get()
 
         if not session_doc.exists:
             return None
@@ -80,12 +86,11 @@ class FirestoreSessionService(BaseSessionService):
 
         # Fetch events from sub-collection, ordered by timestamp
         events_ref = session_ref.collection("events")
-        events_stream = events_ref.order_by("timestamp").stream()
 
         # TODO: Implement event filtering based on GetSessionConfig
 
         events = []
-        for event_doc in events_stream:
+        async for event_doc in events_ref.order_by("timestamp").stream():
             event_data = event_doc.to_dict()
             if event_data:
                 try:
@@ -125,7 +130,7 @@ class FirestoreSessionService(BaseSessionService):
 
         # Save session metadata (excluding events list to keep root doc light)
         session_data = session.model_dump(mode="json", exclude={"events"})
-        session_ref.set(session_data)
+        await session_ref.set(session_data)
 
         return session
 
@@ -135,13 +140,17 @@ class FirestoreSessionService(BaseSessionService):
         """Deletes a session and its sub-collections."""
         session_ref = self._get_session_ref(user_id, session_id)
 
-        # Delete events sub-collection
+        # Delete all events in sub-collection (batch of 100 at a time)
         events_ref = session_ref.collection("events")
-        docs = events_ref.limit(100).stream()
-        for doc in docs:
-            doc.reference.delete()
+        while True:
+            deleted = 0
+            async for doc in events_ref.limit(100).stream():
+                await doc.reference.delete()
+                deleted += 1
+            if deleted < 100:
+                break
 
-        session_ref.delete()
+        await session_ref.delete()
 
     async def list_sessions(
         self, *, app_name: str, user_id: str | None = None
@@ -153,18 +162,18 @@ class FirestoreSessionService(BaseSessionService):
             # Efficient: List only sessions for this user
             sessions_ref = self.root_collection.document(user_id).collection("sessions")
             query = sessions_ref.where(filter=FieldFilter("app_name", "==", app_name))
-            docs = query.limit(50).stream()
+            stream = query.limit(50).stream()
         else:
             # Less efficient: Query all sessions via Collection Group
             # Requires 'sessions' collectionGroup index if we sort/filter strictly
             # For now we just query collectionGroup('sessions').where(...)
             # Note: This might require an index creation link in logs
             query = self.db.collection_group("sessions").where(
-                "app_name", "==", app_name
+                filter=FieldFilter("app_name", "==", app_name)
             )
-            docs = query.limit(50).stream()
+            stream = query.limit(50).stream()
 
-        for doc in docs:
+        async for doc in stream:
             data = doc.to_dict()
             if data:
                 try:
@@ -179,6 +188,7 @@ class FirestoreSessionService(BaseSessionService):
     async def append_event(self, session: Session, event: Event) -> None:  # type: ignore
         """Appends an event to the session's events sub-collection."""
         session.events.append(event)
+        session.last_update_time = event.timestamp
 
         session_ref = self._get_session_ref(session.user_id, session.id)
         events_ref = session_ref.collection("events")
@@ -188,9 +198,24 @@ class FirestoreSessionService(BaseSessionService):
         doc_id = event.id if event.id else None
 
         if doc_id:
-            events_ref.document(doc_id).set(event_data)
+            await events_ref.document(doc_id).set(event_data)
         else:
-            events_ref.add(event_data)
+            await events_ref.add(event_data)
+
+        # Persist state deltas to the session document
+        if event.actions and event.actions.state_delta:
+            # Filter out temp: keys (not persisted) and apply the rest
+            state_update = {
+                k: v
+                for k, v in event.actions.state_delta.items()
+                if not k.startswith("temp:")
+            }
+            if state_update:
+                session.state.update(state_update)
+                await session_ref.set(
+                    {"state": session.state, "last_update_time": event.timestamp},
+                    merge=True,
+                )
 
     async def update_session(self, session: Session) -> None:
         """Updates session metadata in Firestore."""
@@ -199,4 +224,4 @@ class FirestoreSessionService(BaseSessionService):
         session_data = session.model_dump(mode="json", exclude={"events"})
         # Use set with merge=True to update fields without deleting unmentioned ones
         # (though we are dumping the whole session model so it should be complete metadata)
-        session_ref.set(session_data, merge=True)
+        await session_ref.set(session_data, merge=True)

@@ -201,6 +201,11 @@ async def websocket_endpoint(
 
     live_request_queue = LiveRequestQueue()
 
+    # Track events and state deltas during the live session
+    # so we can ingest them into memory on disconnect
+    live_events: list[Any] = []
+    accumulated_state: dict[str, Any] = {}
+
     # ========================================
     # Phase 3: Active Session (concurrent bidirectional communication)
     # ========================================
@@ -265,6 +270,11 @@ async def websocket_endpoint(
             live_request_queue=live_request_queue,
             run_config=run_config,
         ):
+            # Capture events and state deltas for memory ingestion
+            live_events.append(event)
+            if event.actions and event.actions.state_delta:
+                accumulated_state.update(event.actions.state_delta)
+
             event_json = event.model_dump_json(exclude_none=True, by_alias=True)
             logger.debug(f"[SERVER] Event: {event_json}")
             await websocket.send_text(event_json)
@@ -288,6 +298,25 @@ async def websocket_endpoint(
         # Always close the queue, even if exceptions occurred
         logger.debug("Closing live_request_queue")
         live_request_queue.close()
+
+        # Ingest session data into memory
+        try:
+            session = await session_service.get_session(
+                app_name=APP_NAME,
+                user_id=user_id,
+                session_id=session_id,
+            )
+            if session:
+                # Merge state deltas and events captured during the live
+                # session, since run_live may not persist them to the
+                # session service before the WebSocket disconnects.
+                session.state.update(accumulated_state)
+                if live_events:
+                    session.events = live_events
+                await memory_service.add_session_to_memory(session)
+                logger.debug("Session ingested into memory")
+        except Exception as e:
+            logger.error(f"Failed to ingest session into memory: {e}")
 
 
 # ========================================
