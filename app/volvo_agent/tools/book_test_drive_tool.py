@@ -23,7 +23,7 @@ def book_test_drive(
     Args:
         tool_context: The tool context.
         retailer: The selected retailer.
-        user_info: The user's information.
+        user_info: The user's information. The user full name and email are required.
         appointment_slot: The desired appointment slot.
 
     Returns:
@@ -43,8 +43,12 @@ def book_test_drive(
 
     # Mock Availability Check
     # In a real app, this would query the retailer's booking system
-    # Randomize availability to test both success and failure flows
-    is_available = random.choice([True, False])
+    if tool_context.state.get("temp:booking_attempted"):
+        is_available = True
+    else:
+        # Randomize availability to test both success and failure flows
+        is_available = random.choice([True, False])
+        tool_context.state["temp:booking_attempted"] = True
 
     if not is_available:
         # Calculate alternative slots based on the USER'S requested slot
