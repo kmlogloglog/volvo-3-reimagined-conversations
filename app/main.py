@@ -1,12 +1,16 @@
 """FastAPI application demonstrating ADK Bidi-streaming with WebSocket."""
 
+# Suppress verbose gRPC C++ logs — must be set before any google.* import
+import os
+
+os.environ.setdefault("GRPC_VERBOSITY", "ERROR")
+os.environ.setdefault("GRPC_ENABLE_FORK_SUPPORT", "0")
+
 import asyncio
 import base64
 import json
 import logging
-import os
 import warnings
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -17,23 +21,22 @@ from fastapi.staticfiles import StaticFiles
 from google.adk.agents.live_request_queue import LiveRequestQueue
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.runners import Runner
-from google.adk.sessions.in_memory_session_service import InMemorySessionService
 from google.genai import types
 
-from .volvo_agent.services.firestore_session_service import FirestoreSessionService
-from .volvo_agent.services.memory_service import MemoryService
-from .volvo_agent.utils import load_car_configurations
-
-# Load environment variables from .env file BEFORE importing agent
+# Load environment variables from .env file BEFORE importing agent and services
 load_dotenv(Path(__file__).parent / ".env")
 
-# Import agent after loading environment variables
+# Import agent and services after loading environment variables
 # pylint: disable=wrong-import-position
+from .volvo_agent.services.registry import (  # noqa: E402
+    memory_service,
+    session_service,
+)
 from .volvo_agent.volvo_agent import root_agent as agent  # noqa: E402
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
@@ -41,34 +44,21 @@ logger = logging.getLogger(__name__)
 # Suppress Pydantic serialization warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
-# Application name constant
-APP_NAME = "volvo-vaen"
+# Suppress ADK logging a normal WebSocket close (code 1000) as ERROR
+logging.getLogger("google_adk.google.adk.flows.llm_flows.base_llm_flow").setLevel(
+    logging.CRITICAL
+)
 
 # ========================================
 # Phase 1: Application Initialization (once at startup)
 # ========================================
 
+APP_NAME = "volvo_vaen"
 app = FastAPI()
 
 # Mount static files
 static_dir = Path(__file__).parent.parent / "debug_frontend"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
-
-
-# Define your session and memory services based on config
-use_firestore = os.getenv("USE_FIRESTORE", "false").lower() == "true"
-google_cloud_project = os.getenv("GOOGLE_CLOUD_PROJECT")
-
-if use_firestore:
-    if not google_cloud_project:
-        logger.warning("USE_FIRESTORE is True but GOOGLE_CLOUD_PROJECT is not set.")
-    logger.info("Using FirestoreSessionService")
-    session_service: Any = FirestoreSessionService(project_id=google_cloud_project)
-else:
-    logger.info("Using InMemorySessionService")
-    session_service = InMemorySessionService()
-
-memory_service = MemoryService(session_service=session_service)
 
 # Define your runner
 runner = Runner(
@@ -164,39 +154,18 @@ async def websocket_endpoint(
                 f"These settings will be ignored."
             )
     logger.debug(f"RunConfig created: {run_config}")
-    current_datetime = datetime.now().astimezone(UTC).strftime("%Y-%m-%d %H:%M:%S")
+
     # Get or create session (handles both new sessions and reconnections)
     session = await session_service.get_session(
         app_name=APP_NAME,
         user_id=user_id,
         session_id=session_id,
     )
-    if session:
-        update_session = False
-        if not session.state.get("app:car_configurations"):
-            car_configs = load_car_configurations()
-            session.state["app:car_configurations"] = car_configs
-            update_session = True
-        if not session.state.get("temp:current_datetime"):
-            session.state["temp:current_datetime"] = current_datetime
-            update_session = True
-        # Persist state update if service supports it
-        if update_session:
-            if hasattr(session_service, "update_session"):
-                await session_service.update_session(session)
-                logger.debug("Session state updated.")
-            else:
-                logger.error("Failed to update session state.")
-    else:
-        initial_state = {
-            "app:car_configurations": load_car_configurations(),
-            "temp:current_datetime": current_datetime,
-        }
+    if not session:
         await session_service.create_session(
             app_name=APP_NAME,
             user_id=user_id,
             session_id=session_id,
-            state=initial_state,
         )
 
     live_request_queue = LiveRequestQueue()
@@ -213,50 +182,56 @@ async def websocket_endpoint(
     async def upstream_task() -> None:
         """Receives messages from WebSocket and sends to LiveRequestQueue."""
         logger.debug("upstream_task started")
-        while True:
-            # Receive message from WebSocket (text or binary)
-            message = await websocket.receive()
+        try:
+            while True:
+                # Receive message from WebSocket (text or binary)
+                message = await websocket.receive()
 
-            # Handle binary frames (audio data)
-            if "bytes" in message:
-                audio_data = message["bytes"]
-                logger.debug(f"Received binary audio chunk: {len(audio_data)} bytes")
-
-                audio_blob = types.Blob(
-                    mime_type="audio/pcm;rate=16000", data=audio_data
-                )
-                live_request_queue.send_realtime(audio_blob)
-
-            # Handle text frames (JSON messages)
-            elif "text" in message:
-                text_data = message["text"]
-                logger.debug(f"Received text message: {text_data[:100]}...")
-
-                json_message = json.loads(text_data)
-
-                # Extract text from JSON and send to LiveRequestQueue
-                if json_message.get("type") == "text":
-                    logger.debug(f"Sending text content: {json_message['text']}")
-                    content = types.Content(
-                        parts=[types.Part(text=json_message["text"])]
-                    )
-                    live_request_queue.send_content(content)
-
-                # Handle image data
-                elif json_message.get("type") == "image":
-                    logger.debug("Received image data")
-
-                    # Decode base64 image data
-                    image_data = base64.b64decode(json_message["data"])
-                    mime_type = json_message.get("mimeType", "image/jpeg")
-
+                # Handle binary frames (audio data)
+                if "bytes" in message:
+                    audio_data = message["bytes"]
                     logger.debug(
-                        f"Sending image: {len(image_data)} bytes, type: {mime_type}"
+                        f"Received binary audio chunk: {len(audio_data)} bytes"
                     )
 
-                    # Send image as blob
-                    image_blob = types.Blob(mime_type=mime_type, data=image_data)
-                    live_request_queue.send_realtime(image_blob)
+                    audio_blob = types.Blob(
+                        mime_type="audio/pcm;rate=16000", data=audio_data
+                    )
+                    live_request_queue.send_realtime(audio_blob)
+
+                # Handle text frames (JSON messages)
+                elif "text" in message:
+                    text_data = message["text"]
+                    logger.debug(f"Received text message: {text_data[:100]}...")
+
+                    json_message = json.loads(text_data)
+
+                    # Extract text from JSON and send to LiveRequestQueue
+                    if json_message.get("type") == "text":
+                        logger.debug(f"Sending text content: {json_message['text']}")
+                        content = types.Content(
+                            parts=[types.Part(text=json_message["text"])]
+                        )
+                        live_request_queue.send_content(content)
+
+                    # Handle image data
+                    elif json_message.get("type") == "image":
+                        logger.debug("Received image data")
+
+                        # Decode base64 image data
+                        image_data = base64.b64decode(json_message["data"])
+                        mime_type = json_message.get("mimeType", "image/jpeg")
+
+                        logger.debug(
+                            f"Sending image: {len(image_data)} bytes, type: {mime_type}"
+                        )
+
+                        # Send image as blob
+                        image_blob = types.Blob(mime_type=mime_type, data=image_data)
+                        live_request_queue.send_realtime(image_blob)
+        except (WebSocketDisconnect, RuntimeError):
+            logger.info("Client disconnected (upstream)")
+            live_request_queue.close()
 
     async def downstream_task() -> None:
         """Receives Events from run_live() and sends to WebSocket."""
@@ -275,21 +250,23 @@ async def websocket_endpoint(
             if event.actions and event.actions.state_delta:
                 accumulated_state.update(event.actions.state_delta)
 
-            event_json = event.model_dump_json(exclude_none=True, by_alias=True)
-            logger.debug(f"[SERVER] Event: {event_json}")
-            await websocket.send_text(event_json)
+            try:
+                event_json = event.model_dump_json(exclude_none=True, by_alias=True)
+                logger.debug(f"[SERVER] Event: {event_json}")
+                await websocket.send_text(event_json)
+            except (WebSocketDisconnect, RuntimeError):
+                logger.info("Client disconnected (downstream)")
+                break
         logger.debug("run_live() generator completed")
 
     # Run both tasks concurrently
-    # Exceptions from either task will propagate and cancel the other task
+    # upstream_task and downstream_task handle disconnects internally
     try:
         logger.debug("Starting asyncio.gather for upstream and downstream tasks")
         await asyncio.gather(upstream_task(), downstream_task())
         logger.debug("asyncio.gather completed normally")
-    except WebSocketDisconnect:
-        logger.debug("Client disconnected normally")
     except Exception as e:
-        logger.error(f"Unexpected error in streaming tasks: {e}", exc_info=True)
+        logger.info(f"Session ended: {e}")
     finally:
         # ========================================
         # Phase 4: Session Termination

@@ -5,7 +5,7 @@ import googlemaps
 from google.adk.tools import FunctionTool, ToolContext
 
 from ..schemas.test_drive import Location, Retailer
-from ..utils.utils import get_secret
+from ..utils import get_secret
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +48,8 @@ def find_retailer(tool_context: ToolContext, location: Location) -> dict:
     query = f"{location.city}, {location.nation}"
     if location.street:
         query = f"{location.street}, {query}"
+
+    tool_context.state["user:location"] = location.model_dump()
 
     retailer_phone = None
     if gmaps_client:
@@ -99,11 +101,7 @@ def find_retailer(tool_context: ToolContext, location: Location) -> dict:
         phone=retailer_phone,
     )
 
-    # Save to session state
-    tool_context.state["user:selected_retailer"] = retailer.model_dump()
-    logger.info(
-        f"Saved selected_retailer to state: {tool_context.state['user:selected_retailer']}"
-    )
+    tool_context.state["found_retailer"] = retailer.model_dump()
 
     return {
         "ui_action": {

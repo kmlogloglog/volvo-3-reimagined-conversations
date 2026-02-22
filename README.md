@@ -144,15 +144,18 @@ Control persistence via the `USE_FIRESTORE` environment variable:
     -   Recommended for production and for realistic local development.
     -   **Hierarchy**:
         -   Sessions: `users/{user_id}/sessions/{session_id}`
-        -   Memories: `users/{user_id}/memories/{memory_id}`
+        -   Memories: `users/{user_id}/memories/{field_key}`
     -   Requires `google-cloud-firestore` API and authenticated credentials.
 
-### Memory Features
+### Memory Architecture
 
-The agent uses a hybrid **Memory Service**:
+When a session ends (WebSocket disconnect), the **Memory Service** runs two steps:
 
--   **Access**: The agent can search past memories to answer user questions (e.g., "What did I tell you about my car?").
--   **Fallback**: When Firestore is disabled, it behaves identically but stores "saved" facts in a temporary in-memory list.
+1.  **Field-level persistence**: Each `user:` state field set by tools during the conversation (e.g., `user:full_name`, `user:email`, `user:car_config`) is saved as an individual Firestore document under `users/{user_id}/memories/`. This means each field can be updated independently across sessions.
+
+2.  **LLM-powered summary consolidation**: The conversation transcript is sent to an LLM (Gemini 2.5 Flash) along with any existing summary from prior sessions. The LLM produces a consolidated summary that accumulates knowledge about the user across all sessions. This summary is stored as `users/{user_id}/memories/interactions_summary`.
+
+When a new session starts, the **Preload Memory Callback** loads all stored fields back into session state and makes the consolidated summary available to the agent's prompt, enabling personalized greetings and context-aware conversations.
 
 ## Frontend Features
 
@@ -181,28 +184,32 @@ This command:
 ```
 .
 ├── app/
-│   ├── main.py                   # FastAPI entry point
-│   ├── .env                      # Environment variables
-│   ├── volvo_agent/              # Agent logic
-│   │   ├── volvo_agent.py        # Agent definition
-│   │   ├── config/               # Configuration & Prompts
-│   │   ├── services/             # Session & Memory services (Firestore/InMemory)
-│   │   └── tools/                # Agent tools (SaveMemory, Search, etc.)
+│   ├── main.py                       # FastAPI entry point & WebSocket handler
+│   ├── .env                          # Environment variables
+│   └── volvo_agent/                  # Agent logic
+│       ├── volvo_agent.py            # Agent definition (model, tools, callbacks)
+│       ├── callbacks/                # Lifecycle callbacks
+│       │   └── preload_memory_callback.py  # Loads memories at session start
+│       ├── config/                   # Prompts & configuration
+│       │   └── prompts.py            # Agent system prompt
+│       ├── knowledge/                # Static knowledge base (JSON)
+│       ├── schemas/                  # Pydantic models (car config, test drive)
+│       ├── services/                 # Session, Memory & service registry
+│       │   ├── registry.py           # Service singletons (session, memory, genai)
+│       │   ├── memory_service.py     # Memory persistence & LLM summary
+│       │   └── firestore_session_service.py
+│       ├── tools/                    # Agent tools
+│       │   ├── update_and_display_car_configuration_tool.py
+│       │   ├── find_retailer_tool.py
+│       │   └── book_test_drive_tool.py
+│       └── utils/                    # Shared utilities (JSON loading, fuzzy match)
 │
-├── frontend/                     # Source frontend files
-│   ├── index.html                # Main Voice UI
-│   ├── css/                      # Styles
-│   ├── js/                       # Application logic & audio processors
-│   ├── img/                      # Assets (logos, icons)
-│   └── debug/                    # Debug Interface
-│       ├── index.html
-│       ├── css/
-│       └── js/
-│
-├── Makefile                      # Command shortcuts
-├── pyproject.toml                # Dependencies
-├── Dockerfile                    # Deployment container definition
-└── README.md                     # Documentation
+├── ui/                               # Frontend (Nuxt)
+├── debug_frontend/                   # Debug interface
+├── Makefile                          # Command shortcuts
+├── pyproject.toml                    # Dependencies
+├── Dockerfile                        # Deployment container definition
+└── README.md                         # Documentation
 ```
 
 ## Useful Commands
