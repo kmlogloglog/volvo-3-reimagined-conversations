@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 use_firestore = os.getenv("USE_FIRESTORE", "false").lower() == "true"
 google_cloud_project = os.getenv("GOOGLE_CLOUD_PROJECT", "vml-map-xd-volvo")
-firestore_db = os.getenv("FIRESTORE_DB", "volvo-vaen")
+firestore_db = os.getenv("FIRESTORE_DB", "(default)")
 
 session_service: BaseSessionService
 memory_service: BaseMemoryService

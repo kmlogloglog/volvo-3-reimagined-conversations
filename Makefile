@@ -11,7 +11,8 @@ DOMAIN           := vml.com
 DEBUG_ROOT_ENDPOINT := True
 
 # Service Names
-AGENT_SERVICE_NAME := volvo-vaen
+AGENT_SERVICE_NAME := volvo-vaen-v2
+FIRESTORE_DB 	 := $(AGENT_SERVICE_NAME)-db
 
 # Service URLs
 SERVICE_URL  := https://$(AGENT_SERVICE_NAME)-$(PROJECT_NUMBER).$(PROJECT_LOCATION).run.app
@@ -49,7 +50,7 @@ setup-apis: ## Enable required Google Cloud APIs
 	gcloud services enable aiplatform.googleapis.com firestore.googleapis.com run.googleapis.com cloudbuild.googleapis.com logging.googleapis.com iam.googleapis.com iap.googleapis.com --project $(PROJECT_ID)
 
 setup-firestore: ## Create the default Firestore database (if it doesn't exist)
-	gcloud firestore databases create --location=$(PROJECT_LOCATION) --database="(default)" --project=$(PROJECT_ID) || echo "Database might already exist or error occurred."
+	gcloud firestore databases create --location=$(PROJECT_LOCATION) --database="$(FIRESTORE_DB)" --project=$(PROJECT_ID) || echo "Database might already exist or error occurred."
 
 setup-sa: ## Create or Update Service Account and grant necessary roles
 	@echo "Checking service account $(SERVICE_ACCOUNT)..."
@@ -123,6 +124,7 @@ deploy-agent: ## Deploy Volvo Agent to Cloud Run
 	--set-env-vars HOST_URL=${SERVICE_URL} \
 	--set-env-vars USE_FIRESTORE=True \
 	--set-env-vars DEBUG_ROOT_ENDPOINT=$(DEBUG_ROOT_ENDPOINT) \
+	--set-env-vars FIRESTORE_DB=$(FIRESTORE_DB) \
 	--set-secrets GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY:latest \
 	--min 1
 	@echo "Adding IAP binding..."
