@@ -82,18 +82,19 @@ make setup-sa
 ```
 
 This will create the service account (if one doesn't exist already) and grant the following roles:
-- `roles/aiplatform.user` (Gemini & Search)
+- `roles/aiplatform.user` (Gemini)
 - `roles/datastore.user` (Firestore Access)
 - `roles/logging.logWriter` (Cloud Logging)
 - `roles/iam.serviceAccountTokenCreator` (Service Account Token Creator)
 - `roles/run.invoker` (Cloud Run Invoker)
 - `roles/run.serviceAgent` (Cloud Run Service Agent)
+- `roles/secretmanager.secretAccessor` (Secret Manager Access)
 
 ### 6. Firestore Setup (Optional)
 
 If you already have a Firestore database configured, you can skip this step.
 
-If you plan to use Firestore for persistence, create the default database:
+If you plan to use Firestore for persistence, create the dedicated database:
 
 ```bash
 make setup-firestore
@@ -123,9 +124,8 @@ To use Firestore locally (requires `make auth` first):
    make run-agent
    ```
 
--   **New Voice UI**: http://127.0.0.1:8080/
--   **Old Voice UI**: http://127.0.0.1:8080/old-ui
 -   **Debug UI**: http://127.0.0.1:8080/debug
+-   **Nuxt UI**: http://127.0.0.1:8080/
 
 ## Persistence & Memory
 
@@ -142,20 +142,31 @@ Control persistence via the `USE_FIRESTORE` environment variable:
 
 -   **Google Cloud Firestore** (`USE_FIRESTORE=True`):
     -   Recommended for production and for realistic local development.
-    -   **Hierarchy**:
-        -   Sessions: `users/{user_id}/sessions/{session_id}`
-        -   Memories: `users/{user_id}/memories/{field_key}`
+    -   **Hierarchy** (follows ADK state separation conventions):
+        -   `app_state/{app_name}` — app-scoped state (shared across all users)
+        -   `users/{user_id}/user_state/{app_name}` — user-scoped state (shared across sessions)
+        -   `users/{user_id}/sessions/{session_id}` — session-scoped state + events
+        -   `users/{user_id}/memories/interactions_summary` — LLM-generated summary
     -   Requires `google-cloud-firestore` API and authenticated credentials.
+
+### State Management
+
+State is separated into tiers following ADK conventions:
+
+| Prefix | Scope | Persistence |
+|--------|-------|-------------|
+| `app:` | App-wide | Shared across all users and sessions |
+| `user:` | Per-user | Shared across sessions for the same user |
+| `temp:` | Transient | Not persisted — available only during the current session |
+| *(none)* | Session | Stored in the session document |
+
+Tools set `user:`-prefixed state (e.g., `user:full_name`, `user:email`, `user:car_config`) which the **Session Service** automatically persists to `users/{user_id}/user_state/{app_name}` and restores on subsequent sessions.
 
 ### Memory Architecture
 
-When a session ends (WebSocket disconnect), the **Memory Service** runs two steps:
+When a session ends (WebSocket disconnect), the **Memory Service** builds a conversation transcript and sends it to an LLM (Gemini 2.5 Flash) along with any existing summary from prior sessions. The LLM produces a consolidated summary that accumulates knowledge about the user across all sessions. This summary is stored as `users/{user_id}/memories/interactions_summary`.
 
-1.  **Field-level persistence**: Each `user:` state field set by tools during the conversation (e.g., `user:full_name`, `user:email`, `user:car_config`) is saved as an individual Firestore document under `users/{user_id}/memories/`. This means each field can be updated independently across sessions.
-
-2.  **LLM-powered summary consolidation**: The conversation transcript is sent to an LLM (Gemini 2.5 Flash) along with any existing summary from prior sessions. The LLM produces a consolidated summary that accumulates knowledge about the user across all sessions. This summary is stored as `users/{user_id}/memories/interactions_summary`.
-
-When a new session starts, the **Preload Memory Callback** loads all stored fields back into session state and makes the consolidated summary available to the agent's prompt, enabling personalized greetings and context-aware conversations.
+When a new session starts, the **Preload Memory Callback** makes the consolidated summary available to the agent's prompt, enabling personalized greetings and context-aware conversations. User-scoped state (`user:` prefix) is loaded automatically by the session service.
 
 ## Frontend Features
 
@@ -196,12 +207,13 @@ This command:
 │       ├── schemas/                  # Pydantic models (car config, test drive)
 │       ├── services/                 # Session, Memory & service registry
 │       │   ├── registry.py           # Service singletons (session, memory, genai)
-│       │   ├── memory_service.py     # Memory persistence & LLM summary
-│       │   └── firestore_session_service.py
+│       │   ├── firestore_memory_service.py  # LLM summary consolidation
+│       │   └── firestore_session_service.py # Firestore-backed session service
 │       ├── tools/                    # Agent tools
 │       │   ├── update_and_display_car_configuration_tool.py
 │       │   ├── find_retailer_tool.py
-│       │   └── book_test_drive_tool.py
+│       │   ├── book_test_drive_tool.py
+│       │   └── save_user_insight_tool.py
 │       └── utils/                    # Shared utilities (JSON loading, fuzzy match)
 │
 ├── ui/                               # Frontend (Nuxt)
@@ -221,7 +233,7 @@ This command:
 | `make auth` | Authenticate with Google Cloud |
 | `make setup-apis` | Enable required Google Cloud APIs |
 | `make setup-sa` | Create/Update Service Account & Roles |
-| `make setup-firestore` | Create default Firestore database |
+| `make setup-firestore` | Create dedicated Firestore database |
 | `make build-ui` | Build the frontend UI |
 | `make run-agent` | Run local server (Voice + Debug UI) |
 | `make deploy-agent` | Deploy to Cloud Run |
