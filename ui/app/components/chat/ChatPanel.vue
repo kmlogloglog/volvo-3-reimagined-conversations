@@ -111,11 +111,16 @@
                 row-gap: 1rem;
                 overflow-anchor: none;
                 visibility: hidden;
+                padding: 0 1.875rem;
 
                 &.show {
                     visibility: visible;
                 }
             }
+        }
+
+        .chat-input {
+            padding: 0 1.875rem;
         }
     }
 </style>

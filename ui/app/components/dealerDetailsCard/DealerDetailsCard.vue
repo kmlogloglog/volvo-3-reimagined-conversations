@@ -1,5 +1,5 @@
 <template>
-    <div class="booking-wrapper">
+    <div class="content-container">
         <BaseSpeechBubble
             :align-bubble="AGENT.AGENT"
             :full-width="true">
@@ -120,7 +120,7 @@
 </script>
 
 <style lang="scss" scoped>
-    .booking {
+    .content {
         &-headline {
             font-size: 1.25rem;
             margin-bottom: 1.5rem;
@@ -129,6 +129,7 @@
         &-container {
             display: flex;
             flex-direction: column;
+            padding: 0 1.875rem;
         }
 
         &-list {

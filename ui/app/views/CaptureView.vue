@@ -111,16 +111,15 @@
     width: 100%;
 
     .base-view {
+        -webkit-overflow-scrolling: touch;
+        align-content: center;
+        flex: 1;
         margin: 0 auto;
         overflow-y: auto;
+        overflow: hidden;
         position: relative;
         width: 100%;
         z-index: 10;
-        overflow: hidden;
-        -webkit-overflow-scrolling: touch;
-        padding: 0 1.875rem;
-        flex: 1;
-        align-content: center;
 
         &.full-height {
             flex: 1;
@@ -132,7 +131,6 @@
             max-width: var(--max-width);
             position: relative;
             z-index: 10;
-            //
             width: 100%;
             display: flex;
             flex-direction: column;
