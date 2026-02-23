@@ -2,7 +2,8 @@
     <div
         class="speech-bubble-card"
         :data-align="alignBubble"
-        :data-padding="padding">
+        :data-padding="padding"
+        :class="{ 'full-width': fullWidth}">
         <slot></slot>
     </div>
 </template>
@@ -22,6 +23,10 @@
             default: '',
             validator: (value) => ['small', 'large', ''].includes(value),
         },
+        fullWidth: {
+            type: Boolean,
+            default: false,
+        },
     });
 </script>
 <style lang="scss" scoped>
@@ -35,6 +40,11 @@
             padding: 0.75rem 1.25rem;
             position: relative;
             width: fit-content;
+
+            &.full-width {
+                max-width: 100%;
+                width: 100%;
+            }
 
             &[data-align="agent"] {
                 border-radius: var(--border-radius) var(--border-radius) var(--border-radius) 0;

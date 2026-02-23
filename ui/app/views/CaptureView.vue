@@ -7,7 +7,10 @@
             class="base-view">
             <div
                 class="base-view-inner">
-                <ChatPanel v-if="isChatActive" />
+                <DealerDetailsCard
+                    v-if="agentStore.testDriveDetails"
+                    v-bind="agentStore.testDriveDetails" />
+                <ChatPanel v-else-if="isChatActive" />
             </div>
         </div>
 
@@ -37,10 +40,11 @@
     import { useAgentStore } from '@/stores/agent';
     import { useEventBus } from '@vueuse/core';
     import AudioCaptureBlob from '@/components/animations/AudioCaptureBlob.vue';
-    import ChatPanel from '@/components/chat/ChatPanel.vue';
-    import FileUpload from '@/components/upload/FileUpload.vue';
-    import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
     import AudioCaptureMeter from '@/components/animations/AudioCaptureMeter.vue';
+    import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
+    import ChatPanel from '@/components/chat/ChatPanel.vue';
+    import DealerDetailsCard from '@/components/dealerDetailsCard/DealerDetailsCard.vue';
+    import FileUpload from '@/components/upload/FileUpload.vue';
 
     const agentStore = useAgentStore();
 
@@ -115,6 +119,8 @@
         overflow: hidden;
         -webkit-overflow-scrolling: touch;
         padding: 0 1.875rem;
+        flex: 1;
+        align-content: center;
 
         &.full-height {
             flex: 1;
@@ -126,6 +132,11 @@
             max-width: var(--max-width);
             position: relative;
             z-index: 10;
+            //
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
     }
 }

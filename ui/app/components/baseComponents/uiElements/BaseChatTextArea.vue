@@ -105,7 +105,7 @@
             min-height: 2.5rem;
             outline: none;
             padding-right: 40px;
-            padding: 0.3rem .75rem;
+            padding: .3rem 2.25rem .3rem 0.75rem;
             resize: none;
             transition: border-color 0.3s;
             width: 100%;

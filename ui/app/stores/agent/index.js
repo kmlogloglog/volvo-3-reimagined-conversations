@@ -8,6 +8,9 @@ export const useAgentStore = defineStore('agentStore', {
         conversation: [],
         audioLevel: 0,
         backgroundImages: null,
+        phase: -1,
+        retailerDetails: null,
+        testDriveDetails: null,
 
         // Connection state
         connected: false,

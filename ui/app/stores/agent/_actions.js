@@ -109,11 +109,55 @@ export default {
                     this.handleTextResponse(part.text, part.finished);
                     textHandled = true;
                 }
-                if (part.functionResponse?.response?.ui_action) {
-                    const uiAction = part.functionResponse.response.ui_action;
-                    if (uiAction.action === 'display_component') {
+
+                const uiAction = part.functionResponse?.response?.ui_action;
+
+                if (uiAction?.action === AGENT.RESPONSE_ACTION.DISPLAY_COMPONENT) {
+                    const functionName = part.functionResponse?.name;
+
+                    if (functionName === AGENT.RESPONSE_NAME.CAR_CONFIGURATION) {
+                        const phase = uiAction.phase;
+                        this.phase = (typeof phase === 'number' && phase >= 0 && phase <= 5) ? phase : -1;
                         this.handleImageResponse(uiAction.data.images);
                     }
+
+                    if (functionName === AGENT.RESPONSE_NAME.FIND_RETAILER) {
+                        this.retailerDetails = {
+                            retailerName: uiAction.data?.retailer_name || '',
+                            retailerAddress: uiAction.data?.address || '',
+                            retailerLocation: uiAction.data?.location || '',
+                            retailerId: uiAction.data?.retailer_id || '',
+                            retailerCoordinates: {
+                                lat: uiAction.data?.retailer_lat || 0,
+                                lng: uiAction.data?.retailer_lng || 0,
+                            },
+                        };
+                        console.group('Retailer Info');
+                        console.log(this.retailerDetails);
+                        console.groupEnd();
+                    }
+
+                    if (functionName === AGENT.RESPONSE_NAME.BOOK_TEST_DRIVE) {
+                        this.testDriveDetails = {
+                            date: uiAction.data?.date || '',
+                            time: uiAction.data?.time || '',
+                            retailerName: uiAction.data?.retailer_name || '',
+                            retailerAddress: uiAction.data?.retailer_address || '',
+                            retailerCoordinates: uiAction.data?.retailer_location || { lat: 0, lng: 0 },
+                            userName: uiAction.data?.user_name || '',
+                            userEmail: uiAction.data?.user_email || '',
+                        };;
+                        console.group('Test Drive Info');
+                        console.log(this.testDriveDetails);
+                        console.groupEnd();
+                    } else {
+                        this.testDriveDetails = null;
+                    }
+
+                    console.group('Function');
+                    console.log('Name:', functionName);
+                    console.log(part.functionResponse);
+                    console.groupEnd();
                 }
             }
         }
