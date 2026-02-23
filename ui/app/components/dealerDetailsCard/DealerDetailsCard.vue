@@ -14,7 +14,7 @@
                             </div>
                             <div class="booking-item">
                                 <span class="booking-icon icon-calendar-1-dot"></span>
-                                <span>{{ date }}</span>
+                                <span>{{ datePretty }}</span>
                             </div>
                             <div class="booking-item">
                                 <span class="booking-icon icon-map-pin"></span>
@@ -24,7 +24,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="booking-map">
+                        <div ref="mapsContainer" class="booking-map">
                             <img
                                 :src="mapUrl"
                                 @load="onImageLoad" />
@@ -70,16 +70,35 @@
         emit(EMITS.IMAGE_LOADED, event.target);
     }
 
+    const datePretty = computed(() => {
+        if (!props.date) {
+            return '';
+        }
+
+        const date = new Date(props.date + 'T00:00:00');
+
+        return date.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        });
+    });
+
+    const mapsContainer = useTemplateRef('mapsContainer');
+
     const mapUrl = computed(() => {
         if(!props.retailerCoordinates || !props.retailerCoordinates.lat || !props.retailerCoordinates.lng) {
             return '';
         }
+
+        const containerWidth = mapsContainer.value ? mapsContainer.value.clientWidth : 350;
+
         const url = [
             'https://maps.googleapis.com/maps/api/staticmap',
             `?center=${props.retailerCoordinates.lat},${props.retailerCoordinates.lng}`,
             `&zoom=${AGENT.GOOGLE_MAPS.ZOOM}`,
-            `&size=${AGENT.GOOGLE_MAPS.WIDTH}x${AGENT.GOOGLE_MAPS.WIDTH / AGENT.GOOGLE_MAPS.RATIO}`,
-            `&markers=color:white%7C${props.retailerCoordinates.lat},${props.retailerCoordinates.lng}`,
+            `&size=${containerWidth}x${Math.round(containerWidth / AGENT.GOOGLE_MAPS.RATIO)}`,
+            `&markers=color:white%7Csize:large%7C${props.retailerCoordinates.lat},${props.retailerCoordinates.lng}`,
             '&style=element:geometry%7Ccolor:0x1a1520',
             '&style=element:labels.text.fill%7Ccolor:0x9a9080',
             '&style=element:labels.text.stroke%7Ccolor:0x1a1520',

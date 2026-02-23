@@ -16,7 +16,6 @@ export const AGENT = Object.freeze({
     },
     GOOGLE_MAPS: {
         API_KEY: 'AIzaSyD3d1_tLpcZZYu7IqKbXAQo2sxPEk3INT4',
-        WIDTH: 400,
         RATIO: 1.35,
         ZOOM: 15,
     },
