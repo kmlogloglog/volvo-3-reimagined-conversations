@@ -51,7 +51,7 @@
 
         // Noise scale (controls shape smoothness)
         idleNoiseScale: 0.6,
-        maxNoiseScaleBoost: -0.4, // Negative = smoother at peak
+        maxNoiseScaleBoost: -0.3, // Negative = smoother at peak
 
         // Idle state (floor - never goes below this)
         idleMorphIntensity: 0.8,
@@ -59,8 +59,8 @@
         idleFlareIntensity: 0.25,
 
         // Max boost at intensity = 1 (added to idle)
-        maxMorphIntensityBoost: 0.025,
-        maxSizeMultiplierBoost: 3.5,
+        maxMorphIntensityBoost: 0.045,
+        maxSizeMultiplierBoost: 4,
         maxFlareIntensityBoost: 2.0,
 
         // Lens flare
