@@ -44,6 +44,7 @@
             &.full-width {
                 max-width: 100%;
                 width: 100%;
+                padding: 1.25rem;
             }
 
             &[data-align="agent"] {

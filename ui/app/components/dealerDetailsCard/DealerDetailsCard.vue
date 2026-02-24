@@ -121,15 +121,19 @@
 
 <style lang="scss" scoped>
     .content {
-        &-headline {
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
         &-container {
             display: flex;
             flex-direction: column;
-            padding: 0 1.875rem;
+            padding: 2.5rem 1.875rem 1.25rem;
+            overflow: auto;
+            margin: auto 0;
+        }
+    }
+
+    .booking {
+        &-headline {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         &-list {

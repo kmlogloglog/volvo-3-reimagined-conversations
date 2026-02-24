@@ -60,24 +60,36 @@
     const safeImageCount = computed(() => safeImageArray.value.length);
 
     function nextImage() {
-        if (currentIndex.value < safeImageCount.value - 1) currentIndex.value++;
+        if (currentIndex.value < safeImageCount.value - 1) {
+            currentIndex.value++;
+        }
     }
 
     function previousImage() {
-        if (currentIndex.value > 0) currentIndex.value--;
+        if (currentIndex.value > 0) {
+            currentIndex.value--;
+        }
     }
 
     const handleArrowClick = (direction) => {
-        if (direction === 'prev') previousImage();
-        else if (direction === 'next') nextImage();
+        if (direction === 'prev') {
+            previousImage();
+        }
+        else if (direction === 'next') {
+            nextImage();
+        }
     };
 
     if (import.meta.client) {
         const { lengthX } = useSwipe(containerRef, {
             threshold: 50,
             onSwipeEnd() {
-                if (lengthX.value > 50) previousImage();
-                else if (lengthX.value < -50) nextImage();
+                if (lengthX.value > 50) {
+                    previousImage();
+                }
+                else if (lengthX.value < -50) {
+                    nextImage();
+                }
             },
         });
     }
@@ -113,9 +125,9 @@
 
 .slide {
     flex: none;
-    width: 100%;
     height: 100%;
     position: relative;
+    width: 100%;
 
     .background-image {
         height: 100%;
@@ -155,8 +167,16 @@
     transition: all .3s ease;
     width: 2.5rem;
 
-    &.disabled { opacity: 0.5; }
-    &-left     { margin-left: -0.1875rem; }
-    &-right    { margin-left:  0.1875rem; }
+    &.disabled {
+        opacity: 0.5;
+    }
+
+    &-left {
+        margin-left: -0.1875rem;
+    }
+
+    &-right {
+        margin-left:  0.1875rem;
+    }
 }
 </style>
