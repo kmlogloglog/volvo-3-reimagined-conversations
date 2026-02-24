@@ -8,31 +8,29 @@
         <div
             v-if="safeImageCount > 0"
             class="carousel-slider"
+            :class="{ 'no-transition': isJumping }"
             :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
             <div
-                v-for="(image, index) in safeImageArray"
+                v-for="(image, index) in extendedImageArray"
                 :key="index"
                 class="slide">
                 <img
                     :src="image"
                     :alt="`Background image ${index + 1}`"
-                    class="background-image" />
+                    class="background-image"
+                    @load="onImageLoad" />
             </div>
         </div>
 
         <div v-if="safeImageCount > 1" class="carousel-navigation">
             <button
-                :disabled="currentIndex === 0"
                 class="nav-arrow nav-arrow-left"
-                :class="{ disabled: currentIndex === 0 }"
                 @click.stop="handleArrowClick('prev')">
                 <span class="icon-chevron-left"></span>
             </button>
 
             <button
-                :disabled="currentIndex === safeImageCount - 1"
                 class="nav-arrow nav-arrow-right"
-                :class="{ disabled: currentIndex === safeImageCount - 1 }"
                 @click.stop="handleArrowClick('next')">
                 <span class="icon-chevron-right"></span>
             </button>
@@ -41,8 +39,8 @@
 </template>
 
 <script setup>
-    import { ref, computed } from 'vue';
-    import { useSwipe } from '@vueuse/core';
+    import { ref, computed, onUnmounted } from 'vue';
+    import { useSwipe, useIntervalFn } from '@vueuse/core';
     import VolvoLogo from '@/components/logo/VolvoLogo.vue';
 
     const props = defineProps({
@@ -51,31 +49,86 @@
             default: () => [],
             validator: (value) => Array.isArray(value),
         },
+        interval: {
+            type: Number,
+            default: 4000,
+        },
     });
+
+    const TRANSITION_DURATION = 500;
 
     const currentIndex = ref(0);
     const containerRef = ref(null);
+    const loadedCount = ref(0);
+    const isJumping = ref(false);
 
     const safeImageArray = computed(() => Array.isArray(props.src) ? props.src : []);
     const safeImageCount = computed(() => safeImageArray.value.length);
 
+    const extendedImageArray = computed(() => safeImageCount.value > 1
+        ? [...safeImageArray.value, safeImageArray.value[0]]
+        : safeImageArray.value,
+    );
+
+    const lastRealIndex = computed(() => safeImageCount.value - 1);
+    const cloneIndex = computed(() => extendedImageArray.value.length - 1);
+
+    const allImagesLoaded = computed(() =>
+        safeImageCount.value > 0 && loadedCount.value >= safeImageCount.value,
+    );
+
+    const { pause, resume } = useIntervalFn(() => advance(), props.interval, { immediate: false });
+
+    function onImageLoad() {
+        loadedCount.value++;
+        if (allImagesLoaded.value && safeImageCount.value > 1) {
+            resume();
+        }
+    }
+
+    // Silently reposition to the given index without any visible transition
+    async function silentJump(index) {
+        isJumping.value = true;
+        currentIndex.value = index;
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        isJumping.value = false;
+    }
+
+    function advance() {
+        if (currentIndex.value === lastRealIndex.value) {
+            // Slide to the clone with transition, then silently snap back to index 0
+            currentIndex.value = cloneIndex.value;
+            setTimeout(() => silentJump(0), TRANSITION_DURATION);
+        } else {
+            currentIndex.value++;
+        }
+    }
+
     function nextImage() {
-        if (currentIndex.value < safeImageCount.value - 1) {
+        if (currentIndex.value === lastRealIndex.value) {
+            currentIndex.value = cloneIndex.value;
+            setTimeout(() => silentJump(0), TRANSITION_DURATION);
+        } else {
             currentIndex.value++;
         }
     }
 
     function previousImage() {
-        if (currentIndex.value > 0) {
+        if (currentIndex.value === 0) {
+            // Silently jump to the clone, then slide back to the last real slide
+            silentJump(cloneIndex.value).then(() => {
+                currentIndex.value = lastRealIndex.value;
+            });
+        } else {
             currentIndex.value--;
         }
     }
 
     const handleArrowClick = (direction) => {
+        pause();
         if (direction === 'prev') {
             previousImage();
-        }
-        else if (direction === 'next') {
+        } else if (direction === 'next') {
             nextImage();
         }
     };
@@ -84,15 +137,17 @@
         const { lengthX } = useSwipe(containerRef, {
             threshold: 50,
             onSwipeEnd() {
+                pause();
                 if (lengthX.value > 50) {
                     previousImage();
-                }
-                else if (lengthX.value < -50) {
+                } else if (lengthX.value < -50) {
                     nextImage();
                 }
             },
         });
     }
+
+    onUnmounted(() => pause());
 </script>
 
 <style lang="scss" scoped>
@@ -121,6 +176,10 @@
     height: 100%;
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
+
+    &.no-transition {
+        transition: none;
+    }
 }
 
 .slide {
@@ -139,15 +198,19 @@
 }
 
 .carousel-navigation {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 1.25rem;
-    pointer-events: none;
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100%;
-    z-index: 10;
+    display: none;  // hidden by default (mobile first)
+
+    @media (hover: hover) and (pointer: fine) {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 1.25rem;
+        pointer-events: none;
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        z-index: 10;
+    }
 }
 
 .nav-arrow {

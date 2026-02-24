@@ -77,25 +77,41 @@
     });
 
     const { listening: isListening } = storeToRefs(agentStore);
-    // Watch specifically for audio listening starting
-    watch(isListening, (newVal) => {
-        if (newVal && !isChatActive.value) {
-            agent.sendMessage(AGENT.INTRODUCTION);
-        }
-    });
-
-    // Watch specifically for connection in chat mode
-    watch(isConnected, (newVal) => {
-        if (newVal && isChatActive.value) {
-            agent.sendMessage(AGENT.INTRODUCTION);
-        }
-    });
-
     const isChatActive = ref(false);
+
+    const hasReceivedIntroduction = ref(false);
+
+    watch(isConnected, (newVal) => {
+        if (!newVal) {
+            hasReceivedIntroduction.value = false;
+            return;
+        }
+
+        if (isChatActive.value && !isListening.value && !hasReceivedIntroduction.value) {
+            agent.sendMessage(AGENT.INTRODUCTION);
+            hasReceivedIntroduction.value = true;
+        }
+    });
+
+    watch(isListening, (newVal) => {
+        if (newVal && !isChatActive.value && !hasReceivedIntroduction.value) {
+            agent.sendMessage(AGENT.INTRODUCTION);
+            hasReceivedIntroduction.value = true;
+        }
+    });
 
     function handleChatClick(enabled) {
         isChatActive.value = enabled;
+
+        if (enabled && isConnected.value && !isListening.value && !hasReceivedIntroduction.value) {
+            agent.sendMessage(AGENT.INTRODUCTION);
+            hasReceivedIntroduction.value = true;
+        }
     }
+
+    onMounted(() => {
+        agentStore.connect();
+    });
 </script>
 
 <style scoped lang="scss">
