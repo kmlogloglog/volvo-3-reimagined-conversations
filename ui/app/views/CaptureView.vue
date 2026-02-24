@@ -1,12 +1,9 @@
 <template>
-    <div
-        class="view">
+    <div class="view">
         <BackgroundImages
             :src="agentStore.backgroundImages" />
-        <div
-            class="base-view">
-            <div
-                class="base-view-inner">
+        <div class="base-view">
+            <div class="base-view-inner">
                 <DealerDetailsCard
                     v-if="agentStore.testDriveDetails"
                     v-bind="agentStore.testDriveDetails" />
@@ -47,7 +44,17 @@
     import FileUpload from '@/components/upload/FileUpload.vue';
 
     const agentStore = useAgentStore();
+    const agent = useAgent();
 
+    // Tracks which mode sent the intro to prevent double-firing when the other is already active.
+    const introSentBy = ref(null); // 'audio' | 'chat' | null
+
+    function sendIntro(mode) {
+        agent.sendMessage(AGENT.INTRODUCTION);
+        introSentBy.value = mode;
+    }
+
+    // File upload
     function handleFileUploaded(files) {
         console.log('Files uploaded:', files);
     }
@@ -56,56 +63,61 @@
         console.error('File upload error:', error);
     }
 
-    const agent = useAgent();
+    // Connection
+    const busConnection = useEventBus(BUS.AGENT_CONNECTION);
+    const isConnected = ref(false);
+
+    busConnection.on((payload) => {
+        isConnected.value = !payload.connecting && payload.connected;
+    });
+
+    watch(isConnected, (newVal) => {
+        if (!newVal) {
+            introSentBy.value = null;
+            return;
+        }
+
+        if (isChatActive.value && !isListening.value && introSentBy.value !== 'chat') {
+            sendIntro('chat');
+        }
+    });
+
+    // Audio
+    const { listening: isListening } = storeToRefs(agentStore);
+
+    watch(isListening, (newVal) => {
+        if (newVal && !isChatActive.value) {
+            sendIntro('audio');
+        }
+    });
 
     function handleMicrophoneClick(enabled) {
         if (enabled) {
             agent.startAudio();
-
             return;
         }
 
         agent.stopAudio();
+        if (introSentBy.value === 'audio') {
+            introSentBy.value = null;
+        }
     }
 
-    const busConnection = useEventBus(BUS.AGENT_CONNECTION);
-
-    const isConnected = ref(false);
-
-    busConnection.on(async (payload) => {
-        isConnected.value = !payload.connecting && payload.connected;
-    });
-
-    const { listening: isListening } = storeToRefs(agentStore);
+    // Chat
     const isChatActive = ref(false);
-
-    const hasReceivedIntroduction = ref(false);
-
-    watch(isConnected, (newVal) => {
-        if (!newVal) {
-            hasReceivedIntroduction.value = false;
-            return;
-        }
-
-        if (isChatActive.value && !isListening.value && !hasReceivedIntroduction.value) {
-            agent.sendMessage(AGENT.INTRODUCTION);
-            hasReceivedIntroduction.value = true;
-        }
-    });
-
-    watch(isListening, (newVal) => {
-        if (newVal && !isChatActive.value && !hasReceivedIntroduction.value) {
-            agent.sendMessage(AGENT.INTRODUCTION);
-            hasReceivedIntroduction.value = true;
-        }
-    });
 
     function handleChatClick(enabled) {
         isChatActive.value = enabled;
 
-        if (enabled && isConnected.value && !isListening.value && !hasReceivedIntroduction.value) {
-            agent.sendMessage(AGENT.INTRODUCTION);
-            hasReceivedIntroduction.value = true;
+        if (!enabled) {
+            if (introSentBy.value === 'chat') {
+                introSentBy.value = null;
+            }
+            return;
+        }
+
+        if (isConnected.value && !isListening.value) {
+            sendIntro('chat');
         }
     }
 

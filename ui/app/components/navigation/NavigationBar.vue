@@ -6,9 +6,9 @@
                 direction="up-right"
                 @select="handleFoldOutSelect" />
             <NavigationBarAudioButton
-                :disabled="isBusy"
+                :disabled="micRequesting"
                 :is-recording="isAudioRecording"
-                :loading="isBusy && isAudioRecording"
+                :loading="(connecting  || micRequesting) && isAudioRecording"
                 @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
         </nav>
     </ClientOnly>
@@ -36,8 +36,6 @@
     const isAudioRecording = ref(false);
     const isChatActive = ref(false);
     const isCameraActive = ref(false);
-
-    const isBusy = computed(() => connecting.value || micRequesting.value);
 
     const foldOutOptions = computed(() => [
         {
