@@ -38,29 +38,30 @@
 
         // Morph speed
         idleMorphSpeed: 0.5,
-        maxMorphSpeedBoost: 0.1,
+        maxMorphSpeedBoost: 0.25,
 
         // Blob shape
         baseSize: 0.2,
         radialRings: 16,
         angularSegments: 40,
+
+        // Idle pulse (fades out as intensity increases)
         pulseSpeed: 0.7,
+        idlePulseAmount: 0.15,
 
         // Noise scale (controls shape smoothness)
         idleNoiseScale: 0.6,
-        maxNoiseScaleBoost: -0.6, // Negative = smoother at peak
+        maxNoiseScaleBoost: -0.4, // Negative = smoother at peak
 
         // Idle state (floor - never goes below this)
         idleMorphIntensity: 0.8,
-        idlePulseAmount: 0.15,
         idleSizeMultiplier: 1.0,
         idleFlareIntensity: 0.25,
 
         // Max boost at intensity = 1 (added to idle)
-        maxMorphIntensityBoost: 0.015,
-        maxPulseAmountBoost: 0.3,
-        maxSizeMultiplierBoost: 2.5,
-        maxFlareIntensityBoost: 1.0,
+        maxMorphIntensityBoost: 0.025,
+        maxSizeMultiplierBoost: 3.5,
+        maxFlareIntensityBoost: 2.0,
 
         // Lens flare
         flare: {
@@ -98,7 +99,7 @@
     // Lower = slower/organic, Higher = faster/snappy
     const smoothing = {
         attack: 0.1, // Higher = faster rise when intensity increases
-        release: 0.05, // Higher = faster decay when intensity decreases
+        release: 0.1, // Higher = faster decay when intensity decreases
     };
 
     // ========================================
@@ -303,7 +304,8 @@
                 shimmerFactor,
                 flareIntensity,
                 morphIntensity,
-                noiseScale);
+                noiseScale,
+            );
         }
 
         if (secondary.enabled) {
@@ -325,7 +327,8 @@
                     shimmerFactor * 0.5,
                     flareIntensity,
                     morphIntensity,
-                    noiseScale);
+                    noiseScale,
+                );
             }
         }
 
@@ -343,6 +346,7 @@
     let displayWidth = 0;
     let displayHeight = 0;
     let time = 0;
+    let morphPhase = 0;
     let noiseOffset = 0;
     let animationFrameId = null;
     let lastFrameTime = 0;
@@ -391,12 +395,14 @@
         const morphSpeed = config.idleMorphSpeed + boost * config.maxMorphSpeedBoost;
         const morphIntensity = config.idleMorphIntensity + boost * config.maxMorphIntensityBoost;
         const noiseScale = config.idleNoiseScale + boost * config.maxNoiseScaleBoost;
-        const pulseAmount = config.idlePulseAmount + boost * config.maxPulseAmountBoost;
         const sizeMultiplier = config.idleSizeMultiplier + boost * config.maxSizeMultiplierBoost;
         const flareIntensity = config.idleFlareIntensity + boost * config.maxFlareIntensityBoost;
 
-        // Time always progresses
+        // Time progresses for pulse/shimmer
         time += animationSpeed;
+
+        // Morph phase increments by speed (not multiplied)
+        morphPhase += animationSpeed * morphSpeed;
 
         ctx.clearRect(0, 0, displayWidth, displayHeight);
 
@@ -404,12 +410,13 @@
         const centerY = displayHeight / 2;
         const baseRadius = Math.min(displayWidth, displayHeight) * config.baseSize * sizeMultiplier;
 
-        const pulse = Math.sin(time * config.pulseSpeed) * pulseAmount + 1;
-        const pulsedRadius = baseRadius * pulse;
+        // Pulse fades out as intensity increases - intensity takes over size control
+        const idlePulse = Math.sin(time * config.pulseSpeed) * config.idlePulseAmount * (1 - boost);
+        const pulsedRadius = baseRadius * (1 + idlePulse);
 
         const loopRadius = 2.0;
-        const timeX = Math.cos(time * morphSpeed) * loopRadius;
-        const timeY = Math.sin(time * morphSpeed) * loopRadius;
+        const timeX = Math.cos(morphPhase) * loopRadius;
+        const timeY = Math.sin(morphPhase) * loopRadius;
 
         const segmentRatio = maxSegments / config.angularSegments;
 
@@ -454,6 +461,7 @@
         updateCanvasSize();
 
         time = 0;
+        morphPhase = 0;
         noiseOffset = Math.random() * 1000;
         lastFrameTime = performance.now();
 
