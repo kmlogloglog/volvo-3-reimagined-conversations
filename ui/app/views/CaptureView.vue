@@ -21,8 +21,11 @@
             @[EMITS.FILE_UPLOADED]="handleFileUploaded"
             @[EMITS.UPLOAD_ERROR]="handleUploadError" />
 
-        <AudioCaptureMeter
-            :level="agentStore.audioLevel" />
+        <ClientOnly>
+            <AudioCaptureMeter
+                v-if="$router.currentRoute.value.query.meter === 'true'"
+                :level="agentStore.audioLevel" />
+        </ClientOnly>
 
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel"
@@ -54,7 +57,6 @@
     const agentStore = useAgentStore();
     const agent = useAgent();
 
-    // Tracks which mode sent the intro to prevent double-firing when the other is already active.
     const introSentBy = ref(null); // 'audio' | 'chat' | null
 
     function sendIntro(mode) {
