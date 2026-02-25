@@ -127,6 +127,46 @@
     // Seconds remaining before the incoming blob's fade-in starts.
     let fadeInDelayRemaining = 0;
 
+    // ========================================
+    // COLOR CROSSFADE STATE
+    // ========================================
+
+    // How long the color crossfade takes, in seconds.
+    const COLOR_FADE_DURATION_SECS = 1.2;
+
+    let currentStops = [...props.gradientStops];
+    let nextStops = null;
+    let colorFadeProgress = 1; // 1 = fully on currentStops, transition complete
+
+    watch(() => props.gradientStops, (newStops) => {
+        // Snapshot where we are mid-fade (in case a second change arrives mid-transition)
+        currentStops = resolvedStops();
+        nextStops = [...newStops];
+        colorFadeProgress = 0;
+    });
+
+    function resolvedStops() {
+        if (!nextStops || colorFadeProgress >= 1) return currentStops;
+
+        const t = colorFadeProgress;
+        const len = Math.max(currentStops.length, nextStops.length);
+        const resolved = [];
+
+        for (let i = 0; i < len; i++) {
+            const a = currentStops[Math.min(i, currentStops.length - 1)];
+            const b = nextStops[Math.min(i, nextStops.length - 1)];
+            resolved.push({
+                position: a.position + (b.position - a.position) * t,
+                r: a.r + (b.r - a.r) * t,
+                g: a.g + (b.g - a.g) * t,
+                b: a.b + (b.b - a.b) * t,
+                a: a.a + (b.a - a.a) * t,
+            });
+        }
+
+        return resolved;
+    }
+
     function getRemInPx() {
         return parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     }
@@ -246,7 +286,7 @@
     }
 
     function getGradientColor(normalizedRadius) {
-        const stops = props.gradientStops;
+        const stops = resolvedStops();
         const clampedPos = Math.max(0, Math.min(1, normalizedRadius));
 
         let stop1 = stops[0];
@@ -464,10 +504,20 @@
         const factor = target > current ? smoothing.attack : smoothing.release;
         smoothedIntensity.value += (target - current) * factor;
 
+        const elapsedSecs = elapsed / 1000;
+
+        // Advance color crossfade
+        if (nextStops && colorFadeProgress < 1) {
+            colorFadeProgress = Math.min(1, colorFadeProgress + elapsedSecs / COLOR_FADE_DURATION_SECS);
+            if (colorFadeProgress >= 1) {
+                currentStops = [...nextStops];
+                nextStops = null;
+            }
+        }
+
         // Time-based crossfade with independent alphas.
         // Outgoing blob fades out immediately.
         // Incoming blob waits fadeInDelaySecs before fading in.
-        const elapsedSecs = elapsed / 1000;
         const fadeStep = elapsedSecs / config.fadeDurationSecs;
 
         if (props.bottomAlign) {
