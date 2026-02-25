@@ -22,6 +22,10 @@
             default: 0,
             validator: (v) => v >= 0 && v <= 1,
         },
+        bottomAlign: {
+            type: Boolean,
+            default: false,
+        },
     });
 
     // ========================================
@@ -87,6 +91,16 @@
                 amount: 0.15,
             },
         },
+
+        // Bottom alignment
+        bottomAlignOffsetRem: 5,
+
+        // How long the crossfade takes, in seconds.
+        fadeDurationSecs: 0.4,
+
+        // Delay before the fade-IN starts, in seconds.
+        // The fade-out always starts immediately.
+        fadeInDelaySecs: 0.3,
     };
 
     // ========================================
@@ -101,6 +115,26 @@
         attack: 0.1, // Higher = faster rise when intensity increases
         release: 0.1, // Higher = faster decay when intensity decreases
     };
+
+    // ========================================
+    // CROSSFADE STATE
+    // ========================================
+
+    // Each blob has its own independent alpha so fade-out and fade-in
+    // can be timed separately. centerAlpha starts at 1, bottomAlpha at 0.
+    let centerAlpha = 1;
+    let bottomAlpha = 0;
+    // Seconds remaining before the incoming blob's fade-in starts.
+    let fadeInDelayRemaining = 0;
+
+    function getRemInPx() {
+        return parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    }
+
+    function getBottomCenterY() {
+        const offsetPx = config.bottomAlignOffsetRem * getRemInPx();
+        return displayHeight - offsetPx;
+    }
 
     // ========================================
     // VISIBILITY DETECTION
@@ -336,6 +370,47 @@
     }
 
     // ========================================
+    // DRAW ONE COMPLETE BLOB AT A GIVEN CENTER Y AND ALPHA
+    // ========================================
+
+    function drawBlob(centerY, alpha, pulsedRadius, timeX, timeY, morphIntensity, noiseScale, flareIntensity) {
+        const centerX = displayWidth / 2;
+        const segmentRatio = maxSegments / config.angularSegments;
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+
+        for (let ring = config.radialRings; ring >= 0; ring--) {
+            const normalizedRadius = ring / config.radialRings;
+            const ringRadius = pulsedRadius * normalizedRadius;
+            const color = getGradientColor(normalizedRadius);
+
+            ctx.beginPath();
+
+            for (let i = 0; i <= config.angularSegments; i++) {
+                const cacheIndex = (i * segmentRatio) | 0;
+                const cosAngle = cosTable[cacheIndex];
+                const sinAngle = sinTable[cacheIndex];
+
+                const morphedRadius = getMorphedRadius(cosAngle, sinAngle, ringRadius, timeX, timeY, noiseOffset, morphIntensity, noiseScale);
+                const x = centerX + cosAngle * morphedRadius;
+                const y = centerY + sinAngle * morphedRadius;
+
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        drawLensFlare(ctx, centerX, centerY, pulsedRadius, timeX, timeY, noiseOffset, time, flareIntensity, morphIntensity, noiseScale);
+
+        ctx.restore();
+    }
+
+    // ========================================
     // CANVAS STATE
     // ========================================
 
@@ -389,6 +464,32 @@
         const factor = target > current ? smoothing.attack : smoothing.release;
         smoothedIntensity.value += (target - current) * factor;
 
+        // Time-based crossfade with independent alphas.
+        // Outgoing blob fades out immediately.
+        // Incoming blob waits fadeInDelaySecs before fading in.
+        const elapsedSecs = elapsed / 1000;
+        const fadeStep = elapsedSecs / config.fadeDurationSecs;
+
+        if (props.bottomAlign) {
+            // Center fades out immediately
+            centerAlpha = Math.max(0, centerAlpha - fadeStep);
+            // Bottom fades in after delay
+            if (fadeInDelayRemaining > 0) {
+                fadeInDelayRemaining = Math.max(0, fadeInDelayRemaining - elapsedSecs);
+            } else {
+                bottomAlpha = Math.min(1, bottomAlpha + fadeStep);
+            }
+        } else {
+            // Bottom fades out immediately
+            bottomAlpha = Math.max(0, bottomAlpha - fadeStep);
+            // Center fades in after delay
+            if (fadeInDelayRemaining > 0) {
+                fadeInDelayRemaining = Math.max(0, fadeInDelayRemaining - elapsedSecs);
+            } else {
+                centerAlpha = Math.min(1, centerAlpha + fadeStep);
+            }
+        }
+
         // Idle + boost
         const boost = smoothedIntensity.value;
         const animationSpeed = config.idleAnimationSpeed + boost * config.maxAnimationSpeedBoost;
@@ -406,11 +507,7 @@
 
         ctx.clearRect(0, 0, displayWidth, displayHeight);
 
-        const centerX = displayWidth / 2;
-        const centerY = displayHeight / 2;
         const baseRadius = Math.min(displayWidth, displayHeight) * config.baseSize * sizeMultiplier;
-
-        // Pulse fades out as intensity increases - intensity takes over size control
         const idlePulse = Math.sin(time * config.pulseSpeed) * config.idlePulseAmount * (1 - boost);
         const pulsedRadius = baseRadius * (1 + idlePulse);
 
@@ -418,36 +515,16 @@
         const timeX = Math.cos(morphPhase) * loopRadius;
         const timeY = Math.sin(morphPhase) * loopRadius;
 
-        const segmentRatio = maxSegments / config.angularSegments;
+        const centerY = displayHeight / 2;
+        const bottomY = getBottomCenterY();
 
-        // Draw blob
-        for (let ring = config.radialRings; ring >= 0; ring--) {
-            const normalizedRadius = ring / config.radialRings;
-            const ringRadius = pulsedRadius * normalizedRadius;
-            const color = getGradientColor(normalizedRadius);
-
-            ctx.beginPath();
-
-            for (let i = 0; i <= config.angularSegments; i++) {
-                const cacheIndex = (i * segmentRatio) | 0;
-                const cosAngle = cosTable[cacheIndex];
-                const sinAngle = sinTable[cacheIndex];
-
-                const morphedRadius = getMorphedRadius(cosAngle, sinAngle, ringRadius, timeX, timeY, noiseOffset, morphIntensity, noiseScale);
-                const x = centerX + cosAngle * morphedRadius;
-                const y = centerY + sinAngle * morphedRadius;
-
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-
-            ctx.closePath();
-            ctx.fillStyle = color;
-            ctx.fill();
+        if (centerAlpha > 0.01) {
+            drawBlob(centerY, centerAlpha, pulsedRadius, timeX, timeY, morphIntensity, noiseScale, flareIntensity);
         }
 
-        // Draw flare
-        drawLensFlare(ctx, centerX, centerY, pulsedRadius, timeX, timeY, noiseOffset, time, flareIntensity, morphIntensity, noiseScale);
+        if (bottomAlpha > 0.01) {
+            drawBlob(bottomY, bottomAlpha, pulsedRadius, timeX, timeY, morphIntensity, noiseScale, flareIntensity);
+        }
 
         animationFrameId = requestAnimationFrame(animate);
     }
@@ -459,6 +536,11 @@
         ctx = canvas.getContext('2d', { alpha: true });
 
         updateCanvasSize();
+
+        // Snap to initial alignment — no fade on mount
+        centerAlpha = props.bottomAlign ? 0 : 1;
+        bottomAlpha = props.bottomAlign ? 1 : 0;
+        fadeInDelayRemaining = 0;
 
         time = 0;
         morphPhase = 0;
@@ -480,6 +562,12 @@
     }, 150);
 
     watch([windowWidth, windowHeight], debouncedUpdateCanvasSize);
+
+    watch(() => props.bottomAlign, () => {
+        // Outgoing blob fades out immediately (handled in animate).
+        // Incoming blob waits fadeInDelaySecs before fading in.
+        fadeInDelayRemaining = config.fadeInDelaySecs;
+    });
 
     onMounted(() => {
         initBlob();

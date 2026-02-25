@@ -24,7 +24,12 @@
         <AudioCaptureMeter
             :level="agentStore.audioLevel" />
         <AudioCaptureBlob
-            :intensity="agentStore.audioLevel" />
+            :intensity="agentStore.audioLevel"
+            :bottom-align="agentStore.backgroundImages?.length > 0" />
+        <Transition name="fade">
+            <AudioListeningMessage
+                v-if="isListening" />
+        </Transition>
     </div>
 </template>
 
@@ -36,9 +41,10 @@
     import { useAgent } from '@/composables/useAgent';
     import { useAgentStore } from '@/stores/agent';
     import { useEventBus } from '@vueuse/core';
-    import AudioCaptureBlob from '@/components/animations/AudioCaptureBlob.vue';
-    import AudioCaptureMeter from '@/components/animations/AudioCaptureMeter.vue';
+    import AudioCaptureBlob from '@/components/audioCapture/AudioCaptureBlob.vue';
+    import AudioCaptureMeter from '@/components/audioCapture/AudioCaptureMeter.vue';
     import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
+    import AudioListeningMessage from '@/components/audioCapture/AudioListeningMessage.vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
     import DealerDetailsCard from '@/components/dealerDetailsCard/DealerDetailsCard.vue';
     import FileUpload from '@/components/upload/FileUpload.vue';
@@ -165,5 +171,15 @@
             justify-content: center;
         }
     }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.25s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
 </style>

@@ -26,6 +26,8 @@
                         </div>
                         <div ref="mapsContainer" class="booking-map">
                             <img
+                                :width="size.width"
+                                :height="size.height"
                                 :src="mapUrl"
                                 @load="onImageLoad" />
                         </div>
@@ -86,18 +88,30 @@
 
     const mapsContainer = useTemplateRef('mapsContainer');
 
+    const size = computed(() => {
+        if (!mapsContainer.value) {
+            return { width: 0, height: 0 };
+        }
+
+        return {
+            width: mapsContainer.value.clientWidth,
+            height: Math.round(mapsContainer.value.clientWidth / AGENT.GOOGLE_MAPS.RATIO),
+        };
+    });
+
     const mapUrl = computed(() => {
         if(!props.retailerCoordinates || !props.retailerCoordinates.lat || !props.retailerCoordinates.lng) {
             return '';
         }
 
-        const containerWidth = mapsContainer.value ? mapsContainer.value.clientWidth : 350;
+        const containerWidth = size.value.width;
+        const containerHeight = size.value.height;
 
         const url = [
             'https://maps.googleapis.com/maps/api/staticmap',
             `?center=${props.retailerCoordinates.lat},${props.retailerCoordinates.lng}`,
             `&zoom=${AGENT.GOOGLE_MAPS.ZOOM}`,
-            `&size=${containerWidth}x${Math.round(containerWidth / AGENT.GOOGLE_MAPS.RATIO)}`,
+            `&size=${containerWidth}x${containerHeight}`,
             `&markers=color:white%7Csize:large%7C${props.retailerCoordinates.lat},${props.retailerCoordinates.lng}`,
             '&style=element:geometry%7Ccolor:0x1a1520',
             '&style=element:labels.text.fill%7Ccolor:0x9a9080',
