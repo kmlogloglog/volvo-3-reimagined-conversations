@@ -105,7 +105,7 @@
     align-items: center;
     display: inline-flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.4rem;
     justify-content: center;
 }
 
@@ -113,8 +113,8 @@
     background: currentColor;
     border-radius: 9999px;
     display: block;
-    height: 0.25rem;
-    width: 0.25rem;
+    height: 0.375rem;
+    width: 0.375rem;
 }
 
 .menu {

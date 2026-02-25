@@ -23,9 +23,11 @@
 
         <AudioCaptureMeter
             :level="agentStore.audioLevel" />
+
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel"
             :bottom-align="agentStore.backgroundImages?.length > 0" />
+
         <Transition name="fade">
             <AudioListeningMessage
                 v-if="isListening" />

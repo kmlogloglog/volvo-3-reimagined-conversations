@@ -11,7 +11,7 @@
 
     // Typography
     --font-color-primary: var(--color-black);
-    --font-color-secondary: var(--color-grey-700);
+    --font-color-secondary: var(--color-grey-300);
 
     // Buttons
     --button-color-background: var(--color-black);
@@ -31,17 +31,14 @@
     --speech-bubble-color-background: var(--color-white);
     --speech-bubble-color-font: var(--color-black);
 
-    // Icons
-    --icon-color-background: var(--color-white);
-
     // Navigation
-    --navigation-color-background: var(--color-white);
+    --navigation-color-background: var(--color-black);
     --navigation-button-color-background: rgba(46, 44, 44, 0.50);
-    --navigation-button-color-font: var(--color-grey-600);
-    --navigation-button-active-color-background: var(--color-grey-700);
+    --navigation-button-color-font: var(--color-grey-1000);
+    --navigation-button-active-color-background: var(--color-grey-200);
     --navigation-button-active-color-font: var(--color-white);
-    --navigation-button-disabled-color-font: var(--color-grey-900);
-    --navigation-button-disabled-color-background: var(--color-grey-800)
+    --navigation-button-disabled-color-font: var(--color-grey-200);
+    --navigation-button-disabled-color-background: var(--color-grey-100);
 
     --navigation-button-record-color-background: var(--color-red-900);
     --navigation-button-record-color-font: var(--color-white);
@@ -81,9 +78,6 @@
     // Speech bubbles
     --speech-bubble-color-background: var(--color-black);
     --speech-bubble-color-font: var(--color-white);
-
-    // Icons
-    --icon-color-background: var(--color-black);
 
     // Navigation
     --navigation-color-background: var(--color-black);

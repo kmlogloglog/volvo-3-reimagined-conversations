@@ -8,15 +8,15 @@
                     <h4 class="booking-headline">Your test drive booking:</h4>
                     <div class="booking-container">
                         <div class="booking-list">
-                            <div class="booking-item">
+                            <div v-if="time" class="booking-item">
                                 <span class="booking-icon icon-clock"></span>
                                 <span>{{ time }}</span>
                             </div>
-                            <div class="booking-item">
+                            <div v-if="datePretty" class="booking-item">
                                 <span class="booking-icon icon-calendar-1-dot"></span>
                                 <span>{{ datePretty }}</span>
                             </div>
-                            <div class="booking-item">
+                            <div v-if="retailerAddress" class="booking-item">
                                 <span class="booking-icon icon-map-pin"></span>
                                 <div class="booking-address">
                                     <div class="booking-address-headline">{{ retailerName }}</div>
@@ -26,6 +26,7 @@
                         </div>
                         <div ref="mapsContainer" class="booking-map">
                             <img
+                                v-if="mapUrl"
                                 :width="size.width"
                                 :height="size.height"
                                 :src="mapUrl"
@@ -99,36 +100,61 @@
         };
     });
 
+    const colorMode = useColorMode();
+
     const mapUrl = computed(() => {
-        if(!props.retailerCoordinates || !props.retailerCoordinates.lat || !props.retailerCoordinates.lng) {
+        if (!props.retailerCoordinates || !props.retailerCoordinates.lat || !props.retailerCoordinates.lng) {
+            console.log(props.retailerCoordinates);
+            console.groupEnd();
             return '';
         }
 
-        const containerWidth = size.value.width;
-        const containerHeight = size.value.height;
+        const isDark = colorMode.value === 'dark';
+        const markerColor = isDark ? '0xFFFFFF' : '0xFFFFFF';
+        const styles = isDark
+            ? [
+                '&style=element:geometry%7Ccolor:0x1a1520',
+                '&style=element:labels.text.fill%7Ccolor:0x9a9080',
+                '&style=element:labels.text.stroke%7Ccolor:0x1a1520',
+                '&style=feature:road%7Celement:geometry%7Ccolor:0x4B443F',
+                '&style=feature:road.arterial%7Celement:geometry%7Ccolor:0x4B443F',
+                '&style=feature:road.highway%7Celement:geometry%7Ccolor:0xA19685',
+                '&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0x3a3530',
+                '&style=feature:road.local%7Celement:geometry%7Ccolor:0x3a3530',
+                '&style=feature:poi%7Cvisibility:off',
+                '&style=feature:poi.park%7Celement:geometry%7Ccolor:0x542E46%7Cvisibility:on',
+                '&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0x512C43',
+                '&style=feature:landscape.man_made%7Celement:geometry%7Ccolor:0x7B4D3F',
+                '&style=feature:transit%7Celement:geometry%7Ccolor:0x4B443F',
+                '&style=feature:water%7Celement:geometry%7Ccolor:0x0d0d18',
+            ]
+            : [
+                '&style=element:geometry%7Ccolor:0xf0eaf2',
+                '&style=element:labels.text.fill%7Ccolor:0x6b5f55',
+                '&style=element:labels.text.stroke%7Ccolor:0xf0eaf2',
+                '&style=feature:road%7Celement:geometry%7Ccolor:0xd4c8c0',
+                '&style=feature:road.arterial%7Celement:geometry%7Ccolor:0xd4c8c0',
+                '&style=feature:road.highway%7Celement:geometry%7Ccolor:0xb5a898',
+                '&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0xc9bdb5',
+                '&style=feature:road.local%7Celement:geometry%7Ccolor:0xe0d6d0',
+                '&style=feature:poi%7Cvisibility:off',
+                '&style=feature:poi.park%7Celement:geometry%7Ccolor:0xe8c4d8%7Cvisibility:on',
+                '&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0xeacddc',
+                '&style=feature:landscape.man_made%7Celement:geometry%7Ccolor:0xddc8be',
+                '&style=feature:transit%7Celement:geometry%7Ccolor:0xd4c8c0',
+                '&style=feature:water%7Celement:geometry%7Ccolor:0xc8c0e0',
+            ];
 
         const url = [
             'https://maps.googleapis.com/maps/api/staticmap',
             `?center=${props.retailerCoordinates.lat},${props.retailerCoordinates.lng}`,
             `&zoom=${AGENT.GOOGLE_MAPS.ZOOM}`,
-            `&size=${containerWidth}x${containerHeight}`,
-            `&markers=color:white%7Csize:large%7C${props.retailerCoordinates.lat},${props.retailerCoordinates.lng}`,
-            '&style=element:geometry%7Ccolor:0x1a1520',
-            '&style=element:labels.text.fill%7Ccolor:0x9a9080',
-            '&style=element:labels.text.stroke%7Ccolor:0x1a1520',
-            '&style=feature:road%7Celement:geometry%7Ccolor:0x4B443F',
-            '&style=feature:road.arterial%7Celement:geometry%7Ccolor:0x4B443F',
-            '&style=feature:road.highway%7Celement:geometry%7Ccolor:0xA19685',
-            '&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0x3a3530',
-            '&style=feature:road.local%7Celement:geometry%7Ccolor:0x3a3530',
-            '&style=feature:poi%7Cvisibility:off',
-            '&style=feature:poi.park%7Celement:geometry%7Ccolor:0x542E46%7Cvisibility:on',
-            '&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0x512C43',
-            '&style=feature:landscape.man_made%7Celement:geometry%7Ccolor:0x7B4D3F',
-            '&style=feature:transit%7Celement:geometry%7Ccolor:0x4B443F',
-            '&style=feature:water%7Celement:geometry%7Ccolor:0x0d0d18',
+            `&size=${size.value.width}x${size.value.height}`,
+            `&markers=color:${markerColor}%7Csize:large%7C${props.retailerCoordinates.lat},${props.retailerCoordinates.lng}`,
+            ...styles,
             `&key=${AGENT.GOOGLE_MAPS.API_KEY}`,
         ].join('');
+
         return url;
     });
 </script>
