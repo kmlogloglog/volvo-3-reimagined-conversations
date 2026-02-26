@@ -100,8 +100,6 @@
         };
     });
 
-    const colorMode = useColorMode();
-
     const mapUrl = computed(() => {
         if (!props.retailerCoordinates || !props.retailerCoordinates.lat || !props.retailerCoordinates.lng) {
             console.log(props.retailerCoordinates);
@@ -109,41 +107,23 @@
             return '';
         }
 
-        const isDark = colorMode.value === 'dark';
-        const markerColor = isDark ? '0xFFFFFF' : '0xFFFFFF';
-        const styles = isDark
-            ? [
-                '&style=element:geometry%7Ccolor:0x1a1520',
-                '&style=element:labels.text.fill%7Ccolor:0x9a9080',
-                '&style=element:labels.text.stroke%7Ccolor:0x1a1520',
-                '&style=feature:road%7Celement:geometry%7Ccolor:0x4B443F',
-                '&style=feature:road.arterial%7Celement:geometry%7Ccolor:0x4B443F',
-                '&style=feature:road.highway%7Celement:geometry%7Ccolor:0xA19685',
-                '&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0x3a3530',
-                '&style=feature:road.local%7Celement:geometry%7Ccolor:0x3a3530',
-                '&style=feature:poi%7Cvisibility:off',
-                '&style=feature:poi.park%7Celement:geometry%7Ccolor:0x542E46%7Cvisibility:on',
-                '&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0x512C43',
-                '&style=feature:landscape.man_made%7Celement:geometry%7Ccolor:0x7B4D3F',
-                '&style=feature:transit%7Celement:geometry%7Ccolor:0x4B443F',
-                '&style=feature:water%7Celement:geometry%7Ccolor:0x0d0d18',
-            ]
-            : [
-                '&style=element:geometry%7Ccolor:0xf0eaf2',
-                '&style=element:labels.text.fill%7Ccolor:0x6b5f55',
-                '&style=element:labels.text.stroke%7Ccolor:0xf0eaf2',
-                '&style=feature:road%7Celement:geometry%7Ccolor:0xd4c8c0',
-                '&style=feature:road.arterial%7Celement:geometry%7Ccolor:0xd4c8c0',
-                '&style=feature:road.highway%7Celement:geometry%7Ccolor:0xb5a898',
-                '&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0xc9bdb5',
-                '&style=feature:road.local%7Celement:geometry%7Ccolor:0xe0d6d0',
-                '&style=feature:poi%7Cvisibility:off',
-                '&style=feature:poi.park%7Celement:geometry%7Ccolor:0xe8c4d8%7Cvisibility:on',
-                '&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0xeacddc',
-                '&style=feature:landscape.man_made%7Celement:geometry%7Ccolor:0xddc8be',
-                '&style=feature:transit%7Celement:geometry%7Ccolor:0xd4c8c0',
-                '&style=feature:water%7Celement:geometry%7Ccolor:0xc8c0e0',
-            ];
+        const markerColor = '0xFFFFFF';
+        const styles = [
+            '&style=element:geometry%7Ccolor:0x1a1520',
+            '&style=element:labels.text.fill%7Ccolor:0x9a9080',
+            '&style=element:labels.text.stroke%7Ccolor:0x1a1520',
+            '&style=feature:road%7Celement:geometry%7Ccolor:0x4B443F',
+            '&style=feature:road.arterial%7Celement:geometry%7Ccolor:0x4B443F',
+            '&style=feature:road.highway%7Celement:geometry%7Ccolor:0xA19685',
+            '&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0x3a3530',
+            '&style=feature:road.local%7Celement:geometry%7Ccolor:0x3a3530',
+            '&style=feature:poi%7Cvisibility:off',
+            '&style=feature:poi.park%7Celement:geometry%7Ccolor:0x542E46%7Cvisibility:on',
+            '&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0x512C43',
+            '&style=feature:landscape.man_made%7Celement:geometry%7Ccolor:0x7B4D3F',
+            '&style=feature:transit%7Celement:geometry%7Ccolor:0x4B443F',
+            '&style=feature:water%7Celement:geometry%7Ccolor:0x0d0d18',
+        ];
 
         const url = [
             'https://maps.googleapis.com/maps/api/staticmap',

@@ -2,6 +2,7 @@
     <div class="view">
         <BackgroundImages
             :src="agentStore.backgroundImages" />
+
         <div class="base-view">
             <div class="base-view-inner">
                 <DealerDetailsCard
@@ -30,7 +31,6 @@
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel"
             :bottom-align="agentStore.backgroundImages?.length > 0"
-            :gradient-stops="demoBlobGradientStops"
             :hide="false" />
 
         <Transition name="fade">
@@ -47,7 +47,7 @@
     import { storeToRefs } from 'pinia';
     import { useAgent } from '@/composables/useAgent';
     import { useAgentStore } from '@/stores/agent';
-    import { useEventBus, useIntervalFn } from '@vueuse/core';
+    import { useEventBus } from '@vueuse/core';
     import AudioCaptureBlob from '@/components/audioCapture/AudioCaptureBlob.vue';
     import AudioCaptureMeter from '@/components/audioCapture/AudioCaptureMeter.vue';
     import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
@@ -137,39 +137,6 @@
         agentStore.connect();
     });
 
-    // ============================================================
-    // DEMO ONLY: Cycling blob gradient stops every 5 seconds
-    // ============================================================
-    const DEMO_GRADIENT_CYCLES = [
-        [
-            { position: 0, r: 250, g: 210, b: 200, a: 0.75 },
-            { position: 1, r: 89, g: 41, b: 12, a: 0.15 },
-        ],
-        [
-            { position: 0, r: 120, g: 180, b: 255, a: 0.75 },
-            { position: 1, r: 20, g: 60, b: 180, a: 0.15 },
-        ],
-        [
-            { position: 0, r: 180, g: 255, b: 200, a: 0.75 },
-            { position: 1, r: 20, g: 120, b: 60, a: 0.15 },
-        ],
-        [
-            { position: 0, r: 255, g: 220, b: 100, a: 0.75 },
-            { position: 1, r: 160, g: 80, b: 10, a: 0.15 },
-        ],
-        [
-            { position: 0, r: 220, g: 140, b: 255, a: 0.75 },
-            { position: 1, r: 80, g: 20, b: 160, a: 0.15 },
-        ],
-    ];
-    const demoBlobGradientIndex = ref(0);
-    const demoBlobGradientStops = computed(() => DEMO_GRADIENT_CYCLES[demoBlobGradientIndex.value]);
-    useIntervalFn(() => {
-        demoBlobGradientIndex.value = (demoBlobGradientIndex.value + 1) % DEMO_GRADIENT_CYCLES.length;
-    }, 5000);
-    // ============================================================
-    // END DEMO
-    // ============================================================
 </script>
 
 <style scoped lang="scss">
@@ -222,4 +189,5 @@
 .fade-leave-to {
     opacity: 0;
 }
+
 </style>

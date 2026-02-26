@@ -211,3 +211,6 @@ test_agent.sh
 test_mcp.sh
 nextjs/
 *.excalidraw
+
+# Claude settings
+.claude/settings.local.json
