@@ -13,9 +13,10 @@
     const agentStore = useAgentStore();
     const { backgroundStyle } = useBackground(agentStore);
 
-    onMounted(() => {
+    onBeforeMount(() => {
         agentStore.set_userName(`${AGENT.DEFAULT_USER_NAME}_${crypto.randomUUID()}`);
     });
+
 </script>
 
 <style scoped lang="scss">

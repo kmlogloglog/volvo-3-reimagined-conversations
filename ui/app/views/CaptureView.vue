@@ -30,7 +30,8 @@
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel"
             :bottom-align="agentStore.backgroundImages?.length > 0"
-            :gradient-stops="demoBlobGradientStops" />
+            :gradient-stops="demoBlobGradientStops"
+            :hide="false" />
 
         <Transition name="fade">
             <AudioListeningMessage
