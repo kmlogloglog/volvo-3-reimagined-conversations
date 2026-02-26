@@ -96,6 +96,8 @@
 
         // Bottom alignment
         bottomAlignOffsetRem: 5,
+        bottomAlignIdleSizeMultiplier: 0.6,
+        bottomAlignMaxSizeMultiplierBoost: 1.8,
 
         // How long the crossfade takes, in seconds.
         fadeDurationSecs: 0.4,
@@ -564,6 +566,10 @@
         const idlePulse = Math.sin(time * config.pulseSpeed) * config.idlePulseAmount * (1 - boost);
         const pulsedRadius = baseRadius * (1 + idlePulse);
 
+        const bottomSizeMultiplier = config.bottomAlignIdleSizeMultiplier + boost * config.bottomAlignMaxSizeMultiplierBoost;
+        const bottomBaseRadius = Math.min(displayWidth, displayHeight) * config.baseSize * bottomSizeMultiplier;
+        const bottomPulsedRadius = bottomBaseRadius * (1 + idlePulse);
+
         const loopRadius = 2.0;
         const timeX = Math.cos(morphPhase) * loopRadius;
         const timeY = Math.sin(morphPhase) * loopRadius;
@@ -575,7 +581,7 @@
         }
 
         if (bottomAlpha > 0.01) {
-            drawBlob(getBottomCenterY(), bottomAlpha, pulsedRadius, timeX, timeY, morphIntensity, noiseScale, flareIntensity, stops);
+            drawBlob(getBottomCenterY(), bottomAlpha, bottomPulsedRadius, timeX, timeY, morphIntensity, noiseScale, flareIntensity, stops);
         }
 
         animationFrameId = requestAnimationFrame(animate);
