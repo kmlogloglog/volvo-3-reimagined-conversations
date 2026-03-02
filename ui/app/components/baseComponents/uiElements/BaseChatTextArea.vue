@@ -7,8 +7,8 @@
             type="text"
             class="chat-text-input"
             :disabled="disabled || loading"
-            :placeholder="placeholderTxt"
-            @keydown.enter.prevent="onSubmit"></textarea>
+            placeholder="Ask Volvo Vän"
+            @keydown.enter.exact.prevent="onSubmit"></textarea>
         <button
             type="button"
             class="button-reset chat-text-button"
@@ -57,12 +57,8 @@
 
     const emit = defineEmits([EMITS.SUBMIT]);
 
-    const isListening = ref(false);
-    const placeholderTxt = computed(() => isListening.value ? 'Recording' : 'Ask Volvo Vän');
-
     function onSubmit() {
-        if(vModel.value === '') {
-            isListening.value = !isListening.value;
+        if (vModel.value === '') {
             return;
         }
 
@@ -72,6 +68,7 @@
 
     function focus() {
         const textarea = textareaRef.value;
+
         if (textarea) {
             textarea.focus();
         }

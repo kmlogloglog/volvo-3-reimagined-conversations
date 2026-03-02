@@ -49,7 +49,12 @@
 
     // sanitized text to prevent XSS when using v-html
     const sanitizedText = computed(() => {
-        return DOMPurify.sanitize(props.text);
+        const sanitized = DOMPurify.sanitize(props.text);
+        // Agent responses are already HTML — only convert newlines to <br> for plain-text user messages
+        if (/<[a-z][\s\S]*>/i.test(sanitized)) {
+            return sanitized;
+        }
+        return sanitized.replace(/\n/g, '<br>');
     });
 
     const buttonLabel = computed(() => showAllText.value ? 'Collapse message' : 'Show full message');
