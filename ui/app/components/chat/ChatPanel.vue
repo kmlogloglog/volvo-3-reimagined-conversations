@@ -1,7 +1,10 @@
 <template>
     <div class="content-container">
         <div class="chat-stream">
-            <div ref="mainInnerRef" class="main-inner" :class="{ show }">
+            <div
+                ref="mainInnerRef"
+                class="main-inner"
+                :class="{ show }">
                 <ChatStream
                     :chat="agentStore.conversation"
                     :filter-from-last="AGENT.USER"
@@ -111,7 +114,7 @@
                 row-gap: 1rem;
                 overflow-anchor: none;
                 visibility: hidden;
-                padding: 0 1.875rem;
+                padding: 2.5rem 1.875rem 0;
 
                 &.show {
                     visibility: visible;

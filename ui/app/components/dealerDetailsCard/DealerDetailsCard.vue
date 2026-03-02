@@ -8,11 +8,15 @@
                     <h4 class="booking-headline">Your test drive booking:</h4>
                     <div class="booking-container">
                         <div class="booking-list">
-                            <div v-if="time" class="booking-item">
+                            <div
+                                v-if="time"
+                                class="booking-item">
                                 <span class="booking-icon icon-clock"></span>
                                 <span>{{ time }}</span>
                             </div>
-                            <div v-if="datePretty" class="booking-item">
+                            <div
+                                v-if="datePretty"
+                                class="booking-item">
                                 <span class="booking-icon icon-calendar-1-dot"></span>
                                 <span>{{ datePretty }}</span>
                             </div>
@@ -27,9 +31,9 @@
                         <div ref="mapsContainer" class="booking-map">
                             <img
                                 v-if="mapUrl"
-                                :width="size.width"
                                 :height="size.height"
                                 :src="mapUrl"
+                                :width="size.width"
                                 @load="onImageLoad" />
                         </div>
                     </div>
@@ -144,9 +148,9 @@
         &-container {
             display: flex;
             flex-direction: column;
-            padding: 2.5rem 1.875rem 1.25rem;
+            margin: auto 0 0;
             overflow: auto;
-            margin: auto 0;
+            padding: 2.5rem 1.875rem 1.25rem;
         }
     }
 

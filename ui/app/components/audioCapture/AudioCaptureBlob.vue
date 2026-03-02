@@ -1,6 +1,8 @@
 <template>
     <div ref="containerRef" class="gradient-blob" :style="blobContainerStyle">
-        <canvas ref="gradientCanvas"></canvas>
+        <div class="gradient-blob-canvas-wrap">
+            <canvas ref="gradientCanvas"></canvas>
+        </div>
     </div>
 </template>
 
@@ -687,6 +689,16 @@ $blob-blur: 15px;
     filter: blur($blob-blur);
     will-change: filter, transform;
     pointer-events: none;
+}
+
+.gradient-blob-canvas-wrap {
+    position: absolute;
+    width: 100%;
+    max-width: var(--max-width);
+    height: 100%;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .gradient-blob canvas {

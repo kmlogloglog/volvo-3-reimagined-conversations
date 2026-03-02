@@ -19,8 +19,7 @@
 
 <style scoped lang="scss">
 #app {
-    min-height: calc(150vh + 1px);
     background-color: var(--app-background-color);
-
+    min-height: calc(150vh + 1px);
 }
 </style>

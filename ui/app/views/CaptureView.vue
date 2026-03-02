@@ -33,6 +33,10 @@
             :bottom-align="agentStore.backgroundImages?.length > 0"
             :hide="false" />
 
+        <!-- <BlobMask
+            image-size="80"
+            image-src="/assets/images/EX30_rim_JG21_20inch 1.png" /> -->
+
         <Transition name="fade">
             <AudioListeningMessage
                 v-if="isListening" />
@@ -49,6 +53,7 @@
     import { useAgentStore } from '@/stores/agent';
     import { useEventBus } from '@vueuse/core';
     import AudioCaptureBlob from '@/components/audioCapture/AudioCaptureBlob.vue';
+    // import BlobMask from '@/components/blobMask/BlobMask.vue';
     import AudioCaptureMeter from '@/components/audioCapture/AudioCaptureMeter.vue';
     import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
     import AudioListeningMessage from '@/components/audioCapture/AudioListeningMessage.vue';
