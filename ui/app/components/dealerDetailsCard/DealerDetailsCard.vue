@@ -1,5 +1,5 @@
 <template>
-    <div class="content-container">
+    <div class="panel-scroll">
         <BaseSpeechBubble
             :align-bubble="AGENT.AGENT"
             :full-width="true">
@@ -144,14 +144,10 @@
 </script>
 
 <style lang="scss" scoped>
-    .content {
-        &-container {
-            display: flex;
-            flex-direction: column;
-            margin: auto 0 0;
-            overflow: auto;
-            padding: 2.5rem 1.875rem 1.25rem;
-        }
+    @use '@/scss/mixins' as *;
+
+    .panel-scroll {
+        @include panel-scroll;
     }
 
     .booking {

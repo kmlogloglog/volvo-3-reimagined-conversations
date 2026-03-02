@@ -1,15 +1,17 @@
 <template>
-    <div class="content-container">
+    <div class="chat">
         <div class="chat-stream">
             <div
-                ref="mainInnerRef"
-                class="main-inner"
-                :class="{ show }">
-                <ChatStream
-                    :chat="agentStore.conversation"
-                    :filter-from-last="AGENT.USER"
-                    @[EMITS.IMAGE_LOADED]="onImageLoaded"
-                    @[EMITS.SPEECH_BUBBLE_EXPAND]="onSpeechBubbleExpand($event)" />
+                ref="panelScrollRef"
+                class="panel-scroll"
+                :class="{ show, hide: !show }">
+                <div class="chat-messages">
+                    <ChatStream
+                        :chat="agentStore.conversation"
+                        :filter-from-last="AGENT.USER"
+                        @[EMITS.IMAGE_LOADED]="onImageLoaded"
+                        @[EMITS.SPEECH_BUBBLE_EXPAND]="onSpeechBubbleExpand($event)" />
+                </div>
             </div>
         </div>
         <div class="chat-input">
@@ -46,19 +48,19 @@
         agentStore.sendMessage(message);
     };
 
-    const mainInnerRef = ref(null);
-    provide('scrollContainer', mainInnerRef);
+    const panelScrollRef = ref(null);
+    provide('scrollContainer', panelScrollRef);
 
     function onSpeechBubbleExpand({ heightDelta, scrollBefore }) {
-        if (mainInnerRef.value && heightDelta !== 0) {
-            mainInnerRef.value.scrollTop = scrollBefore + heightDelta;
+        if (panelScrollRef.value && heightDelta !== 0) {
+            panelScrollRef.value.scrollTop = scrollBefore + heightDelta;
         }
     }
 
     function setScrollToBottom() {
         requestAnimationFrame(() => {
-            if (mainInnerRef.value) {
-                mainInnerRef.value.scrollTop = mainInnerRef.value.scrollHeight;
+            if (panelScrollRef.value) {
+                panelScrollRef.value.scrollTop = panelScrollRef.value.scrollHeight;
             }
         });
     }
@@ -91,39 +93,43 @@
 </script>
 
 <style lang="scss" scoped>
-    .content-container {
+    @use '@/scss/mixins' as *;
+
+    .chat {
         display: flex;
         flex-direction: column;
         height: 100%;
         width: 100%;
         row-gap: 1.25rem;
 
-        .chat-stream {
+        &-stream {
             display: flex;
             flex-direction: column;
             flex: 1;
             justify-content: flex-end;
             overflow: hidden;
-            width: 100%;
-            -webkit-overflow-scrolling: touch;
-
-            .main-inner {
-                display: flex;
-                flex-direction: column;
-                overflow: auto;
-                row-gap: 1rem;
-                overflow-anchor: none;
-                visibility: hidden;
-                padding: 2.5rem 1.875rem 0;
-
-                &.show {
-                    visibility: visible;
-                }
-            }
         }
 
-        .chat-input {
+        &-messages {
+            display: flex;
+            flex-direction: column;
+            row-gap: 1rem;
+        }
+
+        &-input {
             padding: 0 1.875rem;
+        }
+    }
+
+    .panel-scroll {
+        @include panel-scroll;
+
+        &.hide {
+            visibility: hidden;
+        }
+
+        &.show {
+            visibility: visible;
         }
     }
 </style>
