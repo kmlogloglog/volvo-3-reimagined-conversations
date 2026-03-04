@@ -59,6 +59,3 @@ class AppointmentSlot(BaseModel):
         ..., description="The date of the appointment (e.g., YYYY-MM-DD)."
     )
     time: str = Field(..., description="The time of the appointment (e.g., HH:MM).")
-    duration: Optional[int] = Field(
-        default=None, description="Duration of the appointment in minutes (optional)."
-    )
