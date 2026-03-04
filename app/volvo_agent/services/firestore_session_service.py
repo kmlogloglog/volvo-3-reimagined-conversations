@@ -1,13 +1,15 @@
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from google.adk.events.event import Event
 from google.adk.sessions.base_session_service import (
     BaseSessionService,
+    GetSessionConfig,
     ListSessionsResponse,
 )
 from google.adk.sessions.session import Session
-from google.cloud import firestore  # type: ignore
+from google.cloud import firestore  # type: ignore[attr-defined]
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 logger = logging.getLogger(__name__)
 
@@ -49,14 +51,13 @@ class FirestoreSessionService(BaseSessionService):
             .document(session_id)
         )
 
-    async def get_session(  # type: ignore
+    async def get_session(
         self,
         *,
         app_name: str,
         user_id: str,
         session_id: str,
-        config: dict[str, Any] | None = None,  # Added config matching base,
-        state: dict[str, Any] | None = None,
+        config: Optional[GetSessionConfig] = None,
     ) -> Session | None:
         """Retrieves a session from Firestore, including its events."""
         session_ref = self._get_session_ref(user_id, session_id)
@@ -80,6 +81,8 @@ class FirestoreSessionService(BaseSessionService):
         # Fetch events from sub-collection, ordered by timestamp
         events_ref = session_ref.collection("events")
         events_stream = events_ref.order_by("timestamp").stream()
+
+        # TODO: Implement event filtering based on GetSessionConfig
 
         events = []
         for event_doc in events_stream:
@@ -149,7 +152,7 @@ class FirestoreSessionService(BaseSessionService):
         if user_id:
             # Efficient: List only sessions for this user
             sessions_ref = self.root_collection.document(user_id).collection("sessions")
-            query = sessions_ref.where("app_name", "==", app_name)
+            query = sessions_ref.where(filter=FieldFilter("app_name", "==", app_name))
             docs = query.limit(50).stream()
         else:
             # Less efficient: Query all sessions via Collection Group

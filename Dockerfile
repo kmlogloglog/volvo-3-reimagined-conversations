@@ -1,3 +1,11 @@
+# Build the UI
+FROM node:20-alpine AS ui-builder
+WORKDIR /app/ui
+COPY ui/package*.json ./
+RUN npm install
+COPY ui/ ./
+RUN npm run generate
+
 # Build the backend
 FROM python:3.13-slim AS backend-builder
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -19,8 +27,11 @@ ENV PYTHONUNBUFFERED=1
 # Copy the app source code
 COPY app ./app
 
-# Copy the frontend source code (Vanilla JS, no build needed)
-COPY frontend ./frontend
+# Copy the built UI
+COPY --from=ui-builder /app/ui/.output/public ./ui/.output/public
+
+# Copy the debug frontend source code (Vanilla JS, no build needed)
+COPY debug_frontend ./debug_frontend
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"

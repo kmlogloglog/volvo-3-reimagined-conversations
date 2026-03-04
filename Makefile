@@ -8,6 +8,7 @@ PROJECT_NUMBER   := 719852784419
 PROJECT_LOCATION := europe-west4
 SERVICE_ACCOUNT  := volvo-vaen-sa@$(PROJECT_ID).iam.gserviceaccount.com
 DOMAIN           := vml.com
+DEBUG_ROOT_ENDPOINT := True
 
 # Service Names
 AGENT_SERVICE_NAME := volvo-vaen
@@ -98,8 +99,7 @@ build-ui: ## Build the UI
 run-agent: # Run the agent with using the main (same as in Cloud Run) - Runs on port 8080
 	@echo "----------------------------------------------------------"
 	@echo "Debug UI available at: http://127.0.0.1:8080/debug"
-	@echo "Old UI available at: http://127.0.0.1:8080/old-ui"
-	@echo "New UI available at: http://127.0.0.1:8080/"
+	@echo "Nuxt UI available at: http://127.0.0.1:8080/"
 	@echo "----------------------------------------------------------"
 	uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8080
 
@@ -122,6 +122,8 @@ deploy-agent: ## Deploy Volvo Agent to Cloud Run
 	--set-env-vars SERVICE_ACCOUNT=$(SERVICE_ACCOUNT) \
 	--set-env-vars HOST_URL=${SERVICE_URL} \
 	--set-env-vars USE_FIRESTORE=True \
+	--set-env-vars DEBUG_ROOT_ENDPOINT=$(DEBUG_ROOT_ENDPOINT) \
+	--set-secrets GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY:latest \
 	--min 1
 	@echo "Adding IAP binding..."
 	gcloud beta iap web add-iam-policy-binding \

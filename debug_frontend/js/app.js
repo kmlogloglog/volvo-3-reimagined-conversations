@@ -7,8 +7,7 @@
  */
 
 // Connect the server with a WebSocket connection
-// Connect the server with a WebSocket connection
-let userId = "demo-user";
+let userId = "demo-user-" + Math.random().toString(36).substring(7);
 let sessionId = "demo-session-" + Math.random().toString(36).substring(7);
 let websocket = null;
 let is_audio = false;
@@ -75,11 +74,15 @@ function getWebSocketUrl() {
   // Add proactivity option if checked
   if (enableProactivityCheckbox && enableProactivityCheckbox.checked) {
     params.append("proactivity", "true");
+  } else {
+    params.append("proactivity", "false");
   }
 
   // Add affective dialog option if checked
   if (enableAffectiveDialogCheckbox && enableAffectiveDialogCheckbox.checked) {
     params.append("affective_dialog", "true");
+  } else {
+    params.append("affective_dialog", "false");
   }
 
   const queryString = params.toString();
@@ -838,55 +841,94 @@ function connectWebsocket() {
             // Check for display_component or carousel_card (used by different tools)
             const isDisplayAction = uiAction.action === 'display_component';
             if (isDisplayAction) {
-              const images = uiAction.data.images || (uiAction.data.image_url ? [uiAction.data.image_url] : []);
+              const componentName = uiAction.component_name;
 
-              if (images.length > 0) {
-                console.log("Rendering images from UI Action:", images);
-
+              if (componentName === 'maps_view') {
                 const messageDiv = document.createElement("div");
                 messageDiv.className = "message agent";
-
                 const bubbleDiv = document.createElement("div");
-                bubbleDiv.className = "bubble image-bubble";
-                // Allow bubble to expand for multiple images if needed, though max-width 70% still applies
-                if (images.length > 1) {
-                  bubbleDiv.style.maxWidth = "85%"; // Give more space for carousel
-                }
-
-                // Container for images (carousel if multiple)
-                const imageContainer = document.createElement("div");
-                if (images.length > 1) {
-                  imageContainer.className = "multi-image-container";
-                } else {
-                  // Single image style
-                  imageContainer.style.display = "block";
-                }
-
-                images.forEach(url => {
-                  const img = document.createElement("img");
-                  img.src = url;
-                  img.className = "bubble-image";
-                  img.alt = uiAction.data.alt_text || "Car Configuration Image";
-                  imageContainer.appendChild(img);
-                });
-
-                bubbleDiv.appendChild(imageContainer);
-
-                // Add caption if available
-                if (uiAction.data.caption || uiAction.data.title) {
-                  const captionDiv = document.createElement("div");
-                  captionDiv.className = "bubble-caption";
-                  captionDiv.textContent = uiAction.data.caption || uiAction.data.title;
-                  captionDiv.style.fontSize = "0.8em";
-                  captionDiv.style.color = "#666";
-                  captionDiv.style.marginTop = "8px";
-                  captionDiv.style.textAlign = "center";
-                  bubbleDiv.appendChild(captionDiv);
-                }
-
+                bubbleDiv.className = "bubble component-bubble";
+                bubbleDiv.innerHTML = `
+                  <div class="component-content maps-view">
+                    <h4 style="margin-top: 0; margin-bottom: 8px; color: var(--primary-color);">📍 Retailer Found</h4>
+                    <p style="margin: 4px 0;"><strong>Name:</strong> ${uiAction.data.retailer_name}</p>
+                    <p style="margin: 4px 0;"><strong>Address:</strong> ${uiAction.data.address}</p>
+                  </div>
+                `;
                 messageDiv.appendChild(bubbleDiv);
                 messagesDiv.appendChild(messageDiv);
                 scrollToBottom();
+              } else if (componentName === 'test_drive_confirmation') {
+                const messageDiv = document.createElement("div");
+                messageDiv.className = "message agent";
+                const bubbleDiv = document.createElement("div");
+                bubbleDiv.className = "bubble component-bubble";
+                bubbleDiv.innerHTML = `
+                  <div class="component-content test-drive">
+                    <h4 style="margin-top: 0; margin-bottom: 8px; color: var(--primary-color);">✅ Test Drive Booked!</h4>
+                    <p style="margin: 4px 0;"><strong>Name:</strong> ${uiAction.data.user_name}</p>
+                    <p style="margin: 4px 0;"><strong>Email:</strong> ${uiAction.data.user_email}</p>
+                    <p style="margin: 4px 0;"><strong>Retailer:</strong> ${uiAction.data.retailer_name}</p>
+                    <p style="margin: 4px 0;"><strong>Address:</strong> ${uiAction.data.retailer_address}</p>
+                    <p style="margin: 4px 0;"><strong>Date & Time:</strong> ${uiAction.data.date} at ${uiAction.data.time}</p>
+                    <hr style="margin: 8px 0; border: 0; border-top: 1px solid #ddd;">
+                    <p style="margin: 4px 0; font-size: 0.9em; color: #555;"><em>Preferences:</em> Height: ${uiAction.data.preferences.height}, Music: ${uiAction.data.preferences.music}, Light: ${uiAction.data.preferences.light}</p>
+                  </div>
+                `;
+                messageDiv.appendChild(bubbleDiv);
+                messagesDiv.appendChild(messageDiv);
+                scrollToBottom();
+              } else {
+                const images = uiAction.data.images || (uiAction.data.image_url ? [uiAction.data.image_url] : []);
+
+                if (images.length > 0) {
+                  console.log("Rendering images from UI Action:", images);
+
+                  const messageDiv = document.createElement("div");
+                  messageDiv.className = "message agent";
+
+                  const bubbleDiv = document.createElement("div");
+                  bubbleDiv.className = "bubble image-bubble";
+                  // Allow bubble to expand for multiple images if needed, though max-width 70% still applies
+                  if (images.length > 1) {
+                    bubbleDiv.style.maxWidth = "85%"; // Give more space for carousel
+                  }
+
+                  // Container for images (carousel if multiple)
+                  const imageContainer = document.createElement("div");
+                  if (images.length > 1) {
+                    imageContainer.className = "multi-image-container";
+                  } else {
+                    // Single image style
+                    imageContainer.style.display = "block";
+                  }
+
+                  images.forEach(url => {
+                    const img = document.createElement("img");
+                    img.src = url;
+                    img.className = "bubble-image";
+                    img.alt = uiAction.data.alt_text || "Car Configuration Image";
+                    imageContainer.appendChild(img);
+                  });
+
+                  bubbleDiv.appendChild(imageContainer);
+
+                  // Add caption if available
+                  if (uiAction.data.caption || uiAction.data.title) {
+                    const captionDiv = document.createElement("div");
+                    captionDiv.className = "bubble-caption";
+                    captionDiv.textContent = uiAction.data.caption || uiAction.data.title;
+                    captionDiv.style.fontSize = "0.8em";
+                    captionDiv.style.color = "#666";
+                    captionDiv.style.marginTop = "8px";
+                    captionDiv.style.textAlign = "center";
+                    bubbleDiv.appendChild(captionDiv);
+                  }
+
+                  messageDiv.appendChild(bubbleDiv);
+                  messagesDiv.appendChild(messageDiv);
+                  scrollToBottom();
+                }
               }
             }
           }
