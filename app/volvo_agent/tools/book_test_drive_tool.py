@@ -1,5 +1,6 @@
 import logging
 import random
+from datetime import datetime, timedelta
 
 from google.adk.tools import FunctionTool, ToolContext
 
@@ -34,28 +35,32 @@ def book_test_drive(
         f"retailer={retailer.name}, date={appointment_slot.date}, time={appointment_slot.time}"
     )
 
-    # Persist data to state
-    tool_context.state["user:test_drive_request"] = {
-        "retailer": retailer.model_dump(),
-        "user_info": user_info.model_dump(),
-        "appointment_slot": appointment_slot.model_dump(),
-    }
+    if user_info.name:
+        tool_context.state["user:full_name"] = user_info.name
+    if user_info.email:
+        tool_context.state["user:email"] = user_info.email
+    if user_info.height:
+        tool_context.state["user:height_cm"] = user_info.height
+    if not tool_context.state.get("user:preferences"):
+        tool_context.state["user:preferences"] = {}
+    if user_info.music:
+        tool_context.state["user:preferences"]["music"] = user_info.music
+    if user_info.light:
+        tool_context.state["user:preferences"]["ambient_light"] = user_info.light
 
-    # Mock Availability Check
-    # In a real app, this would query the retailer's booking system
-    if tool_context.state.get("temp:booking_attempted"):
-        is_available = True
-    else:
-        # Randomize availability to test both success and failure flows
+    # Mock booking logic.
+    if not tool_context.state.get("booking_attempted"):
+        # First attempt, randomize availability
         is_available = random.choice([True, False])
-        tool_context.state["temp:booking_attempted"] = True
+        tool_context.state["booking_attempted"] = True
+    else:
+        # Subsequent attempts, assume availability to allow flow to proceed
+        is_available = True
 
     if not is_available:
-        # Calculate alternative slots based on the USER'S requested slot
+        # Calculate alternative slots based on the user's requested slot
         # Mock logic: +1 hour, +2 hours, +1 day relative to the requested time
         try:
-            from datetime import datetime, timedelta
-
             # Parse requested date and time
             # Assuming format YYYY-MM-DD and HH:MM
             requested_dt = datetime.strptime(
@@ -93,6 +98,13 @@ def book_test_drive(
                 "agent_context": f"The slot {appointment_slot.date} at {appointment_slot.time} is not available at {retailer.name}."
             }
 
+        # Persist data to state
+    tool_context.state["user:test_drive_appointment"] = {
+        "retailer": retailer.model_dump(),
+        "user_info": user_info.model_dump(),
+        "appointment_slot": appointment_slot.model_dump(),
+    }
+
     # If available, confirm booking
     payload = {
         "ui_action": {
@@ -103,6 +115,7 @@ def book_test_drive(
                 "user_email": user_info.email,
                 "retailer_name": retailer.name,
                 "retailer_address": retailer.location.street,
+                "retailer_phone": retailer.phone,
                 "date": appointment_slot.date,
                 "time": appointment_slot.time,
                 "retailer_location": {
