@@ -850,9 +850,60 @@
           }
         ]
       },
-      "platinum_grey": {
-        "display_name": "Platinum Grey",
-        "description": "A very sophisticated grey metallic with elegant undertones of brown that add an exclusive fluid, smooth velvet finish."
+      "forest_lake": {
+        "display_name": "Forest Lake",
+        "description": "Both tranquil and active, this semi-dark green metallic adds a technical hint that enhances the car\u2019s design in a balanced way. In sunlight, it has an elegant turquoise sparkle.",
+        "gradient_stops": [
+          {
+            "position": 0,
+            "r": 202,
+            "g": 242,
+            "b": 202,
+            "a": 1
+          },
+          {
+            "position": 0.34,
+            "r": 202,
+            "g": 242,
+            "b": 202,
+            "a": 0.85
+          },
+          {
+            "position": 0.34,
+            "r": 158,
+            "g": 222,
+            "b": 153,
+            "a": 0.4
+          },
+          {
+            "position": 0.55,
+            "r": 158,
+            "g": 222,
+            "b": 153,
+            "a": 0.4
+          },
+          {
+            "position": 0.7,
+            "r": 91,
+            "g": 120,
+            "b": 89,
+            "a": 0.3
+          },
+          {
+            "position": 0.95,
+            "r": 91,
+            "g": 120,
+            "b": 89,
+            "a": 0.25
+          },
+          {
+            "position": 1,
+            "r": 91,
+            "g": 120,
+            "b": 89,
+            "a": 0
+          }
+        ]
       },
       "aurora_silver": {
         "display_name": "Aurora Silver",

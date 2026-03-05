@@ -398,7 +398,8 @@
         "seats_view_side": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/EX90%2Finteriors%2Fnordico_ventilated_dawn%2Fseats_view_side.avif?alt=media",
         "steering_wheel_view": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/EX90%2Finteriors%2Fnordico_ventilated_dawn%2Fsteering_wheel_view.avif?alt=media"
       }
-    }
+    },
+    "silhouette": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/EX90%2Fsilhouette.avif?alt=media"
   },
   "EX60": {
     "exteriors": {
@@ -810,7 +811,8 @@
         "seats_view_side": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/EX60%2Finteriors%2Fwool_rye%2Fseats_view_side.avif?alt=media",
         "steering_wheel_view": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/EX60%2Finteriors%2Fwool_rye%2Fsteering_wheel_view.avif?alt=media"
       }
-    }
+    },
+    "silhouette": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/EX60%2Fsilhouette.avif?alt=media"
   },
   "EX30": {
     "exteriors": {
@@ -958,6 +960,7 @@
         "seats_view_side": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/EX30%2Finteriors%2Findigo%2Fseats_view_side.avif?alt=media",
         "steering_wheel_view": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/EX30%2Finteriors%2Findigo%2Fsteering_wheel_view.avif?alt=media"
       }
-    }
+    },
+    "silhouette": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/EX30%2Fsilhouette.avif?alt=media"
   }
 }
