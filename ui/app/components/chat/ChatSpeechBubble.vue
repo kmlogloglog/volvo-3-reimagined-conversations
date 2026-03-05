@@ -2,6 +2,7 @@
     <BaseSpeechBubble
         ref="speechBubbleRef"
         :align-bubble="alignBubble"
+        :disabled="disabled"
         padding="small">
         <ChatTypeIndicator v-if="!finished" />
         <template v-else>
@@ -42,6 +43,10 @@
         finished: {
             type: Boolean,
             default: true,
+        },
+        disabled: {
+            type: Boolean,
+            default: false,
         },
     });
 

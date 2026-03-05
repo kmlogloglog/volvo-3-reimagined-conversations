@@ -6,6 +6,7 @@
             :align-bubble="message.sender"
             :text="message.content?.text || ''"
             :finished="message.finished"
+            :disabled="disabled"
             padding="small"
             @[EMITS.IMAGE_LOADED]="$emit(EMITS.IMAGE_LOADED)"
             @[EMITS.SPEECH_BUBBLE_EXPAND]="$emit(EMITS.SPEECH_BUBBLE_EXPAND, $event)" />
@@ -26,6 +27,10 @@
             type: String,
             default: '',
             validator: (value) => [AGENT.USER, AGENT.AGENT, ''].includes(value),
+        },
+        disabled: {
+            type: Boolean,
+            default: false,
         },
     });
 

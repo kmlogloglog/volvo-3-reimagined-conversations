@@ -3,7 +3,7 @@
         class="speech-bubble-card"
         :data-align="alignBubble"
         :data-padding="padding"
-        :class="{ 'full-width': fullWidth}">
+        :class="{ 'full-width': fullWidth, disabled }">
         <slot></slot>
     </div>
 </template>
@@ -27,6 +27,10 @@
             type: Boolean,
             default: false,
         },
+        disabled: {
+            type: Boolean,
+            default: false,
+        },
     });
 </script>
 <style lang="scss" scoped>
@@ -41,6 +45,10 @@
             position: relative;
             width: fit-content;
 
+            &.disabled {
+                color: var(--speech-bubble-agent-disabled-color-font);
+            }
+
             &.full-width {
                 max-width: 100%;
                 width: 100%;
@@ -52,6 +60,10 @@
                 color: var(--speech-bubble-agent-color-font);
                 border-radius: var(--border-radius) var(--border-radius) var(--border-radius) 0;
                 margin-left: 0;
+
+                &.disabled {
+                    color: var(--speech-bubble-agent-disabled-color-font);
+                }
             }
 
             &[data-align="user"] {
@@ -59,6 +71,10 @@
                 margin-right: 0;
                 background: var(--speech-bubble-user-color-background);
                 color: var(--speech-bubble-user-color-font);
+
+                &.disabled {
+                    color: var(--speech-bubble-user-disabled-color-font);
+                }
             }
 
             &[data-padding="large"] {

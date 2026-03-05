@@ -22,8 +22,10 @@
     // Speech bubbles
     --speech-bubble-agent-color-background: var(--color-grey-100);
     --speech-bubble-agent-color-font: var(--color-white);
+    --speech-bubble-agent-disabled-color-font: var(--color-grey-300);
     --speech-bubble-user-color-background: var(--color-grey-200);
     --speech-bubble-user-color-font: var(--color-white);
+    --speech-bubble-user-disabled-color-font: var(--color-grey-600);
 
     // Navigation
     --navigation-color-background: var(--color-black);

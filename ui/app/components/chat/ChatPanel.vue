@@ -9,6 +9,7 @@
                     <ChatStream
                         :chat="agentStore.conversation"
                         :filter-from-last="AGENT.USER"
+                        :disabled="!connected"
                         @[EMITS.IMAGE_LOADED]="onImageLoaded"
                         @[EMITS.SPEECH_BUBBLE_EXPAND]="onSpeechBubbleExpand($event)" />
                 </div>
@@ -18,7 +19,7 @@
             <BaseChatTextArea
                 ref="chatTextareaRef"
                 v-model="chatMessage"
-                :disabled="!agentStore.connected"
+                :disabled="!connected"
                 :loading="agentStore.connecting"
                 @submit="handleChatSubmit" />
         </div>
@@ -31,8 +32,10 @@
     import { EMITS } from '@/constants/emits.js';
     import { AGENT } from '@/constants/agent';
     import { useAgentStore } from '@/stores/agent';
+    import { storeToRefs } from 'pinia';
 
     const agentStore = useAgentStore();
+    const { connected } = storeToRefs(agentStore);
 
     const chatMessage = ref('');
     const chatTextareaRef = useTemplateRef('chatTextareaRef');
@@ -40,7 +43,7 @@
     async function handleChatSubmit(message) {
         chatMessage.value = '';
 
-        if (!agentStore.connected) {
+        if (!connected.value) {
             console.info('Connection dropped! Reconnecting...');
             await agentStore.connect();
         }
