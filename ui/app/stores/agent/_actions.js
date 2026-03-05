@@ -332,10 +332,14 @@ export default {
     },
 
     startLevelMonitoring(onLevelChange = null) {
-        if (!this.inputAnalyser || !this.analyser) return;
+        if (!this.inputAnalyser || !this.analyser) {
+            return;
+        }
 
         const inputDataArray = new Uint8Array(this.inputAnalyser.frequencyBinCount);
         const outputDataArray = new Uint8Array(this.analyser.frequencyBinCount);
+
+        const boosterInputLevel = 1.25;
 
         const draw = () => {
             this.animationId = requestAnimationFrame(draw);
@@ -345,7 +349,7 @@ export default {
             const inputLevel = Math.round(inputDataArray.reduce((a, b) => a + b, 0) / inputDataArray.length);
             const outputLevel = Math.round(outputDataArray.reduce((a, b) => a + b, 0) / outputDataArray.length);
 
-            this.audioLevel = Math.round(((Math.max(inputLevel, outputLevel)) / 255) * 1000) / 1000;
+            this.audioLevel = Math.round(((Math.max(inputLevel * boosterInputLevel, outputLevel)) / 255) * 1000) / 1000;
             onLevelChange?.(this.audioLevel);
         };
 
