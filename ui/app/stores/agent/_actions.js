@@ -296,6 +296,14 @@ export default {
                 this.stopAudio();
                 this.connectionPromise = null;
                 this.websocket = null;
+
+                // Drop any unfinished agent messages so ChatTypeIndicator doesn't get stuck.
+                this.conversation = this.conversation.filter(
+                    msg => msg.sender !== AGENT.AGENT || msg.finished,
+                );
+                this.currentMessageId = null;
+                this.currentUserMessageId = null;
+                this.speaking = false;
             };
 
             this.websocket.onmessage = (event) => {
@@ -402,7 +410,9 @@ export default {
 
             // Connect to WebSocket before setting up the recorder so no
             // chunks are dropped while this.connected is still false
-            if (!this.connected) await this.connect();
+            if (!this.connected) {
+                await this.connect();
+            }
 
             if (!this.audioRecorderNode && this.mediaStream) {
                 try {
@@ -440,9 +450,6 @@ export default {
     },
 
     sendMessage(text) {
-        console.log(text);
-        // in conversation remove all messages where finished is false
-
         this.addMessage({
             id: `${Date.now().toString()}_${AGENT.USER}`,
             sender: AGENT.USER,

@@ -84,6 +84,10 @@
 
         const date = new Date(props.date + 'T00:00:00');
 
+        if (isNaN(date.getTime())) {
+            return '';
+        }
+
         return date.toLocaleDateString('en-GB', {
             day: 'numeric',
             month: 'long',
