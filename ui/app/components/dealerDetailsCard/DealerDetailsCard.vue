@@ -106,8 +106,6 @@
 
     const mapUrl = computed(() => {
         if (!props.retailerCoordinates || !props.retailerCoordinates.lat || !props.retailerCoordinates.lng) {
-            console.log(props.retailerCoordinates);
-            console.groupEnd();
             return '';
         }
 
