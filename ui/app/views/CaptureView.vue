@@ -165,22 +165,21 @@
         overflow: hidden;
         position: relative;
         width: 100%;
-        z-index: 10;
+        z-index: 20;
 
         &.full-height {
             flex: 1;
         }
 
         &-inner {
+            display: flex;
+            flex-direction: column;
             height: 100%;
             margin: 0 auto;
             max-width: var(--max-width);
             position: relative;
-            z-index: 10;
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            // justify-content: center;
+            z-index: 10;
         }
     }
 }
