@@ -6,13 +6,13 @@
             v-model="vModel"
             type="text"
             class="chat-text-input"
-            :disabled="disabled || loading"
+            :disabled="loading"
             placeholder="Ask Volvo Vän"
             @keydown.enter.exact.prevent="onSubmit"></textarea>
         <button
             type="button"
             class="button-reset chat-text-button"
-            :disabled="disabled || loading"
+            :disabled="loading"
             @click="onSubmit">
             <span
                 v-if="loading"
