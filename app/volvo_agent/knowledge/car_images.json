@@ -3,423 +3,426 @@
     "exteriors": {
       "cloud_blue": {
         "19_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F19_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F19_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F19_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F19_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F19_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F19_5%2Ffront34_close.avif?alt=media"
         },
         "20_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5%2Ffront34_close.avif?alt=media"
         },
         "20_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcloud_blue%2F20_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "crystal_white": {
         "19_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F19_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F19_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F19_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F19_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F19_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F19_5%2Ffront34_close.avif?alt=media"
         },
         "20_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5%2Ffront34_close.avif?alt=media"
         },
         "20_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fcrystal_white%2F20_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "onyx_black": {
         "19_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F19_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F19_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F19_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F19_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F19_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F19_5%2Ffront34_close.avif?alt=media"
         },
         "20_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5%2Ffront34_close.avif?alt=media"
         },
         "20_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fonyx_black%2F20_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "vapour_grey": {
         "19_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F19_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F19_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F19_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F19_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F19_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F19_5%2Ffront34_close.avif?alt=media"
         },
         "20_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5%2Ffront34_close.avif?alt=media"
         },
         "20_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fvapour_grey%2F20_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "sand_dune": {
         "19_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F19_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F19_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F19_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F19_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F19_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F19_5%2Ffront34_close.avif?alt=media"
         },
         "20_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5%2Ffront34_close.avif?alt=media"
         },
         "20_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Fexteriors%2Fsand_dune%2F20_5y%2Ffront34_close.avif?alt=media"
         }
       }
     },
     "interiors": {
       "breeze": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fbreeze%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fbreeze%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fbreeze%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fbreeze%2Fseat.avif?alt=media"
       },
       "indigo": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Findigo%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Findigo%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Findigo%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Findigo%2Fseat.avif?alt=media"
       },
       "mist": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fmist%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fmist%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fmist%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fmist%2Fseat.avif?alt=media"
       },
       "pine": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fpine%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fpine%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fpine%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fpine%2Fseat.avif?alt=media"
       }
-    }
+    },
+    "silhouette": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/model_selector%2Fmodel_selector%2Fmodels%2Fex30%2Fsilhouette.avif?alt=media"
   },
   "EX60": {
     "exteriors": {
       "ice_white": {
         "21": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F21%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F21%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F21%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F21%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F21%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F21%2Ffront34_close.avif?alt=media"
         },
         "22_diamond": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_diamond%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_diamond%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_diamond%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_diamond%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_diamond%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_diamond%2Ffront34_close.avif?alt=media"
         },
         "22_matt": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_matt%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_matt%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_matt%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_matt%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_matt%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fice_white%2F22_matt%2Ffront34_close.avif?alt=media"
         }
       },
       "onyx_black": {
         "21": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F21%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F21%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F21%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F21%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F21%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F21%2Ffront34_close.avif?alt=media"
         },
         "22_diamond": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_diamond%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_diamond%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_diamond%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_diamond%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_diamond%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_diamond%2Ffront34_close.avif?alt=media"
         },
         "22_matt": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_matt%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_matt%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_matt%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_matt%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_matt%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fonyx_black%2F22_matt%2Ffront34_close.avif?alt=media"
         }
       },
       "denim_blue": {
         "21": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F21%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F21%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F21%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F21%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F21%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F21%2Ffront34_close.avif?alt=media"
         },
         "22_diamond": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_diamond%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_diamond%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_diamond%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_diamond%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_diamond%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_diamond%2Ffront34_close.avif?alt=media"
         },
         "22_matt": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_matt%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_matt%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_matt%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_matt%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_matt%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fdenim_blue%2F22_matt%2Ffront34_close.avif?alt=media"
         }
       },
       "vapour_grey": {
         "21": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F21%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F21%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F21%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F21%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F21%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F21%2Ffront34_close.avif?alt=media"
         },
         "22_diamond": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_diamond%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_diamond%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_diamond%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_diamond%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_diamond%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_diamond%2Ffront34_close.avif?alt=media"
         },
         "22_matt": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_matt%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_matt%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_matt%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_matt%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_matt%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fvapour_grey%2F22_matt%2Ffront34_close.avif?alt=media"
         }
       },
       "aurora_silver": {
         "21": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F21%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F21%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F21%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F21%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F21%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F21%2Ffront34_close.avif?alt=media"
         },
         "22_diamond": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_diamond%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_diamond%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_diamond%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_diamond%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_diamond%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_diamond%2Ffront34_close.avif?alt=media"
         },
         "22_matt": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_matt%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_matt%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_matt%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_matt%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_matt%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Faurora_silver%2F22_matt%2Ffront34_close.avif?alt=media"
         }
       },
       "sand_dune": {
         "21": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F21%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F21%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F21%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F21%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F21%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F21%2Ffront34_close.avif?alt=media"
         },
         "22_diamond": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_diamond%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_diamond%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_diamond%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_diamond%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_diamond%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_diamond%2Ffront34_close.avif?alt=media"
         },
         "22_matt": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_matt%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_matt%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_matt%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_matt%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_matt%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fsand_dune%2F22_matt%2Ffront34_close.avif?alt=media"
         }
       },
       "forest_lake": {
         "21": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F21%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F21%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F21%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F21%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F21%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F21%2Ffront34_close.avif?alt=media"
         },
         "22_diamond": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_diamond%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_diamond%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_diamond%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_diamond%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_diamond%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_diamond%2Ffront34_close.avif?alt=media"
         },
         "22_matt": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_matt%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_matt%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_matt%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_matt%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_matt%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fforest_lake%2F22_matt%2Ffront34_close.avif?alt=media"
         }
       },
       "heather_bronze": {
         "21": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F21%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F21%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F21%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F21%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F21%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F21%2Ffront34_close.avif?alt=media"
         },
         "22_diamond": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_diamond%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_diamond%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_diamond%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_diamond%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_diamond%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_diamond%2Ffront34_close.avif?alt=media"
         },
         "22_matt": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_matt%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_matt%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_matt%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_matt%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_matt%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Fexteriors%2Fheather_bronze%2F22_matt%2Ffront34_close.avif?alt=media"
         }
       }
     },
     "interiors": {
       "cardamom": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcardamom%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcardamom%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcardamom%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcardamom%2Fseat.avif?alt=media"
       },
       "charcoal": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcharcoal%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcharcoal%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcharcoal%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcharcoal%2Fseat.avif?alt=media"
       },
       "dawn": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fdawn%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fdawn%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fdawn%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fdawn%2Fseat.avif?alt=media"
       },
       "wool": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fwool%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fwool%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fwool%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fwool%2Fseat.avif?alt=media"
       }
-    }
+    },
+    "silhouette": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/model_selector%2Fmodel_selector%2Fmodels%2Fex60%2Fsilhouette.avif?alt=media"
   },
   "EX90": {
     "exteriors": {
       "vapour_grey": {
         "21_8": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F21_8%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F21_8%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F21_8%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F21_8%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F21_8%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F21_8%2Ffront34_close.avif?alt=media"
         },
         "22_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5%2Ffront34_close.avif?alt=media"
         },
         "22_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fvapour_grey%2F22_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "onyx_black": {
         "21_8": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F21_8%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F21_8%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F21_8%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F21_8%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F21_8%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F21_8%2Ffront34_close.avif?alt=media"
         },
         "22_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5%2Ffront34_close.avif?alt=media"
         },
         "22_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fonyx_black%2F22_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "crystal_white": {
         "21_8": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F21_8%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F21_8%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F21_8%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F21_8%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F21_8%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F21_8%2Ffront34_close.avif?alt=media"
         },
         "22_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5%2Ffront34_close.avif?alt=media"
         },
         "22_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fcrystal_white%2F22_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "denim_blue": {
         "21_8": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F21_8%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F21_8%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F21_8%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F21_8%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F21_8%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F21_8%2Ffront34_close.avif?alt=media"
         },
         "22_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5%2Ffront34_close.avif?alt=media"
         },
         "22_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fdenim_blue%2F22_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "forest_lake": {
         "21_8": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F21_8%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F21_8%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F21_8%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F21_8%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F21_8%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F21_8%2Ffront34_close.avif?alt=media"
         },
         "22_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5%2Ffront34_close.avif?alt=media"
         },
         "22_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fforest_lake%2F22_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "aurora_silver": {
         "21_8": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F21_8%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F21_8%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F21_8%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F21_8%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F21_8%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F21_8%2Ffront34_close.avif?alt=media"
         },
         "22_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5%2Ffront34_close.avif?alt=media"
         },
         "22_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Faurora_silver%2F22_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "sand_dune": {
         "21_8": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F21_8%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F21_8%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F21_8%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F21_8%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F21_8%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F21_8%2Ffront34_close.avif?alt=media"
         },
         "22_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5%2Ffront34_close.avif?alt=media"
         },
         "22_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fsand_dune%2F22_5y%2Ffront34_close.avif?alt=media"
         }
       },
       "mulberry_red": {
         "21_8": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F21_8%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F21_8%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F21_8%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F21_8%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F21_8%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F21_8%2Ffront34_close.avif?alt=media"
         },
         "22_5": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5%2Ffront34_close.avif?alt=media"
         },
         "22_5y": {
-          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5y%2Ffront.avif?alt=media",
-          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5y%2Ffront34.avif?alt=media",
-          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5y%2Ffront34_close.avif?alt=media"
+          "front": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5y%2Ffront.avif?alt=media",
+          "front34": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5y%2Ffront34.avif?alt=media",
+          "front34_close": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Fexteriors%2Fmulberry_red%2F22_5y%2Ffront34_close.avif?alt=media"
         }
       }
     },
     "interiors": {
       "cardamom": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcardamom%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcardamom%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcardamom%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcardamom%2Fseat.avif?alt=media"
       },
       "charcoal": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcharcoal%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcharcoal%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcharcoal%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcharcoal%2Fseat.avif?alt=media"
       },
       "dawn": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fdawn%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fdawn%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fdawn%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fdawn%2Fseat.avif?alt=media"
       },
       "zinc": {
-        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fzinc%2Fdashboard.avif?alt=media",
-        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-volvo-poc/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fzinc%2Fseat.avif?alt=media"
+        "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fzinc%2Fdashboard.avif?alt=media",
+        "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fzinc%2Fseat.avif?alt=media"
       }
-    }
+    },
+    "silhouette": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/model_selector%2Fmodel_selector%2Fmodels%2Fex90%2Fsilhouette.avif?alt=media"
   }
 }
