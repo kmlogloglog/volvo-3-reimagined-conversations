@@ -115,6 +115,7 @@ def find_retailer(tool_context: ToolContext, location: Location) -> dict:
                 "retailer_lat": retailer.location.lat,
                 "retailer_lng": retailer.location.lng,
             },
+            "phase": 4
         },
         "agent_context": f"Found retailer: {retailer.name} at {retailer.location.street}. Retailer details saved.",
     }
