@@ -44,20 +44,11 @@ def select_wheel(
             "agent_context": f"Wheel {wheel_id} not found for model {model_name}."
         }
     
-    # Smart lookup for wheel image
+    # Fetch wheel image specifically from car_images
     model_images = CAR_IMAGES.get(model_name, {})
-    exterior = current_config.get("exterior")
-    
-    exterior_dict = model_images.get("exteriors", {}).get(exterior, {})
-    wheel_images = exterior_dict.get(wheel_id, {})
-    if not wheel_images and wheel_id:
-        prefix = ''.join(filter(str.isdigit, wheel_id.split('_')[0]))
-        for k, v in exterior_dict.items():
-            if k.startswith(prefix):
-                wheel_images = v
-                break
-                
-    image_url = wheel_images.get("front34_close") or wheel_images.get("front34") or wheel_images.get("front")
+    wheel_closeups = model_images.get("wheel_closeups", {})
+
+    image_url = wheel_closeups.get(wheel_id)
     images_payload = [image_url] if image_url else []
     
     payload_data = {
@@ -74,7 +65,8 @@ def select_wheel(
             "data": {
                 "selected_wheel": payload_data,
                 "images": images_payload
-            }
+            },
+            "phase": 3
         },
         "agent_context": f"Selected wheel {wheel_id}."
     }

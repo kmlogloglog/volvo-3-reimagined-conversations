@@ -59,7 +59,8 @@ def select_exterior_color(
             "component_name": "display_color_selector",
             "data": {
                 "selected_color": payload_data
-            }
+            },
+            "phase": 3
         },
         "agent_context": f"Selected exterior color {color_id}."
     }
