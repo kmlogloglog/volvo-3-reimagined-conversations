@@ -186,16 +186,11 @@ a sequence of steps that should be taken in order.
             <action>Call {@TOOL: select_wheel_tool} to show wheel options.</action>
             <action>Ask a question to continue the configuration process.</action>
         </step>
-        <step name="Configure Interior Material">
+        <step name="Configure Interior Color">
             <trigger>User selected the car wheels.</trigger>
             <action>Acknowledge the user's choice.</action>
-            <action>Ask the user what fabric or material they prefer for the interior (e.g., Nordico, Wool, Ventilated Nordico) from the available options for that specific model.</action>
-            <action>CRITICAL: DO NOT ask about color yet, and DO NOT call {@TOOL: select_interior_tool} yet! Wait for the user to choose a material.</action>
-        </step>
-        <step name="Configure Interior Color">
-            <trigger>User selected an interior material/fabric.</trigger>
-            <action>Based on the chosen material, ask the user what interior color they prefer from the available options for that material.</action>
-            <action>CRITICAL: DO NOT call {@TOOL: select_interior_tool} yet! Wait for the user to choose a color.</action>
+            <action>Look at all the available interior colors across all fabrics/materials for the selected model. Ask the user which of those colors they prefer. DO NOT ask about fabric or material type first.</action>
+            <action>CRITICAL: DO NOT call {@TOOL: select_interior_tool} yet! Wait for the user to state their color preference.</action>
         </step>
         <step name="Show Interior Theme">
             <trigger>User selected an interior color.</trigger>
