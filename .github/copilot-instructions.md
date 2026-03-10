@@ -157,3 +157,33 @@ Copy `app/.env-example` to `app/.env` before running locally. Key variables:
 - **Spell checker**: `codespell` (ignore-word: `wit`)
 - **Frontend**: Nuxt.js in `ui/`, managed with `npm`
 - GCP project: `vml-map-xd-volvo`, region: `europe-west4`, Cloud Run service: `volvo-vaen-v2`
+
+---
+
+## Frontend Conventions (`ui/`)
+
+### Import Alias
+`@/` maps to `ui/app/`. Always use it for imports — never use relative paths that traverse more than one level.
+
+### Component Naming
+- **Folders**: camelCase (e.g. `audioCapture`, `dealerDetailsCard`)
+- **Component files**: PascalCase (e.g. `AudioCaptureBlob.vue`, `DealerDetailsCard.vue`)
+- Never drop components into a flat root `components/` level
+- Generic/base UI elements belong in `components/baseComponents/uiElements/`
+
+### Constants
+Never inline magic strings for event names, emit names, or routes. Always look up or add to the existing constants files in `ui/app/constants/`.
+
+### Composables
+- **Prefer [VueUse](https://vueuse.org/) over hand-rolled composables** whenever a utility exists — e.g. use `useEventBus`, `useWindowSize`, `useIntersectionObserver`, `useDark` rather than implementing them manually
+- **Prefer [Nuxt built-ins](https://nuxt.com/docs/api/composables) over custom solutions** — e.g. use `useRuntimeConfig`, `useFetch`, `useHead`, `navigateTo`, `useRoute` rather than implementing equivalent logic manually
+- New **actions** go in `_actions.js` only — never in `index.js`
+- New **state properties** are declared in `index.js`
+
+### SCSS
+- Use `@use` syntax — never `@import`
+- New CSS variables → `colors.scss` (tokens) or `theme.scss` (light/dark overrides)
+- New mixins → `mixins.scss`
+- New utility classes → `helpers.scss`
+- **Keep SCSS variables to a minimum** — only introduce a variable when a value is reused in multiple places or when naming it genuinely improves clarity
+- **Prefer class name chaining** using SCSS nesting (`&-header`, `&-header-toolbar`) to build inherited, descriptive class names — e.g. `.component`, `.component-header`, `.component-header-toolbar`, `.component-header-toolbar-button`. Do **not** use BEM double-underscore or double-hyphen syntax (`__`, `--`).
