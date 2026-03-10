@@ -4,4 +4,5 @@ export const BUS = Object.freeze({
     MICROPHONE: 'microphone',
     MESSAGE_STATUS: 'message-status',
     TOGGLE_RECORD: 'toggle-record',
+    LISTENING: 'listening',
 });

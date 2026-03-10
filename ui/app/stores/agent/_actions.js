@@ -146,7 +146,7 @@ export default {
                             retailerCoordinates: uiAction.data?.retailer_location || { lat: 0, lng: 0 },
                             userName: uiAction.data?.user_name || '',
                             userEmail: uiAction.data?.user_email || '',
-                        };;
+                        };
                         console.group('Test Drive Info');
                         console.log(this.testDriveDetails);
                         console.groupEnd();
