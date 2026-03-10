@@ -38,7 +38,7 @@ def display_car_configuration(
     ext_views = [
         exterior_data.get("front34"), 
         exterior_data.get("front"), 
-        exterior_data.get("side")
+        exterior_data.get("front34_close")
     ]
 
     images = [img for img in ext_views if img]
