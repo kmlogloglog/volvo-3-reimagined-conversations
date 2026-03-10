@@ -35,33 +35,17 @@ def display_car_configuration(
     
     # 1. Collect 3 Exterior Images
     exterior_data = model_images.get("exteriors", {}).get(exterior, {}).get(wheels, {})
-    
-    # Try the dedicated carousel folder first if available
-    carousel_ext_config = model_images.get("carousel", {}).get("exteriors", {}).get(exterior, {})
-    if carousel_ext_config:
-        exterior_data = carousel_ext_config
-        
     ext_views = [
         exterior_data.get("front34"), 
-        exterior_data.get("front") or exterior_data.get("side"), # Carousel uses side instead of front 
-        exterior_data.get("rear34") or exterior_data.get("front34_close") # Carousel uses rear34 instead of front34_close
+        exterior_data.get("front"), 
+        exterior_data.get("side")
     ]
-    
-    # Check if 'side'/'rear34' is None and 'front34_close' exists, use it instead (for EX30/EX90)
-    if not ext_views[2] and exterior_data.get("front34_close"):
-        ext_views[2] = exterior_data.get("front34_close")
 
     images = [img for img in ext_views if img]
 
     # 2. Collect 2 Interior Images
-    # Handle either "interiors" or "Interiors" folder capitalization
-    model_int_config = model_images.get("interiors", model_images.get("Interiors", {}))
-    
-    # Try the dedicated carousel folder first if available
-    carousel_int_config = model_images.get("carousel", {}).get("interiors", {})
-    if carousel_int_config:
-        model_int_config = carousel_int_config
-        
+    # Handle "interiors" folder capitalization
+    model_int_config = model_images.get("interiors", {})
     interior_key = interior
     for key in model_int_config:
         if key.lower() in interior.lower() or interior.lower() in key.lower():
