@@ -1,5 +1,17 @@
 # Volvo Vän – Copilot Instructions
 
+## Project Status: Proof of Concept (POC)
+
+This project is a **Proof of Concept**. The goal is to demonstrate functionality and explore ideas quickly, not to deliver production-hardened code. When reviewing or suggesting changes, keep this context in mind:
+
+- **Hardcoded API keys** (e.g. Google Maps) are acceptable for POC purposes — do not flag as critical issues
+- **Accessibility gaps** (missing ARIA labels, keyboard navigation, screen reader support) are known and accepted at this stage
+- **Missing TypeScript types** and loose JavaScript patterns are acceptable tradeoffs for development speed
+- **No CSP / security headers** are required at POC stage
+- Focus feedback on **functionality, correctness, and architecture** — not on production-readiness concerns like secrets management, a11y compliance, or hardening
+
+---
+
 ## Project Overview
 
 Volvo Vän is a voice-first AI assistant for Volvo built on **Google ADK (Agent Development Kit)** with **FastAPI** and **WebSockets** for real-time bidirectional audio/text streaming. The backend serves both a Nuxt.js frontend (`ui/`) and a raw debug frontend (`debug_frontend/`).

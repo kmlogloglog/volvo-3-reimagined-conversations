@@ -12,7 +12,6 @@
     import { AGENT } from '@/constants/agent';
 
     defineProps({
-        fullWidth: { type: Boolean, default: false },
         alignBubble: {
             type: String,
             default: 'none',
