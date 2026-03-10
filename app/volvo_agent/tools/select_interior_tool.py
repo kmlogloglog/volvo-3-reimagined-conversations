@@ -29,12 +29,6 @@ def select_interior(
             "agent_context": "No model selected. Please select a model first."
         }
 
-    # Update session state
-    current_config["interior"] = interior_id
-    tool_context.state["user:car_config"] = current_config
-    
-    logger.info(f"select_interior called: model={model_name}, interior={interior_id}")
-    
     model_config = CAR_CONFIGS.get(model_name, {})
     interiors_config = model_config.get("interiors", {})
     selected_interior_data = interiors_config.get(interior_id)
@@ -43,6 +37,12 @@ def select_interior(
          return {
             "agent_context": f"Interior {interior_id} not found for model {model_name}."
         }
+
+    # Update session state
+    current_config["interior"] = interior_id
+    tool_context.state["user:car_config"] = current_config
+    
+    logger.info(f"select_interior called: model={model_name}, interior={interior_id}")
         
     # Use the pre-populated direct image url from configurations
     image_url = selected_interior_data.get("image_url")

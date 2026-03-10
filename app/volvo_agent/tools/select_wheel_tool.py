@@ -29,12 +29,6 @@ def select_wheel(
             "agent_context": "No model selected. Please select a model first."
         }
 
-    # Update session state
-    current_config["wheels"] = wheel_id
-    tool_context.state["user:car_config"] = current_config
-    
-    logger.info(f"select_wheel called: model={model_name}, wheel={wheel_id}")
-    
     model_config = CAR_CONFIGS.get(model_name, {})
     wheels_config = model_config.get("wheels", {})
     selected_wheel_data = wheels_config.get(wheel_id)
@@ -43,6 +37,12 @@ def select_wheel(
          return {
             "agent_context": f"Wheel {wheel_id} not found for model {model_name}."
         }
+
+    # Update session state
+    current_config["wheels"] = wheel_id
+    tool_context.state["user:car_config"] = current_config
+    
+    logger.info(f"select_wheel called: model={model_name}, wheel={wheel_id}")
     
     # Fetch wheel image specifically from car_images
     model_images = CAR_IMAGES.get(model_name, {})

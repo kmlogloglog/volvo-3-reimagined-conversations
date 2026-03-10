@@ -24,6 +24,12 @@ def select_model(
     images_data = CAR_IMAGES
     model_data = images_data.get(model_name, {})
     
+    # Validation: Check if model exists in configurations/images
+    if model_name not in images_data:
+        return {
+            "agent_context": f"Model {model_name} not found in configuration data."
+        }
+
     # Update session state with selected model
     # We should also reset other selections when model changes to avoid invalid states
     tool_context.state["user:car_config"] = {

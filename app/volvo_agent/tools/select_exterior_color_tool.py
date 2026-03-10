@@ -30,12 +30,6 @@ def select_exterior_color(
             "agent_context": "No model selected. Please select a model first."
         }
 
-    # Update session state
-    current_config["exterior"] = color_id
-    tool_context.state["user:car_config"] = current_config
-    
-    logger.info(f"select_exterior_color called: model={model_name}, color={color_id}")
-    
     model_config = CAR_CONFIGS.get(model_name, {})
     exteriors = model_config.get("exteriors", {})
     
@@ -44,6 +38,12 @@ def select_exterior_color(
         return {
             "agent_context": f"Color {color_id} not found for model {model_name}."
         }
+
+    # Update session state
+    current_config["exterior"] = color_id
+    tool_context.state["user:car_config"] = current_config
+    
+    logger.info(f"select_exterior_color called: model={model_name}, color={color_id}")
         
     # Return only the selected color with its gradients
     selected_color_data = exteriors.get(color_id, {})
