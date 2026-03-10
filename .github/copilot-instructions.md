@@ -1,5 +1,11 @@
 # Volvo Vän – Copilot Instructions
 
+## Environment Constraints
+
+**If a PowerShell command fails, automatically retry it using CMD before reporting an error.**
+
+---
+
 ## Project Status: Proof of Concept (POC)
 
 This project is a **Proof of Concept**. The goal is to demonstrate functionality and explore ideas quickly, not to deliver production-hardened code. When reviewing or suggesting changes, keep this context in mind:
@@ -15,6 +21,17 @@ This project is a **Proof of Concept**. The goal is to demonstrate functionality
 ## Project Overview
 
 Volvo Vän is a voice-first AI assistant for Volvo built on **Google ADK (Agent Development Kit)** with **FastAPI** and **WebSockets** for real-time bidirectional audio/text streaming. The backend serves both a Nuxt.js frontend (`ui/`) and a raw debug frontend (`debug_frontend/`).
+
+## Frontend Location
+
+The frontend is a **Nuxt.js** application located in the `ui/` folder. When reviewing, editing, or reasoning about any frontend code — components, composables, stores, styles, pages, layouts, or configuration — always look inside `ui/`. Do not look elsewhere for frontend source files.
+
+**Always ignore these folders when working with the frontend:**
+- `ui/public/` — static assets, not source code
+- `ui/node_modules/` — third-party dependencies
+- `ui/dist/` — build output
+- `ui/.nuxt/` — Nuxt generated files
+- `ui/.output/` — Nuxt build output
 
 ---
 
