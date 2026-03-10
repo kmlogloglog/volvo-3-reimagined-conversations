@@ -89,20 +89,20 @@
         },
         "interiors": {
             "breeze": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fbreeze%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fbreeze%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Finteriors%2Fbreeze%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Finteriors%2Fbreeze%2Fseat.avif?alt=media"
             },
             "indigo": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Findigo%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Findigo%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Finteriors%2Findigo%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Finteriors%2Findigo%2Fseat.avif?alt=media"
             },
             "mist": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fmist%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fmist%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Finteriors%2Fmist%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Finteriors%2Fmist%2Fseat.avif?alt=media"
             },
             "pine": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fpine%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2FInteriors%2Fpine%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Finteriors%2Fpine%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX30%2Finteriors%2Fpine%2Fseat.avif?alt=media"
             }
         },
         "silhouette": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/model_selector%2Fmodel_selector%2Fmodels%2Fex30%2Fsilhouette.avif?alt=media",
@@ -259,20 +259,20 @@
         },
         "interiors": {
             "cardamom": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcardamom%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcardamom%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Finteriors%2Fcardamom%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Finteriors%2Fcardamom%2Fseat.avif?alt=media"
             },
             "charcoal": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcharcoal%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fcharcoal%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Finteriors%2Fcharcoal%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Finteriors%2Fcharcoal%2Fseat.avif?alt=media"
             },
             "dawn": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fdawn%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fdawn%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Finteriors%2Fdawn%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Finteriors%2Fdawn%2Fseat.avif?alt=media"
             },
             "wool": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fwool%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2FInteriors%2Fwool%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Finteriors%2Fwool%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX60%2Finteriors%2Fwool%2Fseat.avif?alt=media"
             }
         },
         "silhouette": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/model_selector%2Fmodel_selector%2Fmodels%2Fex60%2Fsilhouette.avif?alt=media",
@@ -432,20 +432,20 @@
         },
         "interiors": {
             "cardamom": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcardamom%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcardamom%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Finteriors%2Fcardamom%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Finteriors%2Fcardamom%2Fseat.avif?alt=media"
             },
             "charcoal": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcharcoal%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fcharcoal%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Finteriors%2Fcharcoal%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Finteriors%2Fcharcoal%2Fseat.avif?alt=media"
             },
             "dawn": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fdawn%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fdawn%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Finteriors%2Fdawn%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Finteriors%2Fdawn%2Fseat.avif?alt=media"
             },
             "zinc": {
-                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fzinc%2Fdashboard.avif?alt=media",
-                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2FInteriors%2Fzinc%2Fseat.avif?alt=media"
+                "dashboard": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Finteriors%2Fzinc%2Fdashboard.avif?alt=media",
+                "seat": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/carousel%2Fcarousel%2Fmodels%2FEX90%2Finteriors%2Fzinc%2Fseat.avif?alt=media"
             }
         },
         "silhouette": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/model_selector%2Fmodel_selector%2Fmodels%2Fex90%2Fsilhouette.avif?alt=media",
