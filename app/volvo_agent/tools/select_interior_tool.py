@@ -57,12 +57,11 @@ def select_interior(
     return {
         "ui_action": {
             "action": "display_component",
-            "component_name": "display_interior_selector",
+            "component_name": "interior",
             "data": {
                 "selected_interior": payload_data,
                 "images": images_payload
-            },
-            "phase": 3
+            }
         },
         "agent_context": f"Selected interior {interior_id}."
     }

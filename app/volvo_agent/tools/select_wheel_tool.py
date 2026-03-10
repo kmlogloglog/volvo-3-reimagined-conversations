@@ -61,12 +61,11 @@ def select_wheel(
     return {
         "ui_action": {
             "action": "display_component",
-            "component_name": "display_wheel_selector",
+            "component_name": "wheels",
             "data": {
                 "selected_wheel": payload_data,
                 "images": images_payload
-            },
-            "phase": 3
+            }
         },
         "agent_context": f"Selected wheel {wheel_id}."
     }

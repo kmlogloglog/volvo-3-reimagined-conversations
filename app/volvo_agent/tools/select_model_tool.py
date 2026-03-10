@@ -55,8 +55,7 @@ def select_model(
             "data": {
                 "images": [silhouette_url],
                 "caption": f"Volvo {model_name}"
-            },
-            "phase": 2
+            }
         },
         "agent_context": f"Selected model {model_name}. Displaying silhouette."
     }

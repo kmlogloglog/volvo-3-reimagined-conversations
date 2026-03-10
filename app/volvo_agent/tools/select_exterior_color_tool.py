@@ -56,11 +56,10 @@ def select_exterior_color(
     return {
         "ui_action": {
             "action": "display_component",
-            "component_name": "display_color_selector",
+            "component_name": "exterior",
             "data": {
                 "selected_color": payload_data
-            },
-            "phase": 3
+            }
         },
         "agent_context": f"Selected exterior color {color_id}."
     }

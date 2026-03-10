@@ -127,8 +127,7 @@ def book_test_drive(
                     "music": user_info.music,
                     "light": user_info.light,
                 },
-            },
-            "phase": 4
+            }
         },
         "agent_context": f"Test drive booked for {user_info.name} at {retailer.name} on {appointment_slot.date} at {appointment_slot.time}. "
         f"Preferences recorded. Confirmation displayed to user.",

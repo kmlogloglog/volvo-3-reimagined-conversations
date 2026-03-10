@@ -71,8 +71,7 @@ def display_car_configuration(
             "data": {
                 "images": images,
                 "caption": f"Volvo {model_name} in {exterior} with {wheels} wheels and {interior} interior."
-            },
-            "phase": 3
+            }
         },
         "agent_context": "Displayed final configuration images."
     }
