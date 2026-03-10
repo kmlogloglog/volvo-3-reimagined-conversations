@@ -1,11 +1,10 @@
 import logging
 from google.adk.tools import FunctionTool, ToolContext
-from ..utils import load_car_configurations, load_car_images
+from ..utils import load_car_configurations
 
 logger = logging.getLogger(__name__)
 
 CAR_CONFIGS = load_car_configurations()
-CAR_IMAGES = load_car_images()
 
 def select_interior(
     tool_context: ToolContext,
