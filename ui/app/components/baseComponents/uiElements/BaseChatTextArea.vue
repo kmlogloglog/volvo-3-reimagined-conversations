@@ -14,18 +14,7 @@
             class="button-reset chat-text-button"
             :disabled="loading"
             @click="onSubmit">
-            <span
-                v-if="loading"
-                class="spinner">
-                <svg viewBox="0 0 100 100">
-                    <circle
-                        cx="50" cy="50" r="40"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="4"
-                        stroke-dasharray="209 251" />
-                </svg>
-            </span>
+            <BaseSpinner v-if="loading" class="chat-text-spinner" />
             <span
                 v-else
                 class="chat-text-button-icon"
@@ -35,6 +24,7 @@
 </template>
 <script setup>
     import { EMITS } from '@/constants/emits.js';
+    import BaseSpinner from '@/components/baseComponents/uiElements/BaseSpinner.vue';
 
     defineProps({
         disabled: {
@@ -141,11 +131,8 @@
         }
     }
 
-    .spinner {
-        animation: spin 1s linear infinite;
+    .chat-text-spinner {
         color: var(--input-color-font-placeholder);
-        display: inline-block;
-        width: 20px;
     }
 
     @keyframes spin {

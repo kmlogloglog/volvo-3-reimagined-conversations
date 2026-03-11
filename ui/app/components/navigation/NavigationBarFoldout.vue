@@ -81,12 +81,8 @@
         return `${vertical} ${horizontal}`;
     });
 
-    const stopClickOutside = onClickOutside(containerRef, () => {
+    onClickOutside(containerRef, () => {
         isOpen.value = false;
-    });
-
-    onUnmounted(() => {
-        stopClickOutside();
     });
 
     function handleSelect(option) {

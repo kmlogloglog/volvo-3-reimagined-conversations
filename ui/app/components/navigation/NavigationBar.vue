@@ -1,5 +1,17 @@
 <template>
     <ClientOnly>
+        <Teleport to="body">
+            <Transition name="alert-drop">
+                <div
+                    v-if="micDenied"
+                    class="mic-access-alert"
+                    role="alert">
+                    <span class="mic-access-alert-icon icon-microphone"></span>
+                    <span class="mic-access-alert-message">Microphone access denied</span>
+                </div>
+            </Transition>
+        </Teleport>
+
         <nav class="navigation">
             <NavigationBarFoldOut
                 :options="foldOutOptions"
@@ -52,13 +64,11 @@
         },
     ]);
 
-    onMounted(() => {
-        const agentStore = useAgentStore();
-        const { listening } = storeToRefs(agentStore);
+    const agentStore = useAgentStore();
+    const { listening } = storeToRefs(agentStore);
 
-        watch(listening, (val) => {
-            isAudioRecording.value = val;
-        });
+    watch(listening, (val) => {
+        isAudioRecording.value = val;
     });
 
     function handleFoldOutSelect(option) {
@@ -105,5 +115,48 @@
     padding: 0 1.875rem 1.25rem;
     width: min(100vw, 768px);
     z-index: 99;
+}
+
+.mic-access-alert {
+    align-items: center;
+    background: #b71c1c;
+    border-radius: 9999px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    color: #fff;
+    display: inline-flex;
+    font-size: 0.875rem;
+    font-weight: 500;
+    gap: 0.625rem;
+    left: 50%;
+    padding: 0.75rem 1.25rem;
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 72px);
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 9999;
+
+    &-icon {
+        flex-shrink: 0;
+        font-size: 1rem;
+        line-height: 0;
+        opacity: 0.9;
+    }
+}
+
+.alert-drop-enter-active,
+.alert-drop-leave-active {
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.alert-drop-enter-from,
+.alert-drop-leave-to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-0.5rem);
+}
+
+.alert-drop-enter-to,
+.alert-drop-leave-from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 </style>

@@ -18,7 +18,8 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            port: 8080
+            port: 8080,
+            googleMapsApiKey: 'AIzaSyD3d1_tLpcZZYu7IqKbXAQo2sxPEk3INT4',
         }
     },
     app: {

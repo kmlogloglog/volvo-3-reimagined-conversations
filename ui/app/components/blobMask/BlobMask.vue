@@ -6,7 +6,7 @@
 
 <script setup>
     import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
-    import { useIntersectionObserver, useDocumentVisibility } from '@vueuse/core';
+    import { useIntersectionObserver, useDocumentVisibility, usePreferredReducedMotion } from '@vueuse/core';
 
     const props = defineProps({
         imageSrc: {
@@ -236,7 +236,7 @@
     // Pause animation when the tab is hidden or the component leaves the viewport.
     const documentVisibility = useDocumentVisibility();
     const isIntersecting = ref(false);
-    const prefersReducedMotion = ref(false);
+    const prefersReducedMotion = usePreferredReducedMotion();
 
     useIntersectionObserver(
         containerRef,
@@ -247,7 +247,7 @@
     );
 
     const shouldAnimate = computed(() => {
-        if (prefersReducedMotion.value) return false;
+        if (prefersReducedMotion.value === 'reduce') return false;
         if (documentVisibility.value === 'hidden') return false;
         if (!isIntersecting.value) return false;
         return true;
@@ -347,7 +347,6 @@
     });
 
     onMounted(() => {
-        prefersReducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         initMask();
     });
 

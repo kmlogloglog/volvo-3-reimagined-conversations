@@ -1,5 +1,5 @@
 <template>
-    <div id="error" :style="backgroundStyle">
+    <div id="error">
         <div class="app-screen">
             <div class="content">
                 <h1 class="text-center">{{ error.statusCode }}</h1>
@@ -18,7 +18,6 @@
     import BaseButton from './components/baseComponents/uiElements/BaseButton.vue';
 
     const error = useError();
-    const { backgroundStyle } = useBackground();
 
     function handleError() {
         clearError({ redirect: '/' });

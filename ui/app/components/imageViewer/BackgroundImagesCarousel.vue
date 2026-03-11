@@ -77,7 +77,7 @@
         safeImageCount.value > 0 && loadedCount.value >= safeImageCount.value,
     );
 
-    const { pause, resume } = useIntervalFn(() => advance(), props.interval, { immediate: false });
+    const { pause, resume } = useIntervalFn(() => nextImage(), props.interval, { immediate: false });
 
     function onImageLoad() {
         loadedCount.value++;
@@ -92,16 +92,6 @@
         currentIndex.value = index;
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
         isJumping.value = false;
-    }
-
-    function advance() {
-        if (currentIndex.value === lastRealIndex.value) {
-            // Slide to the clone with transition, then silently snap back to index 0
-            currentIndex.value = cloneIndex.value;
-            setTimeout(() => silentJump(0), TRANSITION_DURATION);
-        } else {
-            currentIndex.value++;
-        }
     }
 
     function nextImage() {

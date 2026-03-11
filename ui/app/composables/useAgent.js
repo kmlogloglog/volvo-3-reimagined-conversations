@@ -9,9 +9,8 @@ export function useAgent(options = {}) {
     const agentStore = useAgentStore();
     const { listening } = storeToRefs(agentStore); // reactive ref to store state
 
-    const connectionBus = useEventBus(BUS.AGENT_CONNECTION);
     const microphoneBus = useEventBus(BUS.MICROPHONE);
-    const listeningBus = useEventBus(BUS.LISTENING); // add BUS.LISTENING to your constants
+    const listeningBus = useEventBus(BUS.LISTENING);
 
     // Emit whenever listening changes in the store
     watch(listening, (value) => {
@@ -43,20 +42,12 @@ export function useAgent(options = {}) {
         onLevelChange?.(0);
     }
 
-    async function connect() {
-        try {
-            connectionBus.emit({ connecting: true, connected: false });
-            await agentStore.connect();
-            connectionBus.emit({ connecting: false, connected: true });
-        } catch (error) {
-            connectionBus.emit({ connecting: false, connected: false });
-            throw error;
-        }
+    async function connect(params = {}) {
+        await agentStore.connect(params);
     }
 
     function disconnect() {
         agentStore.disconnect();
-        connectionBus.emit({ connecting: false, connected: false });
     }
 
     const sendMessage = (text) => agentStore.sendMessage(text);

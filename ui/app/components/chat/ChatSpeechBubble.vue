@@ -29,6 +29,7 @@
     import { AGENT } from '@/constants/agent';
     import DOMPurify from 'isomorphic-dompurify';
     import ChatTypeIndicator from '@/components/chat/ChatTypeIndicator.vue';
+    import { useResizeObserver } from '@vueuse/core';
 
     const props = defineProps({
         text: {
@@ -125,6 +126,11 @@
             attachImageListeners();
         }
     }, { immediate: true });
+
+    useResizeObserver(textRef, ([entry]) => {
+        const el = entry.target;
+        showReadMoreButton.value = !showAllText.value && el.scrollHeight > el.clientHeight;
+    });
 
     onBeforeUnmount(() => {
         detachImageListeners();

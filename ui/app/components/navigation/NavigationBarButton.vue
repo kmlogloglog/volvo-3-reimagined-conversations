@@ -5,23 +5,13 @@
         :style="{ fontSize }"
         :disabled="disabled"
         @click="$emit('click')">
-        <span
-            v-if="loading"
-            class="spinner">
-            <svg viewBox="0 0 100 100">
-                <circle
-                    cx="50" cy="50" r="40"
-                    fill="none"
-                    stroke="#ffffff"
-                    stroke-width="4"
-                    stroke-dasharray="209 251" />
-            </svg>
-        </span>
+        <BaseSpinner v-if="loading" />
         <slot v-else ></slot>
     </button>
 </template>
 
 <script setup>
+    import BaseSpinner from '@/components/baseComponents/uiElements/BaseSpinner.vue';
     defineProps({
         active: {
             type: Boolean,
@@ -82,16 +72,5 @@
         color: var(--navigation-button-disabled-color-font);
         opacity: 0.5;
     }
-}
-
-.spinner {
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    width: 20px;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
 }
 </style>

@@ -22,7 +22,7 @@ export default {
 
     base64ToArray(base64) {
         const base64Clean = base64.replace(/-/g, '+').replace(/_/g, '/');
-        const binaryString = window.atob(base64Clean);
+        const binaryString = atob(base64Clean);
         const len = binaryString.length;
         const bytes = new Uint8Array(len);
         for (let i = 0; i < len; i++) {
@@ -132,9 +132,6 @@ export default {
                                 lng: uiAction.data?.retailer_lng || 0,
                             },
                         };
-                        console.group('Retailer Info');
-                        console.log(this.retailerDetails);
-                        console.groupEnd();
                     }
 
                     if (functionName === AGENT.RESPONSE_NAME.BOOK_TEST_DRIVE) {
@@ -147,17 +144,11 @@ export default {
                             userName: uiAction.data?.user_name || '',
                             userEmail: uiAction.data?.user_email || '',
                         };
-                        console.group('Test Drive Info');
-                        console.log(this.testDriveDetails);
-                        console.groupEnd();
                     } else {
                         this.testDriveDetails = null;
                     }
 
-                    console.group('Function');
-                    console.log('Name:', functionName);
-                    console.log(part.functionResponse);
-                    console.groupEnd();
+                    log.info('Function', `Name: ${functionName}`);
                 }
             }
         }
@@ -234,7 +225,7 @@ export default {
         this.micPermissionGranted = false;
     },
 
-    async connect() {
+    async connect({ userId, sessionId } = {}) {
         if (this.connected) return Promise.resolve();
         if (this.connectionPromise) return this.connectionPromise;
 
@@ -243,11 +234,9 @@ export default {
         const connectionBus = useEventBus(BUS.AGENT_CONNECTION);
         connectionBus.emit({ connecting: true, connected: false });
 
-        const { $router } = useNuxtApp();
-
         this.connectionPromise = new Promise((resolve, reject) => {
-            const userIdFromQuery = $router.currentRoute.value.query.user || this.userName;
-            const sessionIdFromQuery = $router.currentRoute.value.query.session || crypto.randomUUID();
+            const userIdFromQuery = userId || this.userName;
+            const sessionIdFromQuery = sessionId || crypto.randomUUID();
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const url = `${protocol}//${window.location.host}/ws/${userIdFromQuery}/${sessionIdFromQuery}`;
 
@@ -484,6 +473,10 @@ export default {
     },
 
     set_userName(name) {
+        this.userName = name;
+    },
+
+    setUserName(name) {
         this.userName = name;
     },
 };

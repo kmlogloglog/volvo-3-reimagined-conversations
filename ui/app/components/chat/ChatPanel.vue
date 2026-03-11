@@ -41,13 +41,16 @@
     const chatTextareaRef = useTemplateRef('chatTextareaRef');
 
     async function handleChatSubmit(message) {
-        chatMessage.value = '';
-
         if (!connected.value) {
             console.info('Connection dropped! Reconnecting...');
-            await agentStore.connect();
+            try {
+                await agentStore.connect();
+            } catch {
+                return;
+            }
         }
 
+        chatMessage.value = '';
         agentStore.sendMessage(message);
     };
 
@@ -89,9 +92,7 @@
 
         setScrollToBottom();
 
-        await agentStore.connect();
-
-        chatTextareaRef.value.focus();
+        chatTextareaRef.value?.focus();
     });
 </script>
 

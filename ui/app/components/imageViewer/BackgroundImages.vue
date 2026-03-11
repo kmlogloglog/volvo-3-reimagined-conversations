@@ -38,10 +38,6 @@
 
             // Immediately mark the old one for removal so Vue starts its leave transition
             instances.value.shift();
-
-            console.group('Images src');
-            console.log(props.src);
-            console.groupEnd();
         },
     );
 

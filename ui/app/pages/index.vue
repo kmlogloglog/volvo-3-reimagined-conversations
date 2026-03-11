@@ -126,7 +126,6 @@
     onMounted(() => {
         agentStore.connect({ userId: route.query.user, sessionId: route.query.session });
     });
-
 </script>
 
 <style scoped lang="scss">
@@ -178,5 +177,4 @@
 .fade-leave-to {
     opacity: 0;
 }
-
 </style>

@@ -214,3 +214,6 @@ nextjs/
 
 # Claude settings
 .claude/settings.local.json
+
+# GitHub Copilot / local agent config
+.github/

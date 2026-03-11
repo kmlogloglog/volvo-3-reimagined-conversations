@@ -47,6 +47,7 @@
     import BaseSpeechBubble from '@/components/baseComponents/uiElements/BaseSpeechBubble.vue';
     import { EMITS } from '@/constants/emits.js';
     import { AGENT } from '@/constants/agent.js';
+    import { useElementSize } from '@vueuse/core';
 
     const props =defineProps({
         time: {
@@ -96,17 +97,14 @@
     });
 
     const mapsContainer = useTemplateRef('mapsContainer');
+    const { width: containerWidth } = useElementSize(mapsContainer);
 
-    const size = computed(() => {
-        if (!mapsContainer.value) {
-            return { width: 0, height: 0 };
-        }
+    const size = computed(() => ({
+        width: containerWidth.value,
+        height: Math.round(containerWidth.value / AGENT.GOOGLE_MAPS.RATIO),
+    }));
 
-        return {
-            width: mapsContainer.value.clientWidth,
-            height: Math.round(mapsContainer.value.clientWidth / AGENT.GOOGLE_MAPS.RATIO),
-        };
-    });
+    const { public: { googleMapsApiKey } } = useRuntimeConfig();
 
     const mapUrl = computed(() => {
         if (!props.retailerCoordinates || !props.retailerCoordinates.lat || !props.retailerCoordinates.lng) {
@@ -138,7 +136,7 @@
             `&size=${size.value.width}x${size.value.height}`,
             `&markers=color:${markerColor}%7Csize:large%7C${props.retailerCoordinates.lat},${props.retailerCoordinates.lng}`,
             ...styles,
-            `&key=${AGENT.GOOGLE_MAPS.API_KEY}`,
+            `&key=${googleMapsApiKey}`,
         ].join('');
 
         return url;

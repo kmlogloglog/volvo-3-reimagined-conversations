@@ -15,14 +15,7 @@
             <span
                 v-if="loading"
                 class="spinner">
-                <svg viewBox="0 0 100 100">
-                    <circle
-                        cx="50" cy="50" r="40"
-                        fill="none"
-                        stroke="#ffffff"
-                        stroke-width="4"
-                        stroke-dasharray="209 251" />
-                </svg>
+                <BaseSpinner />
             </span>
             <span
                 v-else
@@ -34,6 +27,7 @@
 <script setup>
     import { EMITS } from '@/constants/emits';
     import { ROUTE } from '@/constants/route';
+    import BaseSpinner from '@/components/baseComponents/uiElements/BaseSpinner.vue';
 
     defineProps({
         loading: {
@@ -151,17 +145,6 @@
         mask-composite: exclude;
         pointer-events: none;
     }
-}
-
-.spinner {
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    width: 20px;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
 }
 
 @keyframes fade-in {

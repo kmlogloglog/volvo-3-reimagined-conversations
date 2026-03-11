@@ -8,7 +8,7 @@
 
 <script setup>
     import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
-    import { useWindowSize, useDebounceFn, useIntersectionObserver, useDocumentVisibility } from '@vueuse/core';
+    import { useWindowSize, useDebounceFn, useIntersectionObserver, useDocumentVisibility, usePreferredReducedMotion } from '@vueuse/core';
 
     const props = defineProps({
         gradientStops: {
@@ -192,13 +192,10 @@
         { threshold: 0.1 },
     );
 
-    const prefersReducedMotion = ref(false);
-    onMounted(() => {
-        prefersReducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    });
+    const prefersReducedMotion = usePreferredReducedMotion();
 
-    const shouldAnimate = computed(() => {
-        if (prefersReducedMotion.value) return false;
+    const shouldAnimate= computed(() => {
+        if (prefersReducedMotion.value === 'reduce') return false;
         if (documentVisibility.value === 'hidden') return false;
         if (!isIntersecting.value) return false;
         return true;
