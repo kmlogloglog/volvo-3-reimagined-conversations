@@ -83,6 +83,8 @@
             return '';
         }
 
+        // Append a time component to force local-timezone parsing; without it,
+        // Date constructor treats YYYY-MM-DD strings as UTC and shifts the date.
         const date = new Date(props.date + 'T00:00:00');
 
         if (isNaN(date.getTime())) {
@@ -106,6 +108,7 @@
 
     const { public: { googleMapsApiKey } } = useRuntimeConfig();
 
+    // Builds the Google Maps Static API URL with a custom dark theme and a marker at the retailer location.
     const mapUrl = computed(() => {
         if (!props.retailerCoordinates || !props.retailerCoordinates.lat || !props.retailerCoordinates.lng) {
             return '';

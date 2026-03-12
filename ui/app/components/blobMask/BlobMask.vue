@@ -72,6 +72,7 @@
         permutation[i] = permutation[i + 256] = (i * 167 + 53) & 255;
     }
 
+    // Smoothstep curve used internally by Perlin noise.
     function fade(t) {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
@@ -80,6 +81,7 @@
         return a + t * (b - a);
     }
 
+    // Gradient contribution for a single Perlin lattice point.
     function grad(hash, x, y, z) {
         const h = hash & 15;
         const u = h < 8 ? x : y;
@@ -87,6 +89,7 @@
         return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
     }
 
+    // 3D Perlin noise, returns a value in roughly [-1, 1].
     function noise(x, y, z) {
         const X = Math.floor(x) & 255;
         const Y = Math.floor(y) & 255;
@@ -253,6 +256,7 @@
         return true;
     });
 
+    // Rate-limited rAF loop that advances time and redraws the masked image at targetFps.
     function animate(timestamp) {
         if (!shouldAnimate.value) {
             animationFrameId = null;
@@ -276,6 +280,7 @@
         animationFrameId = requestAnimationFrame(animate);
     }
 
+    // Resizes the canvas backing buffer to match the CSS layout size at the current DPR (capped at 2×).
     function updateCanvasSize() {
         if (!canvas) return;
 
@@ -301,6 +306,7 @@
         img.src = src;
     }
 
+    // Initialises the canvas context, wires a ResizeObserver for layout changes, and starts the animation loop.
     function initMask() {
         if (!maskCanvas.value) return;
 

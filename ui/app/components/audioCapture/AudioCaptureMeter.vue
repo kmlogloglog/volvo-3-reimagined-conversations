@@ -46,26 +46,21 @@
     import { computed, ref } from 'vue';
     import { watchThrottled } from '@vueuse/core';
 
-    // --- Props ---
     const props = defineProps({
-        /** Current audio level from getByteFrequencyData (0-255) or percentage (0-100) */
         level: {
             type:    Number,
             default: 0,
         },
-        /** Throttle interval in ms for the displayed value */
         throttleMs: {
             type:    Number,
             default: 500,
         },
     });
 
-    // --- Convert level to percentage if needed ---
     const levelAsPercentage = computed(() => {
         return Math.min(props.level * 100, 100);
     });
 
-    // --- Throttled level for readable numeric display ---
     const displayLevel = ref(0);
     watchThrottled(
         () => levelAsPercentage.value,
@@ -73,7 +68,6 @@
         { throttle: props.throttleMs, leading: true, trailing: true },
     );
 
-    // --- Colour helpers ---
     // Interpolate green → yellow → red based on t (0–1)
     // Red appears earlier: green 0-25%, yellow 25-50%, red 50-100%
     function gradientColor(t) {
@@ -100,12 +94,11 @@
         return { r, g, b, css: `rgb(${r},${g},${b})` };
     }
 
-    // --- Horizontal segment configuration ---
     const NUM_SEGMENTS = ref(30);
-    const SEGMENT_WIDTH = computed(() => 100 / NUM_SEGMENTS.value); // Percentage width per segment
+    // Percentage width per segment
+    const SEGMENT_WIDTH = computed(() => 100 / NUM_SEGMENTS.value);
 
-    // --- Reactive: visible segments based on current level ---
-    const visibleSegments = computed(() => {
+    const visibleSegments= computed(() => {
         const norm = levelAsPercentage.value / 100;
         const numVisible = Math.ceil(norm * NUM_SEGMENTS.value);
 
@@ -115,7 +108,7 @@
             result.push({
                 i,
                 bottom: i * SEGMENT_WIDTH.value,
-                height: SEGMENT_WIDTH.value * 0.9, // Small gap between segments
+                height: SEGMENT_WIDTH.value * 0.9,
                 color: gradientColor(segmentProgress).css,
             });
         }
@@ -130,14 +123,14 @@
         };
     });
 
-    // --- Tick marks configuration ---
-    const ticks = computed(() => {
+    const ticks= computed(() => {
         const result = [];
-        const numTicks = 5; // 0, 10, 20, ..., 100
+        const numTicks = 5;
 
         for (let i = 0; i <= numTicks; i++) {
             result.push({
                 i,
+                // 0, 10, 20, ..., 100
                 label: (i * 10) * 2,
                 width: '12px',
                 color: 'rgba(191,154,103,0.45)',
@@ -166,14 +159,14 @@
         margin: 0 auto;
         display: flex;
         justify-content: center;
-        min-width: 0; /* Allow flex items to shrink below content size */
+        min-width: 0;
     }
 
     .meter-bar {
         position: relative;
         width: 10px;
         height: 100%;
-        min-width: 0; /* Allow flex item to shrink */
+        min-width: 0;
     }
 
     .meter-bg-segments {

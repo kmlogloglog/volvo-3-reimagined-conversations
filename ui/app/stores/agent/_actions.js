@@ -10,6 +10,7 @@ const log = {
 };
 
 export default {
+    // Converts a Float32 audio buffer to Int16 for transmission over WebSocket.
     float32ToInt16(float32) {
         const int16 = new Int16Array(float32.length);
         for (let i = 0; i < float32.length; i++) {
@@ -20,6 +21,7 @@ export default {
         return int16;
     },
 
+    // Decodes a URL-safe base64 string (as returned by the agent) to an ArrayBuffer for audio playback.
     base64ToArray(base64) {
         const base64Clean = base64.replace(/-/g, '+').replace(/_/g, '/');
         const binaryString = atob(base64Clean);
@@ -35,6 +37,7 @@ export default {
         this.conversation.push(msg);
     },
 
+    // Upserts the in-progress user transcription message; creates a new entry on the first delta for a turn.
     handleUserTranscription(text, finished = false) {
         if (!this.currentUserMessageId) {
             this.currentUserMessageId = `${Date.now().toString()}_${AGENT.USER}`;
@@ -63,6 +66,7 @@ export default {
         }
     },
 
+    // Appends a text delta to the current agent message, deduplicating re-sent chunks and pruning stale turns.
     handleTextResponse(text, finished = false) {
         if (!this.currentMessageId) {
             this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
@@ -82,11 +86,12 @@ export default {
             const currentText = msg.content.text || '';
             msg.finished = finished;
 
+            // Guard against duplicate deltas — ADK sometimes resends the last chunk.
             if (currentText.endsWith(text) && text.length > 1) return;
             msg.content.text = `${currentText}${text}`;
         }
 
-        // from this.conversation array remove all where id is not currentMessageId and sender is AGENT and finished is false
+        // Prune stale unfinished agent messages that belong to a previous turn.
         this.conversation = this.conversation.filter(msg => msg.id === this.currentMessageId || msg.sender !== AGENT.AGENT || msg.finished);
 
         if (finished) {
@@ -98,6 +103,8 @@ export default {
         this.backgroundImages = imageUrls;
     },
 
+    // Dispatches an incoming WebSocket event to the correct handler based on its content.
+    // Handles audio chunks, text deltas, transcriptions, ui_action directives, and turn signals.
     handleAgentEvent(event) {
         let textHandled = false;
         if (event.content && event.content.parts) {
@@ -173,6 +180,7 @@ export default {
         }
     },
 
+    // Tears down all audio nodes, contexts, and the level-monitoring rAF loop, resetting audio state.
     stopAudio() {
         log.info('AUDIO', 'Stopping...');
 
@@ -225,6 +233,8 @@ export default {
         this.micPermissionGranted = false;
     },
 
+    // Opens a WebSocket connection with a 5-second timeout, wiring all event handlers.
+    // Deduplicates concurrent calls by returning the same in-flight promise.
     async connect({ userId, sessionId } = {}) {
         if (this.connected) return Promise.resolve();
         if (this.connectionPromise) return this.connectionPromise;
@@ -320,6 +330,8 @@ export default {
         connectionBus.emit({ connecting: false, connected: false });
     },
 
+    // Starts an rAF loop that reads both input and output analyser frequency data and reports a
+    // normalised 0–1 audio level, boosting microphone input so it reads comparably to speaker output.
     startLevelMonitoring(onLevelChange = null) {
         if (!this.inputAnalyser || !this.analyser) {
             return;
@@ -345,6 +357,9 @@ export default {
         draw();
     },
 
+    // Initialises the full audio pipeline: requests mic permission, creates two AudioContexts (16 kHz
+    // recorder and 24 kHz player), loads AudioWorklet modules, connects to the WebSocket, and starts
+    // streaming PCM chunks. Safe to call while already running — exits early if already active.
     async startAudio() {
         if (this.listening || this.startingAudio) return;
 
@@ -442,6 +457,7 @@ export default {
         }
     },
 
+    // Adds user and agent placeholder messages to the conversation, then sends the text over WebSocket.
     sendMessage(text) {
         this.addMessage({
             id: `${Date.now().toString()}_${AGENT.USER}`,

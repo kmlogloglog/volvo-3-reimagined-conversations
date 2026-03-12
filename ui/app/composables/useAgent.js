@@ -12,10 +12,14 @@ export function useAgent(options = {}) {
     const microphoneBus = useEventBus(BUS.MICROPHONE);
     const listeningBus = useEventBus(BUS.LISTENING);
 
+    // Bridge Pinia listening state to the event bus so components without
+    // direct store access can react to microphone activation changes.
     watch(listening, (value) => {
         listeningBus.emit({ listening: value });
     });
 
+    // Re-registers the level monitoring callback after audio starts so the
+    // caller's onLevelChange handler is always wired to the current analyser nodes.
     async function startAudio() {
         try {
             microphoneBus.emit({ requesting: true, granted: false, denied: false });

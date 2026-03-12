@@ -188,7 +188,7 @@
 }
 
 .carousel-navigation {
-    display: none;  // hidden by default (mobile first)
+    display: none;
 
     @media (hover: hover) and (pointer: fine) {
         display: flex;

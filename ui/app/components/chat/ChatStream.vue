@@ -34,11 +34,11 @@
         },
     });
 
+    // Filters out the intro message, sorts by timestamp, then trims to messages since the last user turn.
     const chatFiltered = computed(() => {
         const arr = Array.isArray(props.chat) ? props.chat : [];
         const chatArr = arr.filter(e => e?.content?.text !== AGENT.INTRODUCTION);
 
-        // sort chatArr by timestamp
         chatArr.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
         if (props.filterFromLast === AGENT.USER) {

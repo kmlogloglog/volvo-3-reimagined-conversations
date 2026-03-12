@@ -58,14 +58,14 @@
     const agent = useAgent();
     const route = useRoute();
 
-    const introSentBy = ref(null); // 'audio' | 'chat' | null
+    // Tracks which mode triggered the intro message: 'audio', 'chat', or null.
+    const introSentBy = ref(null);
 
     function sendIntro(mode) {
         agent.sendMessage(AGENT.INTRODUCTION);
         introSentBy.value = mode;
     }
 
-    // Connection
     const busConnection = useEventBus(BUS.AGENT_CONNECTION);
     const isConnected = ref(false);
 
@@ -84,7 +84,6 @@
         }
     });
 
-    // Audio
     const { listening: isListening } = storeToRefs(agentStore);
 
     watch(isListening, (newVal) => {
@@ -105,9 +104,9 @@
         }
     }
 
-    // Chat
     const isChatActive = ref(false);
 
+    // Toggles the chat panel and sends the intro message on open, guarding against duplicate intros.
     function handleChatClick(enabled) {
         isChatActive.value = enabled;
 

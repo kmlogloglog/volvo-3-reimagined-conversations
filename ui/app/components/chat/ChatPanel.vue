@@ -40,6 +40,7 @@
     const chatMessage = ref('');
     const chatTextareaRef = useTemplateRef('chatTextareaRef');
 
+    // Reconnects the WebSocket if it has dropped before forwarding the message to the agent.
     async function handleChatSubmit(message) {
         if (!connected.value) {
             console.info('Connection dropped! Reconnecting...');
@@ -55,6 +56,8 @@
     };
 
     const panelScrollRef = ref(null);
+    // Provided to descendant components (e.g. ChatSpeechBubble) so they can
+    // adjust scroll position after dynamic content changes like "read more" expansion.
     provide('scrollContainer', panelScrollRef);
 
     function onSpeechBubbleExpand({ heightDelta, scrollBefore }) {

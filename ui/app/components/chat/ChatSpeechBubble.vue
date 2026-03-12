@@ -53,7 +53,6 @@
 
     const emit = defineEmits([EMITS.SPEECH_BUBBLE_EXPAND, EMITS.IMAGE_LOADED]);
 
-    // sanitized text to prevent XSS when using v-html
     const sanitizedText = computed(() => {
         const sanitized = DOMPurify.sanitize(props.text);
         // Agent responses are already HTML — only convert newlines to <br> for plain-text user messages
@@ -65,7 +64,6 @@
 
     const buttonLabel = computed(() => showAllText.value ? 'Collapse message' : 'Show full message');
 
-    // toggle read more
     const textRef = useTemplateRef('textRef');
     const speechBubbleRef = useTemplateRef('speechBubbleRef');
     const showReadMoreButton = ref(false);
@@ -73,6 +71,7 @@
 
     const scrollContainer = inject('scrollContainer', ref(null));
 
+    // Toggles expanded state, then adjusts the parent scroll container to compensate for the height change.
     async function onReadMoreClick() {
         const el = speechBubbleRef.value.$el;
         const heightBefore = el.offsetHeight;
@@ -90,7 +89,6 @@
         });
     }
 
-    // Image load handling
     function onImageLoad(event) {
         emit(EMITS.IMAGE_LOADED, event.target);
     }
