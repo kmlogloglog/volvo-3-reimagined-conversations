@@ -7,15 +7,14 @@ from .callbacks import preload_memories
 from .config.prompts import PROMPT
 from .tools import (
     book_test_drive_tool,
+    display_car_configuration_tool,
     find_retailer_tool,
     save_user_insight_tool,
-    select_model_tool,
     select_exterior_color_tool,
-    select_wheel_tool,
     select_interior_tool,
-    display_car_configuration_tool,
+    select_model_tool,
+    select_wheel_tool,
 )
-
 
 load_dotenv()
 
@@ -34,7 +33,7 @@ volvo_agent = LlmAgent(
         select_exterior_color_tool,
         select_wheel_tool,
         select_interior_tool,
-        display_car_configuration_tool
+        display_car_configuration_tool,
     ],
 )
 
