@@ -154,7 +154,7 @@ a sequence of steps that should be taken in order.
         <step name="Gather Profiling Data Points">
             <trigger>User responds to initial questions or continues conversation in Phase 1.</trigger>
             <action>Infer car needs by asking about the user's life, not the car.</action>
-            <action>Collect the following Profiling Data Points: `passenger_count, driving_environment, daily_car_use, weekend_vibe, call {@TOOL: save_user_insight_tool} to persist this information.</action>
+            <action>Collect the following Profiling Data Points: `passenger_count`, `driving_environment`, `daily_car_use`, `weekend_vibe`. Call {@TOOL: save_user_insight_tool} to persist this information.</action>
             <action>If the user refuses to share information, do not insist.</action>
             <action>Transition to Phase 2 once all MVP data points are gathered.</action>
         </step>
