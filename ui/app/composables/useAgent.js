@@ -7,12 +7,11 @@ export function useAgent(options = {}) {
     const { onLevelChange } = options;
 
     const agentStore = useAgentStore();
-    const { listening } = storeToRefs(agentStore); // reactive ref to store state
+    const { listening } = storeToRefs(agentStore);
 
     const microphoneBus = useEventBus(BUS.MICROPHONE);
     const listeningBus = useEventBus(BUS.LISTENING);
 
-    // Emit whenever listening changes in the store
     watch(listening, (value) => {
         listeningBus.emit({ listening: value });
     });
