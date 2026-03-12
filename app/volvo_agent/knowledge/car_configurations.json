@@ -2,1085 +2,234 @@
     "EX30": {
         "wheels": {
             "19_5": {
-                "display_name": "19_5 Wheel",
-                "description": "Premium wheel option.",
-                "dimension": "19_5",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex30%2Fwheels%2F19_5_spoke_glossy_black_diamond_cut%2F19_5%2Fwheel.avif?alt=media"
+                "display_name": "19″ 5-spoke glossy black diamond cut",
+                "description": "These aerodynamic wheels perfectly complement the bold design of your fully electric Volvo. Diamond cut design with contrasting surfaces of polished aluminium and glossy black aero inserts create a distinctive contemporary look. Aerodynamic design and innovative use of synthetic materials also help to lower air resistance and weight which gives you good conditions for optimised energy efficiency and long range.",
+                "dimension": "8x19",
+                "tyre_dimension": "245/45 R19"
             },
             "20_5": {
-                "display_name": "20_5 Wheel",
-                "description": "Premium wheel option.",
-                "dimension": "20_5",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex30%2Fwheels%2F20_5_spoke_glossy_black_diamond_cut%2F20_5%2Fwheel.avif?alt=media"
+                "display_name": "20″ 5-spoke glossy black diamond cut",
+                "description": "These larger aerodynamic wheels add a bolder stance to your fully electric Volvo. The 5-spoke diamond cut design with contrasting surfaces of polished aluminium and glossy black aero inserts creates a sporty, contemporary look while maintaining excellent energy efficiency and long range.",
+                "dimension": "8x20",
+                "tyre_dimension": "245/45 R20"
             },
             "20_5y": {
-                "display_name": "20_5y Wheel",
-                "description": "Premium wheel option.",
-                "dimension": "20_5y",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex30%2Fwheels%2F20_5_y_spoke_glossy_black_diamond_cut%2F20_5y%2Fwheel.avif?alt=media"
+                "display_name": "20″ 5-Y spoke glossy black diamond cut",
+                "description": "The distinctive Y-spoke design in diamond cut finish gives your fully electric Volvo SUV a dynamic and technical expression. Contrasting surfaces of polished aluminium and glossy black create a unique look, while the aerodynamic design contributes to optimised energy efficiency and long range.",
+                "dimension": "8x20",
+                "tyre_dimension": "245/45 R20"
             }
         },
         "exteriors": {
             "cloud_blue": {
                 "display_name": "Cloud Blue",
-                "description": "A pure, light solid blue colour with a whitish character, inspired by the cold air of snowy Swedish winter landscapes. This is a playful colour that enhances the graphic impression of your Volvo.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 167,
-                        "g": 253,
-                        "b": 253,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.45,
-                        "r": 167,
-                        "g": 253,
-                        "b": 253,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.55,
-                        "r": 122,
-                        "g": 178,
-                        "b": 224,
-                        "a": 0.35
-                    },
-                    {
-                        "position": 0.75,
-                        "r": 122,
-                        "g": 178,
-                        "b": 224,
-                        "a": 0.25
-                    },
-                    {
-                        "position": 0.9,
-                        "r": 91,
-                        "g": 125,
-                        "b": 155,
-                        "a": 0.25
-                    },
-                    {
-                        "position": 1,
-                        "r": 91,
-                        "g": 125,
-                        "b": 155,
-                        "a": 0
-                    }
-                ]
+                "description": "A pure, light solid blue colour with a whitish character, inspired by the cold air of snowy Swedish winter landscapes. This is a playful colour that enhances the graphic impression of your Volvo."
             },
             "crystal_white": {
                 "display_name": "Crystal White",
-                "description": "Shimmering, sparkling white pearl colour built up by three layers of coat which gives a soft, deep pearlescent effect for a silky, smooth appearance and a pure exclusive look.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.55,
-                        "r": 125,
-                        "g": 139,
-                        "b": 155,
-                        "a": 0.8
-                    },
-                    {
-                        "position": 0.65,
-                        "r": 125,
-                        "g": 139,
-                        "b": 155,
-                        "a": 0.3
-                    },
-                    {
-                        "position": 1,
-                        "r": 125,
-                        "g": 139,
-                        "b": 155,
-                        "a": 0
-                    }
-                ]
+                "description": "Shimmering, sparkling white pearl colour built up by three layers of coat which gives a soft, deep pearlescent effect for a silky, smooth appearance and a pure exclusive look."
             },
             "onyx_black": {
                 "display_name": "Onyx Black",
-                "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 230,
-                        "g": 230,
-                        "b": 230,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.15,
-                        "r": 230,
-                        "g": 230,
-                        "b": 230,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.3,
-                        "r": 51,
-                        "g": 51,
-                        "b": 51,
-                        "a": 0.7
-                    },
-                    {
-                        "position": 1,
-                        "r": 51,
-                        "g": 51,
-                        "b": 51,
-                        "a": 0
-                    }
-                ]
+                "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light."
             },
             "vapour_grey": {
                 "display_name": "Vapour Grey",
-                "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 129,
-                        "g": 130,
-                        "b": 131,
-                        "a": 0.8
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 177,
-                        "g": 182,
-                        "b": 185,
-                        "a": 0.75
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 196,
-                        "g": 203,
-                        "b": 207,
-                        "a": 0.75
-                    },
-                    {
-                        "position": 0.7,
-                        "r": 78,
-                        "g": 78,
-                        "b": 79,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 0.8,
-                        "r": 78,
-                        "g": 78,
-                        "b": 79,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 1,
-                        "r": 78,
-                        "g": 78,
-                        "b": 79,
-                        "a": 0
-                    }
-                ]
+                "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight."
             },
             "sand_dune": {
                 "display_name": "Sand Dune",
-                "description": "A warm, sand-coloured solid effect metallic with glass flakes that sparkle like sand in the sun. Inspired by the sand dunes of Sweden's west coast, this colour adds a natural, contrasting feel.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.1,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 0.85
-                    },
-                    {
-                        "position": 0.15,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0.7
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0.7
-                    },
-                    {
-                        "position": 0.55,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0.2
-                    },
-                    {
-                        "position": 1,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0
-                    }
-                ]
+                "description": "A warm, sand-coloured solid effect metallic with glass flakes that sparkle like sand in the sun. Inspired by the sand dunes of Sweden's west coast, this colour adds a natural, contrasting feel."
             }
         },
         "interiors": {
             "wool_blend_breeze": {
-                "display_name": "Wool Blend Breeze Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex30%2Fupholstery%2Fwool_blend%2Fbreeze%2Fupholstery.avif?alt=media"
+                "display_name": "Breeze wool blend interior",
+                "description": "Light, airy breeze-toned wool blend seat upholstery with studio-inspired textile materials for a fresh, Scandinavian-modern interior feel."
             },
             "wool_blend_indigo": {
-                "display_name": "Wool Blend Indigo Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex30%2Fupholstery%2Fwool_blend%2Findigo%2Fupholstery.avif?alt=media"
+                "display_name": "Indigo wool blend interior",
+                "description": "Peaceful deep blue wool blend seat upholstery with studio-inspired textile materials and contrasting bio-attributed Nordico for a modern, sporty look."
             },
             "wool_blend_mist": {
-                "display_name": "Wool Blend Mist Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex30%2Fupholstery%2Fwool_blend%2Fmist%2Fupholstery.avif?alt=media"
+                "display_name": "Mist wool blend interior",
+                "description": "Soft, neutral mist-toned wool blend seat upholstery with studio-inspired textile materials for a calm, minimalist Scandinavian interior."
             },
             "wool_blend_pine": {
-                "display_name": "Wool Blend Pine Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex30%2Fupholstery%2Fwool_blend%2Fpine%2Fupholstery.avif?alt=media"
+                "display_name": "Pine wool blend interior",
+                "description": "Earthy, nature-inspired pine-toned wool blend seat upholstery with studio-inspired textile materials for a grounded, natural interior feel."
             }
         }
     },
     "EX60": {
         "wheels": {
             "21": {
-                "display_name": "21 Wheel",
-                "description": "Premium wheel option.",
-                "dimension": "21",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fwheels%2F21_5_spoke_glossy_black_matt_graphite_diamond_cut%2F21%2Fwheel.avif?alt=media"
+                "display_name": "21″ 5-spoke glossy black/matt graphite diamond cut",
+                "description": "The optimized 5-spoke design in machined diamond cut with the contrasting matt graphite colour gives your Volvo SUV an athletic and active expression. The lightweight design with aerodynamic inserts in glossy black contributes to optimized handling and energy efficiency.",
+                "dimension": "8.5x21",
+                "tyre_dimension": "255/45 R21"
             },
             "22_matt": {
-                "display_name": "22_matt Wheel",
-                "description": "Premium wheel option.",
-                "dimension": "22_matt",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fwheels%2F22_5_y_spoke_matt_black%2F22_matt%2Fwheel.avif?alt=media"
+                "display_name": "22″ 5-Y spoke matt black",
+                "description": "The bold 5-Y spoke design in matt black gives your Volvo SUV a commanding and modern presence. The larger diameter enhances the car’s athletic stance while the lightweight construction maintains excellent handling and energy efficiency.",
+                "dimension": "9x22",
+                "tyre_dimension": "265/40 R22"
             },
             "22_diamond": {
-                "display_name": "22_diamond Wheel",
-                "description": "Premium wheel option.",
-                "dimension": "22_diamond",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fwheels%2F22_5_y_spoke_matt_black_diamond_cut%2F22_diamond%2Fwheel.avif?alt=media"
+                "display_name": "22″ 5-Y spoke matt black diamond cut",
+                "description": "The premium 5-Y spoke design combines matt black surfaces with machined diamond cut detailing for a sophisticated and technical expression. The larger 22-inch diameter gives your Volvo SUV an outstanding presence while aerodynamic design contributes to optimised energy efficiency.",
+                "dimension": "9x22",
+                "tyre_dimension": "265/40 R22"
             }
         },
         "exteriors": {
             "ice_white": {
                 "display_name": "Ice White",
-                "description": "Bright, solid white with broken white tones that enhances the car's shape and adds intensity.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 119,
-                        "g": 139,
-                        "b": 155,
-                        "a": 0.5
-                    },
-                    {
-                        "position": 0.64,
-                        "r": 172,
-                        "g": 182,
-                        "b": 189,
-                        "a": 0.2
-                    },
-                    {
-                        "position": 1,
-                        "r": 172,
-                        "g": 182,
-                        "b": 189,
-                        "a": 0
-                    }
-                ]
+                "description": "Bright, solid white with broken white tones that enhances the car's shape and adds intensity."
             },
             "onyx_black": {
                 "display_name": "Onyx Black",
-                "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 230,
-                        "g": 230,
-                        "b": 230,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.15,
-                        "r": 230,
-                        "g": 230,
-                        "b": 230,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.3,
-                        "r": 51,
-                        "g": 51,
-                        "b": 51,
-                        "a": 0.7
-                    },
-                    {
-                        "position": 1,
-                        "r": 51,
-                        "g": 51,
-                        "b": 51,
-                        "a": 0
-                    }
-                ]
+                "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light."
             },
             "denim_blue": {
                 "display_name": "Denim Blue",
-                "description": "Rich, smokey blue metallic colour with plenty of depth and a fluid, silky finish. A modern classic that works everywhere, inspired by Scandinavian fashion.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 118,
-                        "g": 151,
-                        "b": 254,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.4,
-                        "r": 152,
-                        "g": 194,
-                        "b": 237,
-                        "a": 0.57
-                    },
-                    {
-                        "position": 0.43,
-                        "r": 224,
-                        "g": 240,
-                        "b": 255,
-                        "a": 0.3
-                    },
-                    {
-                        "position": 0.6,
-                        "r": 92,
-                        "g": 109,
-                        "b": 153,
-                        "a": 0.25
-                    },
-                    {
-                        "position": 0.8,
-                        "r": 92,
-                        "g": 109,
-                        "b": 153,
-                        "a": 0.25
-                    },
-                    {
-                        "position": 1,
-                        "r": 92,
-                        "g": 109,
-                        "b": 153,
-                        "a": 0
-                    }
-                ]
+                "description": "Rich, smokey blue metallic colour with plenty of depth and a fluid, silky finish. A modern classic that works everywhere, inspired by Scandinavian fashion."
             },
             "vapour_grey": {
                 "display_name": "Vapour Grey",
-                "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 129,
-                        "g": 130,
-                        "b": 131,
-                        "a": 0.8
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 177,
-                        "g": 182,
-                        "b": 185,
-                        "a": 0.75
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 196,
-                        "g": 203,
-                        "b": 207,
-                        "a": 0.75
-                    },
-                    {
-                        "position": 0.7,
-                        "r": 78,
-                        "g": 78,
-                        "b": 79,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 0.8,
-                        "r": 78,
-                        "g": 78,
-                        "b": 79,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 1,
-                        "r": 78,
-                        "g": 78,
-                        "b": 79,
-                        "a": 0
-                    }
-                ]
+                "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight."
             },
             "aurora_silver": {
                 "display_name": "Aurora Silver",
-                "description": "A futuristic silver metallic with a balanced purple tint. Adds an ethereal, weightless touch while building contrasts. Sparkles with a hint of purple in sunlight.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 0.87
-                    },
-                    {
-                        "position": 0.75,
-                        "r": 164,
-                        "g": 130,
-                        "b": 183,
-                        "a": 0.92
-                    },
-                    {
-                        "position": 1,
-                        "r": 164,
-                        "g": 130,
-                        "b": 183,
-                        "a": 0
-                    }
-                ]
+                "description": "A futuristic silver metallic with a balanced purple tint. Adds an ethereal, weightless touch while building contrasts. Sparkles with a hint of purple in sunlight."
             },
             "sand_dune": {
                 "display_name": "Sand Dune",
-                "description": "A warm, sand-coloured solid effect metallic with glass flakes that sparkle like sand in the sun. Inspired by the sand dunes of Sweden's west coast, this colour adds a natural, contrasting feel.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.1,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 0.85
-                    },
-                    {
-                        "position": 0.15,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0.7
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0.7
-                    },
-                    {
-                        "position": 0.55,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0.2
-                    },
-                    {
-                        "position": 1,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0
-                    }
-                ]
+                "description": "A warm, sand-coloured solid effect metallic with glass flakes that sparkle like sand in the sun. Inspired by the sand dunes of Sweden's west coast, this colour adds a natural, contrasting feel."
             },
             "forest_lake": {
                 "display_name": "Forest Lake",
-                "description": "Both tranquil and active, this semi-dark green metallic adds a technical hint that enhances the car\u2019s design in a balanced way. In sunlight, it has an elegant turquoise sparkle.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 202,
-                        "g": 242,
-                        "b": 202,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.34,
-                        "r": 202,
-                        "g": 242,
-                        "b": 202,
-                        "a": 0.85
-                    },
-                    {
-                        "position": 0.34,
-                        "r": 158,
-                        "g": 222,
-                        "b": 153,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 0.55,
-                        "r": 158,
-                        "g": 222,
-                        "b": 153,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 0.7,
-                        "r": 91,
-                        "g": 120,
-                        "b": 89,
-                        "a": 0.3
-                    },
-                    {
-                        "position": 0.95,
-                        "r": 91,
-                        "g": 120,
-                        "b": 89,
-                        "a": 0.25
-                    },
-                    {
-                        "position": 1,
-                        "r": 91,
-                        "g": 120,
-                        "b": 89,
-                        "a": 0
-                    }
-                ]
+                "description": "Both tranquil and active, this semi-dark green metallic adds a technical hint that enhances the car’s design in a balanced way. In sunlight, it has an elegant turquoise sparkle."
             },
             "heather_bronze": {
                 "display_name": "Heather Bronze",
-                "description": "A warm and earthy metallic inspired by the heather blooming across Nordic landscapes. Its soft bronze and violet tones create a refined, natural look that subtly shifts with the light.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 255,
-                        "g": 215,
-                        "b": 190,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.34,
-                        "r": 255,
-                        "g": 215,
-                        "b": 190,
-                        "a": 0.85
-                    },
-                    {
-                        "position": 0.55,
-                        "r": 241,
-                        "g": 169,
-                        "b": 151,
-                        "a": 0.5
-                    },
-                    {
-                        "position": 0.6,
-                        "r": 112,
-                        "g": 80,
-                        "b": 76,
-                        "a": 0.5
-                    },
-                    {
-                        "position": 0.95,
-                        "r": 112,
-                        "g": 80,
-                        "b": 76,
-                        "a": 0.18
-                    },
-                    {
-                        "position": 1,
-                        "r": 112,
-                        "g": 80,
-                        "b": 76,
-                        "a": 0
-                    }
-                ]
+                "description": "A warm and earthy metallic inspired by the heather blooming across Nordic landscapes. Its soft bronze and violet tones create a refined, natural look that subtly shifts with the light."
             }
         },
         "interiors": {
             "nordico_charcoal": {
                 "display_name": "Charcoal Nordico in charcoal interior",
-                "description": "Elegant bio-attributed charcoal Nordico seat upholstery in a charcoal interior with black headlining and contemporary decor.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fupholstery%2Fnordico%2Fcharcoal%2Fupholstery.avif?alt=media"
+                "description": "Elegant bio-attributed charcoal Nordico seat upholstery in a charcoal interior with black headlining and contemporary decor."
             },
             "nordico_cardamom": {
                 "display_name": "Cardamom Nordico in charcoal interior",
-                "description": "Elegant bio-attributed cardamom Nordico seat upholstery in a contrasting charcoal interior with black headlining and contemporary decor.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fupholstery%2Fnordico%2Fcardamom%2Fupholstery.avif?alt=media"
+                "description": "Elegant bio-attributed cardamom Nordico seat upholstery in a contrasting charcoal interior with black headlining and contemporary decor."
             },
             "nordico_dawn": {
                 "display_name": "Dawn Nordico in dawn interior",
-                "description": "Stylish light-coloured bio-attributed dawn Nordico seat upholstery in a dawn interior with weathered grey ash wood decor, contrasting dark rubus base carpet and dualtone tailored steering wheel.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fupholstery%2Fnordico%2Fdawn%2Fupholstery.avif?alt=media"
+                "description": "Stylish light-coloured bio-attributed dawn Nordico seat upholstery in a dawn interior with weathered grey ash wood decor, contrasting dark rubus base carpet and dualtone tailored steering wheel."
             },
             "ventilated_nordico_cardamom": {
-                "display_name": "Ventilated Nordico Cardamom Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fupholstery%2Fventilated_nordico%2Fcardamom%2Fupholstery.avif?alt=media"
+                "display_name": "Cardamom ventilated Nordico in charcoal interior",
+                "description": "Elegant bio-attributed cardamom Nordico seat upholstery with front seat ventilation in a contrasting charcoal interior with black headlining and weathered grey ash wood decor."
             },
             "ventilated_nordico_charcoal": {
-                "display_name": "Ventilated Nordico Charcoal Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fupholstery%2Fventilated_nordico%2Fcharcoal%2Fupholstery.avif?alt=media"
+                "display_name": "Charcoal ventilated Nordico in charcoal interior",
+                "description": "Elegant bio-attributed charcoal Nordico seat upholstery with subtly contrasting piping and front seat ventilation in a charcoal interior with black headlining and weathered grey ash wood decor."
             },
             "ventilated_nordico_dawn": {
-                "display_name": "Ventilated Nordico Dawn Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fupholstery%2Fventilated_nordico%2Fdawn%2Fupholstery.avif?alt=media"
+                "display_name": "Dawn ventilated Nordico in dawn interior",
+                "description": "Light-coloured bio-attributed dawn Nordico seat upholstery with front seat ventilation in a dawn interior with weathered grey ash wood decor, contrasting dark rubus base carpet, and a tailored dual-tone steering wheel."
             },
             "wool_blend_rye": {
-                "display_name": "Wool Blend Rye Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex60%2Fupholstery%2Fwool_blend%2Frye%2Fupholstery.avif?alt=media"
+                "display_name": "Rye tailored wool blend in dawn interior",
+                "description": "Exclusive rye tailored wool blend seat upholstery in a dawn interior with dark rubus fused ash wood decor, dark rubus base carpet and tailored dual-tone steering wheel."
             }
         }
     },
     "EX90": {
         "wheels": {
             "21_8": {
-                "display_name": "21_8 Wheel",
-                "description": "Premium wheel option.",
-                "dimension": "21_8",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fwheels%2F21_8_spoke_glossy_black_matt_graphite_diamond_cut%2F21_8%2Fwheel.avif?alt=media"
+                "display_name": "21″ 8-spoke glossy black/matt graphite diamond cut",
+                "description": "This new generation aerodynamic wheels perfectly complements the bold design of your full-electric Volvo SUV. Diamond cut design with contrasting surfaces of polished aluminium and glossy black inserts create a distinctive, technical look. Aerodynamic design and innovative use of synthetic materials also help to lower air resistance and weight which gives you good conditions for optimised energy efficiency and long range.",
+                "dimension": "9x21",
+                "tyre_dimension": "265/45 R21"
             },
             "22_5": {
-                "display_name": "22_5 Wheel",
-                "description": "Premium wheel option.",
-                "dimension": "22_5",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fwheels%2F22_5_spoke_glossy_black_diamond_cut%2F22_5%2Fwheel.avif?alt=media"
+                "display_name": "22″ 5-spoke glossy black diamond cut",
+                "description": "This advanced, large 22-inch wheel in futuristic aerodynamic design features a multicolour insert that covers the complete wheel centre. Together with Diamond Cut design and contrasting surfaces of polished aluminium, this creates a unique look that gives your full-electric Volvo SUV an outstanding presence. Aerodynamic design and innovative use of synthetic materials also help to lower air resistance and weight which gives you good conditions for optimised energy efficiency and long range.",
+                "dimension": "9x22",
+                "tyre_dimension": "265/40 R22"
             },
             "22_5y": {
-                "display_name": "22_5y Wheel",
-                "description": "Premium wheel option.",
-                "dimension": "22_5y",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fwheels%2F22_5_y_spoke_glossy_black_diamond_cut_forged%2F22_5y%2Fwheel.avif?alt=media"
+                "display_name": "22″ 5-Y spoke glossy black diamond cut, forged",
+                "description": "Adding to the car's excellent handling as well as its distinctive look, the 22-inch 5-Y spoke glossy black diamond cut forged wheels are in a unique light-weight design that contributes to responsive driving characteristics and excellent road holding. Forging is an exclusive high-end production method where the wheel design is milled out of an aluminum blank. Compared to traditional low-pressure casting, the forged wheels have higher material properties that allow strong and low weight designs.",
+                "dimension": "9x22",
+                "tyre_dimension": "265/40 R22"
             }
         },
         "exteriors": {
             "vapour_grey": {
                 "display_name": "Vapour Grey",
-                "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 129,
-                        "g": 130,
-                        "b": 131,
-                        "a": 0.8
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 177,
-                        "g": 182,
-                        "b": 185,
-                        "a": 0.75
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 196,
-                        "g": 203,
-                        "b": 207,
-                        "a": 0.75
-                    },
-                    {
-                        "position": 0.7,
-                        "r": 78,
-                        "g": 78,
-                        "b": 79,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 0.8,
-                        "r": 78,
-                        "g": 78,
-                        "b": 79,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 1,
-                        "r": 78,
-                        "g": 78,
-                        "b": 79,
-                        "a": 0
-                    }
-                ]
+                "description": "A solid effect metallic in neutral grey with a misty touch, inspired by windswept Scandinavian limestone houses. Gives the car a light, agile look. The solid look turns to light, shimmering metallic in sunlight."
             },
             "onyx_black": {
                 "display_name": "Onyx Black",
-                "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 230,
-                        "g": 230,
-                        "b": 230,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.15,
-                        "r": 230,
-                        "g": 230,
-                        "b": 230,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.3,
-                        "r": 51,
-                        "g": 51,
-                        "b": 51,
-                        "a": 0.7
-                    },
-                    {
-                        "position": 1,
-                        "r": 51,
-                        "g": 51,
-                        "b": 51,
-                        "a": 0
-                    }
-                ]
+                "description": "Elegant, deep black metallic with a brilliant sparkle in strong daylight and a solid darkness in reduced light."
             },
             "crystal_white": {
                 "display_name": "Crystal White",
-                "description": "Shimmering, sparkling white pearl colour built up by three layers of coat which gives a soft, deep pearlescent effect for a silky, smooth appearance and a pure exclusive look.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.55,
-                        "r": 125,
-                        "g": 139,
-                        "b": 155,
-                        "a": 0.8
-                    },
-                    {
-                        "position": 0.65,
-                        "r": 125,
-                        "g": 139,
-                        "b": 155,
-                        "a": 0.3
-                    },
-                    {
-                        "position": 1,
-                        "r": 125,
-                        "g": 139,
-                        "b": 155,
-                        "a": 0
-                    }
-                ]
+                "description": "Shimmering, sparkling white pearl colour built up by three layers of coat which gives a soft, deep pearlescent effect for a silky, smooth appearance and a pure exclusive look."
             },
             "denim_blue": {
                 "display_name": "Denim Blue",
-                "description": "Rich, smokey blue metallic colour with plenty of depth and a fluid, silky finish. A modern classic that works everywhere, inspired by Scandinavian fashion.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 118,
-                        "g": 151,
-                        "b": 254,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.4,
-                        "r": 152,
-                        "g": 194,
-                        "b": 237,
-                        "a": 0.57
-                    },
-                    {
-                        "position": 0.43,
-                        "r": 224,
-                        "g": 240,
-                        "b": 255,
-                        "a": 0.3
-                    },
-                    {
-                        "position": 0.6,
-                        "r": 92,
-                        "g": 109,
-                        "b": 153,
-                        "a": 0.25
-                    },
-                    {
-                        "position": 0.8,
-                        "r": 92,
-                        "g": 109,
-                        "b": 153,
-                        "a": 0.25
-                    },
-                    {
-                        "position": 1,
-                        "r": 92,
-                        "g": 109,
-                        "b": 153,
-                        "a": 0
-                    }
-                ]
+                "description": "Rich, smokey blue metallic colour with plenty of depth and a fluid, silky finish. A modern classic that works everywhere, inspired by Scandinavian fashion."
             },
             "forest_lake": {
                 "display_name": "Forest Lake",
-                "description": "Both tranquil and active, this semi-dark green metallic adds a technical hint that enhances the car\u2019s design in a balanced way. In sunlight, it has an elegant turquoise sparkle.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 202,
-                        "g": 242,
-                        "b": 202,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.34,
-                        "r": 202,
-                        "g": 242,
-                        "b": 202,
-                        "a": 0.85
-                    },
-                    {
-                        "position": 0.34,
-                        "r": 158,
-                        "g": 222,
-                        "b": 153,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 0.55,
-                        "r": 158,
-                        "g": 222,
-                        "b": 153,
-                        "a": 0.4
-                    },
-                    {
-                        "position": 0.7,
-                        "r": 91,
-                        "g": 120,
-                        "b": 89,
-                        "a": 0.3
-                    },
-                    {
-                        "position": 0.95,
-                        "r": 91,
-                        "g": 120,
-                        "b": 89,
-                        "a": 0.25
-                    },
-                    {
-                        "position": 1,
-                        "r": 91,
-                        "g": 120,
-                        "b": 89,
-                        "a": 0
-                    }
-                ]
+                "description": "Both tranquil and active, this semi-dark green metallic adds a technical hint that enhances the car’s design in a balanced way. In sunlight, it has an elegant turquoise sparkle."
             },
             "aurora_silver": {
                 "display_name": "Aurora Silver",
-                "description": "A futuristic silver metallic with a balanced purple tint. Adds an ethereal, weightless touch while building contrasts. Sparkles with a hint of purple in sunlight.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 0.87
-                    },
-                    {
-                        "position": 0.75,
-                        "r": 164,
-                        "g": 130,
-                        "b": 183,
-                        "a": 0.92
-                    },
-                    {
-                        "position": 1,
-                        "r": 164,
-                        "g": 130,
-                        "b": 183,
-                        "a": 0
-                    }
-                ]
+                "description": "A futuristic silver metallic with a balanced purple tint. Adds an ethereal, weightless touch while building contrasts. Sparkles with a hint of purple in sunlight."
             },
             "sand_dune": {
                 "display_name": "Sand Dune",
-                "description": "A warm, sand-coloured solid effect metallic with glass flakes that sparkle like sand in the sun. Inspired by the sand dunes of Sweden's west coast, this colour adds a natural, contrasting feel.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.1,
-                        "r": 255,
-                        "g": 255,
-                        "b": 255,
-                        "a": 0.85
-                    },
-                    {
-                        "position": 0.15,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0.7
-                    },
-                    {
-                        "position": 0.5,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0.7
-                    },
-                    {
-                        "position": 0.55,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0.2
-                    },
-                    {
-                        "position": 1,
-                        "r": 236,
-                        "g": 217,
-                        "b": 193,
-                        "a": 0
-                    }
-                ]
+                "description": "A warm, sand-coloured solid effect metallic with glass flakes that sparkle like sand in the sun. Inspired by the sand dunes of Sweden's west coast, this colour adds a natural, contrasting feel."
             },
             "mulberry_red": {
                 "display_name": "Mulberry Red",
-                "description": "A dark, elegant blackish red metallic inspired by Scandinavian autumn. With a calm yet dramatic feel, it sparkles up in sunlight for a colourful expression with prominent shades of red.",
-                "gradient_stops": [
-                    {
-                        "position": 0,
-                        "r": 252,
-                        "g": 173,
-                        "b": 188,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.2,
-                        "r": 252,
-                        "g": 173,
-                        "b": 188,
-                        "a": 1
-                    },
-                    {
-                        "position": 0.25,
-                        "r": 134,
-                        "g": 50,
-                        "b": 65,
-                        "a": 0.15
-                    },
-                    {
-                        "position": 0.9,
-                        "r": 134,
-                        "g": 50,
-                        "b": 65,
-                        "a": 0.1
-                    },
-                    {
-                        "position": 1,
-                        "r": 134,
-                        "g": 50,
-                        "b": 65,
-                        "a": 0
-                    }
-                ]
+                "description": "A dark, elegant blackish red metallic inspired by Scandinavian autumn. With a calm yet dramatic feel, it sparkles up in sunlight for a colourful expression with prominent shades of red."
             }
         },
         "interiors": {
             "nordico_charcoal": {
                 "display_name": "Charcoal Nordico in Charcoal interior",
-                "description": "Elegant bio-attributed Charcoal Nordico seat upholstery in a leather-free Charcoal interior with light-coloured contrasting Dawn headlining and contemporary decor for an airy, distinctive ambience.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fupholstery%2Fnordico%2Fcharcoal%2Fupholstery.avif?alt=media"
+                "description": "Elegant bio-attributed Charcoal Nordico seat upholstery in a leather-free Charcoal interior with light-coloured contrasting Dawn headlining and contemporary decor for an airy, distinctive ambience."
             },
             "nordico_cardamom": {
                 "display_name": "Cardamom Nordico in Charcoal/Cardamom interior",
-                "description": "Elegant bio-attributed Cardamom Nordico seat upholstery in a leather-free, subtly contrasting Charcoal/Cardamom interior with black headlining and contemporary decor for a distinctive, timeless expression of style.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fupholstery%2Fnordico%2Fcardamom%2Fupholstery.avif?alt=media"
+                "description": "Elegant bio-attributed Cardamom Nordico seat upholstery in a leather-free, subtly contrasting Charcoal/Cardamom interior with black headlining and contemporary decor for a distinctive, timeless expression of style."
             },
             "nordico_dawn": {
                 "display_name": "Dawn Nordico in dawn interior",
-                "description": "Light-coloured bio-attributed Dawn Nordico seat upholstery in a leather-free Dawn interior with dual-tone tailored steering wheel and contemporary decor for an airy, elegant ambience.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fupholstery%2Fnordico%2Fdawn%2Fupholstery.avif?alt=media"
+                "description": "Light-coloured bio-attributed Dawn Nordico seat upholstery in a leather-free Dawn interior with dual-tone tailored steering wheel and contemporary decor for an airy, elegant ambience."
             },
             "ventilated_nordico_cardamom": {
-                "display_name": "Ventilated Nordico Cardamom Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fupholstery%2Fventilated_nordico%2Fcardamom%2Fupholstery.avif?alt=media"
+                "display_name": "Ventilated Cardamom Nordico in Charcoal/Cardamom interior",
+                "description": "Elegant bio-attributed Cardamom Nordico seat upholstery with ventilated front seats in a leather-free, subtly contrasting Charcoal/Cardamom interior with black headlining and contemporary decor for a distinctive, timeless expression of style."
             },
             "ventilated_nordico_charcoal": {
-                "display_name": "Ventilated Nordico Charcoal Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fupholstery%2Fventilated_nordico%2Fcharcoal%2Fupholstery.avif?alt=media"
+                "display_name": "Charcoal ventilated Nordico in charcoal interior",
+                "description": "Elegant bio-attributed Charcoal Nordico seat upholstery with ventilated front seats in a leather-free Charcoal interior with light-coloured contrasting Dawn headlining and contemporary decor for an airy, distinctive ambience."
             },
             "ventilated_nordico_dawn": {
-                "display_name": "Ventilated Nordico Dawn Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fupholstery%2Fventilated_nordico%2Fdawn%2Fupholstery.avif?alt=media"
+                "display_name": "Dawn ventilated Nordico in dawn interior",
+                "description": "Light-coloured bio-attributed Dawn Nordico seat upholstery with ventilated front seats in a leather-free Dawn interior with dual-tone tailored steering wheel and contemporary decor for an airy, elegant ambience."
             },
             "wool_blend_zinc": {
-                "display_name": "Wool Blend Zinc Upholstery",
-                "description": "Premium upholstery option.",
-                "image_url": "https://firebasestorage.googleapis.com/v0/b/vml-map-xd-volvo.firebasestorage.app/o/configuration%2Fmodels%2Fex90%2Fupholstery%2Fwool_blend%2Fzinc%2Fupholstery.avif?alt=media"
+                "display_name": "Zinc tailored wool blend interior",
+                "description": "Exclusive zinc-toned tailored wool blend seat upholstery in a leather-free interior with contemporary decor for a refined, natural Scandinavian ambience."
             }
         }
     }
