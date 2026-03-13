@@ -8,28 +8,19 @@
     </div>
 </template>
 
-<script setup>
-    import { AGENT } from '@/constants/agent';
+<script setup lang="ts">
+    interface Props {
+        alignBubble?: 'user' | 'agent' | 'none'
+        padding?: 'small' | 'large' | ''
+        fullWidth?: boolean
+        disabled?: boolean
+    }
 
-    defineProps({
-        alignBubble: {
-            type: String,
-            default: 'none',
-            validator: (value) => [AGENT.USER, AGENT.AGENT, 'none'].includes(value),
-        },
-        padding: {
-            type: String,
-            default: '',
-            validator: (value) => ['small', 'large', ''].includes(value),
-        },
-        fullWidth: {
-            type: Boolean,
-            default: false,
-        },
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
+    withDefaults(defineProps<Props>(), {
+        alignBubble: 'none',
+        padding: '',
+        fullWidth: false,
+        disabled: false,
     });
 </script>
 <style lang="scss" scoped>

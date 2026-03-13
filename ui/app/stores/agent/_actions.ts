@@ -1,6 +1,8 @@
-import { AGENT } from '@/constants/agent.js';
-import { BUS } from '@/constants/bus.js';
+import { AGENT } from '@/constants/agent';
+import { BUS } from '@/constants/bus';
 import { useEventBus } from '@vueuse/core';
+import type { ChatMessage } from '@/types/chat';
+import type { AgentEvent, ConnectParams } from '@/types/agent';
 
 const log = {
     info: (label, ...args) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
@@ -11,7 +13,7 @@ const log = {
 
 export default {
     // Converts a Float32 audio buffer to Int16 for transmission over WebSocket.
-    float32ToInt16(float32) {
+    float32ToInt16(float32: Float32Array): Int16Array {
         const int16 = new Int16Array(float32.length);
         for (let i = 0; i < float32.length; i++) {
             const sample = float32[i] ?? 0;
@@ -22,7 +24,7 @@ export default {
     },
 
     // Decodes a URL-safe base64 string (as returned by the agent) to an ArrayBuffer for audio playback.
-    base64ToArray(base64) {
+    base64ToArray(base64: string): ArrayBuffer {
         const base64Clean = base64.replace(/-/g, '+').replace(/_/g, '/');
         const binaryString = atob(base64Clean);
         const len = binaryString.length;
@@ -33,12 +35,12 @@ export default {
         return bytes.buffer;
     },
 
-    addMessage(msg) {
+    addMessage(msg: ChatMessage): void {
         this.conversation.push(msg);
     },
 
     // Upserts the in-progress user transcription message; creates a new entry on the first delta for a turn.
-    handleUserTranscription(text, finished = false) {
+    handleUserTranscription(text: string, finished = false): void {
         if (!this.currentUserMessageId) {
             this.currentUserMessageId = `${Date.now().toString()}_${AGENT.USER}`;
             const newMsg = {
@@ -58,7 +60,7 @@ export default {
         }
     },
 
-    playAudioChunk(base64Data) {
+    playAudioChunk(base64Data: string): void {
         this.speaking = true;
         if (this.audioPlayerNode) {
             const arrayBuffer = this.base64ToArray(base64Data);
@@ -67,7 +69,7 @@ export default {
     },
 
     // Appends a text delta to the current agent message, deduplicating re-sent chunks and pruning stale turns.
-    handleTextResponse(text, finished = false) {
+    handleTextResponse(text: string, finished = false): void {
         if (!this.currentMessageId) {
             this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
             const newMsg = {
@@ -99,13 +101,13 @@ export default {
         }
     },
 
-    handleImageResponse(imageUrls) {
+    handleImageResponse(imageUrls: string[]): void {
         this.backgroundImages = imageUrls;
     },
 
     // Dispatches an incoming WebSocket event to the correct handler based on its content.
     // Handles audio chunks, text deltas, transcriptions, ui_action directives, and turn signals.
-    handleAgentEvent(event) {
+    handleAgentEvent(event: AgentEvent): void {
         let textHandled = false;
         if (event.content && event.content.parts) {
             for (const part of event.content.parts) {
@@ -181,7 +183,7 @@ export default {
     },
 
     // Tears down all audio nodes, contexts, and the level-monitoring rAF loop, resetting audio state.
-    stopAudio() {
+    stopAudio(): void {
         log.info('AUDIO', 'Stopping...');
 
         this.listening = false;
@@ -235,7 +237,7 @@ export default {
 
     // Opens a WebSocket connection with a 5-second timeout, wiring all event handlers.
     // Deduplicates concurrent calls by returning the same in-flight promise.
-    async connect({ userId, sessionId } = {}) {
+    async connect({ userId, sessionId }: ConnectParams = {}): Promise<void> {
         if (this.connected) return Promise.resolve();
         if (this.connectionPromise) return this.connectionPromise;
 
@@ -318,7 +320,7 @@ export default {
         return this.connectionPromise;
     },
 
-    disconnect() {
+    disconnect(): void {
         log.warn('WEBSOCKET', 'Disconnecting...');
         if (this.websocket) {
             this.websocket.close();
@@ -332,7 +334,7 @@ export default {
 
     // Starts an rAF loop that reads both input and output analyser frequency data and reports a
     // normalised 0–1 audio level, boosting microphone input so it reads comparably to speaker output.
-    startLevelMonitoring(onLevelChange = null) {
+    startLevelMonitoring(onLevelChange: ((level: number) => void) | null = null): void {
         if (!this.inputAnalyser || !this.analyser) {
             return;
         }
@@ -360,7 +362,7 @@ export default {
     // Initialises the full audio pipeline: requests mic permission, creates two AudioContexts (16 kHz
     // recorder and 24 kHz player), loads AudioWorklet modules, connects to the WebSocket, and starts
     // streaming PCM chunks. Safe to call while already running — exits early if already active.
-    async startAudio() {
+    async startAudio(): Promise<void> {
         if (this.listening || this.startingAudio) return;
 
         log.info('AUDIO', 'Starting...');
@@ -458,7 +460,7 @@ export default {
     },
 
     // Adds user and agent placeholder messages to the conversation, then sends the text over WebSocket.
-    sendMessage(text) {
+    sendMessage(text: string): void {
         this.addMessage({
             id: `${Date.now().toString()}_${AGENT.USER}`,
             sender: AGENT.USER,
@@ -484,15 +486,15 @@ export default {
         this.websocket.send(JSON.stringify({ type: 'text', text }));
     },
 
-    clearMessages() {
+    clearMessages(): void {
         this.conversation.length = 0;
     },
 
-    set_userName(name) {
+    set_userName(name: string): void {
         this.userName = name;
     },
 
-    setUserName(name) {
+    setUserName(name: string): void {
         this.userName = name;
     },
 };

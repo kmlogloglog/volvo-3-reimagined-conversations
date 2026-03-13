@@ -38,27 +38,25 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
     import { ref, computed, onUnmounted } from 'vue';
     import { useSwipe, useIntervalFn } from '@vueuse/core';
     import VolvoLogo from '@/components/logo/VolvoLogo.vue';
 
-    const props = defineProps({
-        src: {
-            type: Array,
-            default: () => [],
-            validator: (value) => Array.isArray(value),
-        },
-        interval: {
-            type: Number,
-            default: 4000,
-        },
+    interface Props {
+        src?: string[]
+        interval?: number
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        src: () => [],
+        interval: 4000,
     });
 
     const TRANSITION_DURATION = 500;
 
     const currentIndex = ref(0);
-    const containerRef = ref(null);
+    const containerRef = ref<HTMLElement | null>(null);
     const loadedCount = ref(0);
     const isJumping = ref(false);
 
@@ -66,7 +64,7 @@
     const safeImageCount = computed(() => safeImageArray.value.length);
 
     const extendedImageArray = computed(() => safeImageCount.value > 1
-        ? [...safeImageArray.value, safeImageArray.value[0]]
+        ? [...safeImageArray.value, safeImageArray.value[0]!]
         : safeImageArray.value,
     );
 
@@ -87,7 +85,7 @@
     }
 
     // Silently reposition to the given index without any visible transition
-    async function silentJump(index) {
+    async function silentJump(index: number) {
         isJumping.value = true;
         currentIndex.value = index;
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -114,7 +112,7 @@
         }
     }
 
-    const handleArrowClick = (direction) => {
+    const handleArrowClick = (direction: 'prev' | 'next') => {
         pause();
         if (direction === 'prev') {
             previousImage();

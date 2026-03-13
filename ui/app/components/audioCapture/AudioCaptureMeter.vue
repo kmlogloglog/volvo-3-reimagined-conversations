@@ -42,19 +42,18 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
     import { computed, ref } from 'vue';
     import { watchThrottled } from '@vueuse/core';
 
-    const props = defineProps({
-        level: {
-            type:    Number,
-            default: 0,
-        },
-        throttleMs: {
-            type:    Number,
-            default: 500,
-        },
+    interface Props {
+        level?: number
+        throttleMs?: number
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        level: 0,
+        throttleMs: 500,
     });
 
     const levelAsPercentage = computed(() => {
@@ -70,8 +69,8 @@
 
     // Interpolate green → yellow → red based on t (0–1)
     // Red appears earlier: green 0-25%, yellow 25-50%, red 50-100%
-    function gradientColor(t) {
-        let r, g, b;
+    function gradientColor(t: number): { r: number; g: number; b: number; css: string } {
+        let r: number, g: number, b: number;
         if (t < 0.25) {
             // Green to yellow-green
             const tt = t / 0.25;

@@ -3,6 +3,10 @@
         <span>Listening...</span>
     </div>
 </template>
+
+<script setup lang="ts">
+</script>
+
 <style scoped lang="scss">
     .message-container {
         background: var(--navigation-button-color-background);

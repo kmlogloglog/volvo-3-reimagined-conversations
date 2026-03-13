@@ -35,29 +35,29 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+    import type { CSSProperties } from 'vue';
+    import type { FoldoutOption } from '@/types/ui';
     import NavigationBarButton from './NavigationBarButton.vue';
     import { onClickOutside } from '@vueuse/core';
 
-    const props = defineProps({
-        options: {
-            type: Array,
-            default: () => [],
-        },
-        direction: {
-            type: String,
-            default: 'up-right',
-            validator: (val) => ['up-right', 'up-left', 'down-right', 'down-left'].includes(val),
-        },
+    interface Props {
+        options?: FoldoutOption[]
+        direction?: 'up-right' | 'up-left' | 'down-right' | 'down-left'
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        options: () => [],
+        direction: 'up-right',
     });
 
-    const emit = defineEmits(['select']);
+    const emit = defineEmits<{ select: [option: FoldoutOption] }>();
 
     const isOpen = ref(false);
-    const containerRef = ref(null);
+    const containerRef = ref<HTMLElement | null>(null);
 
-    const menuStyle = computed(() => {
-        const styles = {};
+    const menuStyle = computed<CSSProperties>(() => {
+        const styles: CSSProperties = {};
         if (props.direction.startsWith('up')) {
             styles.bottom = 'calc(100% + 0.5rem)';
             styles.top = 'auto';
@@ -75,7 +75,7 @@
         return styles;
     });
 
-    const transformOrigin = computed(() => {
+    const transformOrigin = computed<string>(() => {
         const vertical = props.direction.startsWith('up') ? 'bottom' : 'top';
         const horizontal = props.direction.endsWith('right') ? 'left' : 'right';
         return `${vertical} ${horizontal}`;
@@ -85,7 +85,7 @@
         isOpen.value = false;
     });
 
-    function handleSelect(option) {
+    function handleSelect(option: FoldoutOption) {
         if (option.disabled) return;
         emit('select', option);
         isOpen.value = false;

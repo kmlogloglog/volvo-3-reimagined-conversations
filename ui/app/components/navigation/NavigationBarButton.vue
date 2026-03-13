@@ -10,28 +10,23 @@
     </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
     import BaseSpinner from '@/components/baseComponents/uiElements/BaseSpinner.vue';
-    defineProps({
-        active: {
-            type: Boolean,
-            default: false,
-        },
-        fontSize: {
-            type: String,
-            default: '1.75rem',
-        },
-        loading: {
-            type: Boolean,
-            default: false,
-        },
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
+    interface Props {
+        active?: boolean
+        fontSize?: string
+        loading?: boolean
+        disabled?: boolean
+    }
+
+    withDefaults(defineProps<Props>(), {
+        active: false,
+        fontSize: '1.75rem',
+        loading: false,
+        disabled: false,
     });
 
-    defineEmits(['click']);
+    defineEmits<{ click: [] }>();
 </script>
 
 <style scoped lang="scss">

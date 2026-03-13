@@ -13,11 +13,12 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+    import type { NuxtError } from '#app';
     import { useError, clearError } from '#app';
     import BaseButton from './components/baseComponents/uiElements/BaseButton.vue';
 
-    const error = useError();
+    const error = useError() as Ref<NuxtError>;
 
     function handleError() {
         clearError({ redirect: '/' });

@@ -12,21 +12,21 @@
     </TransitionGroup>
 </template>
 
-<script setup>
+<script setup lang="ts">
     import { ref, watch } from 'vue';
     import BackgroundImagesCarousel from '@/components/imageViewer/BackgroundImagesCarousel.vue';
 
-    const props = defineProps({
-        src: {
-            type: Array,
-            default: () => [],
-            validator: (value) => Array.isArray(value),
-        },
+    interface Props {
+        src?: string[]
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        src: () => [],
     });
 
     let idCounter = 0;
 
-    const instances = ref([
+    const instances = ref<Array<{ id: number; src: string[] }>>([
         { id: idCounter++, src: props.src },
     ]);
 

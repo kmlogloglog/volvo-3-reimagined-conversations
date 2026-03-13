@@ -4,22 +4,20 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
     import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
     import { useIntersectionObserver, useDocumentVisibility, usePreferredReducedMotion } from '@vueuse/core';
 
-    const props = defineProps({
-        imageSrc: {
-            type: String,
-            default: null,
-        },
+    interface Props {
+        imageSrc?: string
         // Size of the image relative to the container, in percent (0–100).
         // 100 = contain-fit to the full container; 50 = contain-fit within a 50% box.
-        imageSize: {
-            type: Number,
-            default: 100,
-            validator: (v) => v > 0 && v <= 100,
-        },
+        imageSize?: number
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        imageSrc: '',
+        imageSize: 100,
     });
 
     // Animation and shape tuning constants.
@@ -73,16 +71,16 @@
     }
 
     // Smoothstep curve used internally by Perlin noise.
-    function fade(t) {
+    function fade(t: number): number {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
 
-    function lerp(t, a, b) {
+    function lerp(t: number, a: number, b: number): number {
         return a + t * (b - a);
     }
 
     // Gradient contribution for a single Perlin lattice point.
-    function grad(hash, x, y, z) {
+    function grad(hash: number, x: number, y: number, z: number): number {
         const h = hash & 15;
         const u = h < 8 ? x : y;
         const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
@@ -90,7 +88,7 @@
     }
 
     // 3D Perlin noise, returns a value in roughly [-1, 1].
-    function noise(x, y, z) {
+    function noise(x: number, y: number, z: number): number {
         const X = Math.floor(x) & 255;
         const Y = Math.floor(y) & 255;
         const Z = Math.floor(z) & 255;
@@ -103,20 +101,20 @@
         const v = fade(y);
         const w = fade(z);
 
-        const A = permutation[X] + Y;
-        const AA = permutation[A] + Z;
-        const AB = permutation[A + 1] + Z;
-        const B = permutation[X + 1] + Y;
-        const BA = permutation[B] + Z;
-        const BB = permutation[B + 1] + Z;
+        const A = permutation[X]! + Y;
+        const AA = permutation[A]! + Z;
+        const AB = permutation[A + 1]! + Z;
+        const B = permutation[X + 1]! + Y;
+        const BA = permutation[B]! + Z;
+        const BB = permutation[B + 1]! + Z;
 
         return lerp(w,
                     lerp(v,
-                         lerp(u, grad(permutation[AA], x, y, z), grad(permutation[BA], x - 1, y, z)),
-                         lerp(u, grad(permutation[AB], x, y - 1, z), grad(permutation[BB], x - 1, y - 1, z))),
+                         lerp(u, grad(permutation[AA]!, x, y, z), grad(permutation[BA]!, x - 1, y, z)),
+                         lerp(u, grad(permutation[AB]!, x, y - 1, z), grad(permutation[BB]!, x - 1, y - 1, z))),
                     lerp(v,
-                         lerp(u, grad(permutation[AA + 1], x, y, z - 1), grad(permutation[BA + 1], x - 1, y, z - 1)),
-                         lerp(u, grad(permutation[AB + 1], x, y - 1, z - 1), grad(permutation[BB + 1], x - 1, y - 1, z - 1))));
+                         lerp(u, grad(permutation[AA + 1]!, x, y, z - 1), grad(permutation[BA + 1]!, x - 1, y, z - 1)),
+                         lerp(u, grad(permutation[AB + 1]!, x, y - 1, z - 1), grad(permutation[BB + 1]!, x - 1, y - 1, z - 1))));
     }
 
     // Precomputed sin/cos tables to avoid per-vertex trig calls.
@@ -130,7 +128,7 @@
     }
 
     // Returns the noise-displaced radius for a single blob vertex.
-    function getMorphedRadius(cosAngle, sinAngle, baseRadius, timeX, timeY) {
+    function getMorphedRadius(cosAngle: number, sinAngle: number, baseRadius: number, timeX: number, timeY: number): number {
         const noiseValue = noise(
             cosAngle * config.noiseScale + noiseOffset + timeX,
             sinAngle * config.noiseScale + noiseOffset + timeY,
@@ -140,12 +138,13 @@
     }
 
     // Traces the organic blob outline as a canvas path (does not fill/stroke).
-    function traceBlobPath(centerX, centerY, radius, timeX, timeY) {
+    function traceBlobPath(centerX: number, centerY: number, radius: number, timeX: number, timeY: number) {
+        if (!ctx) return;
         ctx.beginPath();
 
         for (let i = 0; i <= config.angularSegments; i++) {
-            const cosAngle = cosTable[i];
-            const sinAngle = sinTable[i];
+            const cosAngle = cosTable[i]!;
+            const sinAngle = sinTable[i]!;
 
             const morphedRadius = getMorphedRadius(cosAngle, sinAngle, radius, timeX, timeY);
             const x = centerX + cosAngle * morphedRadius;
@@ -162,6 +161,7 @@
     // animated blob shape. The mask is blurred so edges feather softly.
     function drawMaskedImage() {
         if (!loadedImage) return;
+        if (!ctx) return;
 
         const centerX = displayWidth / 2;
         const centerY = displayHeight / 2;
@@ -219,20 +219,20 @@
     }
 
     // Canvas context, dimensions, and frame timing.
-    const maskCanvas = ref(null);
-    const containerRef = ref(null);
-    let canvas = null;
-    let ctx = null;
+    const maskCanvas = ref<HTMLCanvasElement | null>(null);
+    const containerRef = ref<HTMLElement | null>(null);
+    let canvas: HTMLCanvasElement | null = null;
+    let ctx: CanvasRenderingContext2D | null = null;
     let dpr = 1;
     let displayWidth = 0;
     let displayHeight = 0;
     let time = 0;
     let morphPhase = 0;
     let noiseOffset = 0;
-    let animationFrameId = null;
+    let animationFrameId: number | null = null;
     let lastFrameTime = 0;
-    let loadedImage = null;
-    let resizeObserver = null;
+    let loadedImage: HTMLImageElement | null = null;
+    let resizeObserver: ResizeObserver | null = null;
 
     const frameInterval = 1000 / config.targetFps;
 
@@ -243,8 +243,8 @@
 
     useIntersectionObserver(
         containerRef,
-        ([{ isIntersecting: visible }]) => {
-            isIntersecting.value = visible;
+        (entries) => {
+            isIntersecting.value = entries[0]?.isIntersecting ?? false;
         },
         { threshold: 0.1 },
     );
@@ -257,7 +257,7 @@
     });
 
     // Rate-limited rAF loop that advances time and redraws the masked image at targetFps.
-    function animate(timestamp) {
+    function animate(timestamp: number): void {
         if (!shouldAnimate.value) {
             animationFrameId = null;
             return;
@@ -283,6 +283,7 @@
     // Resizes the canvas backing buffer to match the CSS layout size at the current DPR (capped at 2×).
     function updateCanvasSize() {
         if (!canvas) return;
+        if (!ctx) return;
 
         displayWidth = canvas.offsetWidth;
         displayHeight = canvas.offsetHeight;
@@ -296,7 +297,7 @@
         ctx.scale(dpr, dpr);
     }
 
-    function loadImage(src) {
+    function loadImage(src: string): void {
         loadedImage = null;
         if (!src) return;
 

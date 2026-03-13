@@ -11,9 +11,6 @@
     </span>
 </template>
 
-<script setup>
-</script>
-
 <style scoped lang="scss">
 .base-spinner {
     animation: spin 1s linear infinite;

@@ -6,8 +6,8 @@
                     v-if="micDenied"
                     class="mic-access-alert"
                     role="alert">
-                    <span class="mic-access-alert-icon icon-microphone"></span>
-                    <span class="mic-access-alert-message">Microphone access denied</span>
+                    <span class="mic-access-alert-title">Microphone access denied</span>
+                    <span class="mic-access-alert-hint">Allow microphone access in your browser's site settings</span>
                 </div>
             </Transition>
         </Teleport>
@@ -26,20 +26,26 @@
     </ClientOnly>
 </template>
 
-<script setup>
+<script setup lang="ts">
+    import type { FoldoutOption } from '@/types/ui';
+    import type { ConnectionBusPayload, MicrophoneBusPayload } from '@/types/bus';
     import NavigationBarAudioButton from '@/components/navigation/NavigationBarAudioButton.vue';
     import NavigationBarFoldOut from '@/components/navigation/NavigationBarFoldout.vue';
     import { useAgentStore } from '@/stores/agent';
     import { ROUTE } from '@/constants/route';
-    import { EMITS } from '@/constants/emits.js';
-    import { BUS } from '@/constants/bus.js';
+    import { EMITS } from '@/constants/emits';
+    import { BUS } from '@/constants/bus';
     import { useEventBus } from '@vueuse/core';
     import { storeToRefs } from 'pinia';
 
-    const emits = defineEmits([EMITS.RECORD_CLICK, EMITS.CHAT_CLICK, EMITS.CAMERA_CLICK]);
+    const emits = defineEmits<{
+        recordClick: [enabled: boolean]
+        chatClick: [enabled: boolean]
+        cameraClick: [enabled: boolean]
+    }>();
 
-    const busMicrophone = useEventBus(BUS.MICROPHONE);
-    const busConnection = useEventBus(BUS.AGENT_CONNECTION);
+    const busMicrophone = useEventBus<MicrophoneBusPayload>(BUS.MICROPHONE);
+    const busConnection = useEventBus<ConnectionBusPayload>(BUS.AGENT_CONNECTION);
 
     const connected = ref(false);
     const connecting = ref(false);
@@ -49,7 +55,7 @@
     const isChatActive = ref(false);
     const isCameraActive = ref(false);
 
-    const foldOutOptions = computed(() => [
+    const foldOutOptions = computed<FoldoutOption[]>(() => [
         {
             id: ROUTE.CHAT.id,
             label: ROUTE.CHAT.label,
@@ -71,7 +77,7 @@
         isAudioRecording.value = val;
     });
 
-    function handleFoldOutSelect(option) {
+    function handleFoldOutSelect(option: FoldoutOption) {
         if (option.id === ROUTE.CHAT.id) {
             isChatActive.value = !isChatActive.value;
             emits(EMITS.CHAT_CLICK, isChatActive.value);
@@ -118,28 +124,35 @@
 }
 
 .mic-access-alert {
-    align-items: center;
     background: #b71c1c;
-    border-radius: 9999px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
     color: #fff;
-    display: inline-flex;
-    font-size: 0.875rem;
-    font-weight: 500;
-    gap: 0.625rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
     left: 50%;
-    padding: 0.75rem 1.25rem;
+    max-width: calc(100% - 2.5rem);
+    padding: 0.875rem 1.125rem;
     position: fixed;
+    right: unset;
+    text-align: center;
     top: calc(env(safe-area-inset-top, 0px) + 72px);
     transform: translateX(-50%);
-    white-space: nowrap;
+    width: max-content;
     z-index: 9999;
 
-    &-icon {
-        flex-shrink: 0;
-        font-size: 1rem;
-        line-height: 0;
-        opacity: 0.9;
+    &-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    &-hint {
+        font-size: 0.75rem;
+        font-weight: 400;
+        opacity: 0.8;
+        line-height: 1.4;
     }
 }
 

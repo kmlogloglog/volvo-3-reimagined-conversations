@@ -38,10 +38,11 @@
     </div>
 </template>
 
-<script setup>
-    import { BUS } from '@/constants/bus.js';
-    import { EMITS } from '@/constants/emits.js';
-    import { AGENT } from '@/constants/agent.js';
+<script setup lang="ts">
+    import type { ConnectionBusPayload } from '@/types/bus';
+    import { BUS } from '@/constants/bus';
+    import { EMITS } from '@/constants/emits';
+    import { AGENT } from '@/constants/agent';
     import { storeToRefs } from 'pinia';
     import { useAgent } from '@/composables/useAgent';
     import { useAgentStore } from '@/stores/agent';
@@ -59,18 +60,18 @@
     const route = useRoute();
 
     // Tracks which mode triggered the intro message: 'audio', 'chat', or null.
-    const introSentBy = ref(null);
+    const introSentBy = ref<'audio' | 'chat' | null>(null);
 
-    function sendIntro(mode) {
+    function sendIntro(mode: 'audio' | 'chat') {
         agent.sendMessage(AGENT.INTRODUCTION);
         introSentBy.value = mode;
     }
 
-    const busConnection = useEventBus(BUS.AGENT_CONNECTION);
+    const busConnection = useEventBus<ConnectionBusPayload>(BUS.AGENT_CONNECTION);
     const isConnected = ref(false);
 
     busConnection.on((payload) => {
-        isConnected.value = !payload.connecting && payload.connected;
+        isConnected.value = !payload.connecting && !!payload.connected;
     });
 
     watch(isConnected, (newVal) => {
@@ -92,7 +93,7 @@
         }
     });
 
-    function handleMicrophoneClick(enabled) {
+    function handleMicrophoneClick(enabled: boolean) {
         if (enabled) {
             agent.startAudio();
             return;
@@ -107,7 +108,7 @@
     const isChatActive = ref(false);
 
     // Toggles the chat panel and sends the intro message on open, guarding against duplicate intros.
-    function handleChatClick(enabled) {
+    function handleChatClick(enabled: boolean) {
         isChatActive.value = enabled;
 
         if (!enabled) {
@@ -123,7 +124,7 @@
     }
 
     onMounted(() => {
-        agentStore.connect({ userId: route.query.user, sessionId: route.query.session });
+        agentStore.connect({ userId: route.query.user as string | undefined, sessionId: route.query.session as string | undefined });
     });
 
 </script>

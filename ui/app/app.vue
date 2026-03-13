@@ -4,9 +4,9 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
     import { useAgentStore } from '@/stores/agent';
-    import { AGENT } from '@/constants/agent.js';
+    import { AGENT } from '@/constants/agent';
 
     const agentStore = useAgentStore();
 

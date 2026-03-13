@@ -24,27 +24,24 @@
     </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
     import { EMITS } from '@/constants/emits';
     import { ROUTE } from '@/constants/route';
     import BaseSpinner from '@/components/baseComponents/uiElements/BaseSpinner.vue';
 
-    defineProps({
-        loading: {
-            type: Boolean,
-            default: false,
-        },
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
-        isRecording: {
-            type: Boolean,
-            default: false,
-        },
+    interface Props {
+        loading?: boolean
+        disabled?: boolean
+        isRecording?: boolean
+    }
+
+    withDefaults(defineProps<Props>(), {
+        loading: false,
+        disabled: false,
+        isRecording: false,
     });
 
-    defineEmits([EMITS.RECORD_CLICK]);
+    defineEmits<{ recordClick: [] }>();
 </script>
 
 <style scoped lang="scss">

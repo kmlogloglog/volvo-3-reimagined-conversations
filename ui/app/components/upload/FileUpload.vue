@@ -7,16 +7,19 @@
         @change="handleFileSelect" />
 </template>
 
-<script setup>
+<script setup lang="ts">
     import { ref } from 'vue';
-    import { EMITS } from '@/constants/emits.js';
+    import { EMITS } from '@/constants/emits';
 
-    const emit = defineEmits([EMITS.FILE_UPLOADED, EMITS.UPLOAD_ERROR]);
+    const emit = defineEmits<{
+        fileUploaded: [file: File[]]
+        uploadError: [error: unknown]
+    }>();
 
-    const fileInput = ref(null);
+    const fileInput = ref<HTMLInputElement | null>(null);
 
-    function handleFileSelect(event) {
-        const files = Array.from(event.target.files || []);
+    function handleFileSelect(event: Event) {
+        const files = Array.from((event.target as HTMLInputElement).files || []);
 
         if (files.length > 0) {
             try {
@@ -27,7 +30,7 @@
         }
     }
 
-    defineExpose({
+    defineExpose<{ triggerFileSelect: () => void }>({
         triggerFileSelect: () => fileInput.value?.click(),
     });
 </script>

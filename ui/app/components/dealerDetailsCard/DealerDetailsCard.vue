@@ -43,39 +43,33 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+    import type { Coordinates } from '@/types/agent';
     import BaseSpeechBubble from '@/components/baseComponents/uiElements/BaseSpeechBubble.vue';
-    import { EMITS } from '@/constants/emits.js';
-    import { AGENT } from '@/constants/agent.js';
+    import { EMITS } from '@/constants/emits';
+    import { AGENT } from '@/constants/agent';
     import { useElementSize } from '@vueuse/core';
 
-    const props =defineProps({
-        time: {
-            type: String,
-            default: '',
-        },
-        date: {
-            type: String,
-            default: '',
-        },
-        retailerName: {
-            type: String,
-            default: '',
-        },
-        retailerAddress: {
-            type: String,
-            default: '',
-        },
-        retailerCoordinates: {
-            type: Object,
-            default: () => ({ lat: 0, lng: 0 }),
-        },
+    interface Props {
+        time?: string
+        date?: string
+        retailerName?: string
+        retailerAddress?: string
+        retailerCoordinates?: Coordinates
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        time: '',
+        date: '',
+        retailerName: '',
+        retailerAddress: '',
+        retailerCoordinates: () => ({ lat: 0, lng: 0 }),
     });
 
-    const emit = defineEmits([EMITS.IMAGE_LOADED]);
+    const emit = defineEmits<{ imageLoaded: [] }>();
 
-    function onImageLoad(event) {
-        emit(EMITS.IMAGE_LOADED, event.target);
+    function onImageLoad(event: Event) {
+        emit(EMITS.IMAGE_LOADED, (event.target as HTMLImageElement));
     }
 
     const datePretty = computed(() => {
@@ -98,7 +92,7 @@
         });
     });
 
-    const mapsContainer = useTemplateRef('mapsContainer');
+    const mapsContainer = useTemplateRef<HTMLElement>('mapsContainer');
     const { width: containerWidth } = useElementSize(mapsContainer);
 
     const size = computed(() => ({

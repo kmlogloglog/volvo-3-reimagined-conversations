@@ -23,35 +23,34 @@
         </template>
     </BaseSpeechBubble>
 </template>
-<script setup>
+<script setup lang="ts">
+    import type { Ref, ComponentPublicInstance } from 'vue';
+
     import BaseSpeechBubble from '@/components/baseComponents/uiElements/BaseSpeechBubble.vue';
     import { EMITS } from '@/constants/emits';
-    import { AGENT } from '@/constants/agent';
     import DOMPurify from 'isomorphic-dompurify';
     import ChatTypeIndicator from '@/components/chat/ChatTypeIndicator.vue';
     import { useResizeObserver } from '@vueuse/core';
 
-    const props = defineProps({
-        text: {
-            type: String,
-            required: true,
-        },
-        alignBubble: {
-            type: String,
-            default: 'none',
-            validator: (value) => [AGENT.USER, AGENT.AGENT, 'none'].includes(value),
-        },
-        finished: {
-            type: Boolean,
-            default: true,
-        },
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
+    interface Props {
+        text: string
+        alignBubble?: 'user' | 'agent' | 'none'
+        finished?: boolean
+        disabled?: boolean
+        padding?: 'small' | 'large' | ''
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        alignBubble: 'none',
+        finished: true,
+        disabled: false,
+        padding: '',
     });
 
-    const emit = defineEmits([EMITS.SPEECH_BUBBLE_EXPAND, EMITS.IMAGE_LOADED]);
+    const emit = defineEmits<{
+        speechBubbleExpand: [payload: { heightDelta: number; scrollBefore: number }]
+        imageLoaded: [img: HTMLImageElement]
+    }>();
 
     const sanitizedText = computed(() => {
         const sanitized = DOMPurify.sanitize(props.text);
@@ -64,16 +63,16 @@
 
     const buttonLabel = computed(() => showAllText.value ? 'Collapse message' : 'Show full message');
 
-    const textRef = useTemplateRef('textRef');
-    const speechBubbleRef = useTemplateRef('speechBubbleRef');
+    const textRef = useTemplateRef<HTMLElement>('textRef');
+    const speechBubbleRef = useTemplateRef<ComponentPublicInstance>('speechBubbleRef');
     const showReadMoreButton = ref(false);
     const showAllText = ref(false);
 
-    const scrollContainer = inject('scrollContainer', ref(null));
+    const scrollContainer = inject<Ref<HTMLElement | null>>('scrollContainer', ref(null));
 
     // Toggles expanded state, then adjusts the parent scroll container to compensate for the height change.
     async function onReadMoreClick() {
-        const el = speechBubbleRef.value.$el;
+        const el = speechBubbleRef.value?.$el as HTMLElement;
         const heightBefore = el.offsetHeight;
         const scrollBefore = scrollContainer.value?.scrollTop ?? 0;
 
@@ -89,8 +88,8 @@
         });
     }
 
-    function onImageLoad(event) {
-        emit(EMITS.IMAGE_LOADED, event.target);
+    function onImageLoad(event: Event) {
+        emit(EMITS.IMAGE_LOADED, (event.target as HTMLImageElement));
     }
 
     function attachImageListeners() {
@@ -126,7 +125,7 @@
     }, { immediate: true });
 
     useResizeObserver(textRef, ([entry]) => {
-        const el = entry.target;
+        const el = entry!.target as HTMLElement;
         showReadMoreButton.value = !showAllText.value && el.scrollHeight > el.clientHeight;
     });
 

@@ -22,30 +22,26 @@
         </button>
     </div>
 </template>
-<script setup>
-    import { EMITS } from '@/constants/emits.js';
+<script setup lang="ts">
+    import { EMITS } from '@/constants/emits';
     import BaseSpinner from '@/components/baseComponents/uiElements/BaseSpinner.vue';
 
-    defineProps({
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
-        loading: {
-            type: Boolean,
-            default: false,
-        },
-    });
-    const vModel = defineModel({
-        type: String,
-        default: '',
-    });
+    interface Props {
+        disabled?: boolean
+        loading?: boolean
+    }
 
-    const textareaRef = useTemplateRef('textareaRef');
+    withDefaults(defineProps<Props>(), {
+        disabled: false,
+        loading: false,
+    });
+    const vModel = defineModel<string>({ default: '' });
+
+    const textareaRef = useTemplateRef<HTMLTextAreaElement>('textareaRef');
 
     const id = useId();
 
-    const emit = defineEmits([EMITS.SUBMIT]);
+    const emit = defineEmits<{ submit: [value: string] }>();
 
     function onSubmit() {
         if (vModel.value === '') {
@@ -64,7 +60,7 @@
         }
     }
 
-    defineExpose({
+    defineExpose<{ focus: () => void }>({
         focus,
     });
 

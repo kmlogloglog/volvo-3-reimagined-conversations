@@ -1,9 +1,14 @@
-import { BUS } from '@/constants/bus.js';
+import { BUS } from '@/constants/bus';
 import { useEventBus } from '@vueuse/core';
 import { useAgentStore } from '@/stores/agent';
 import { storeToRefs } from 'pinia';
+import type { ConnectParams } from '@/types/agent';
 
-export function useAgent(options = {}) {
+interface UseAgentOptions {
+    onLevelChange?: (level: number) => void;
+}
+
+export function useAgent(options: UseAgentOptions = {}) {
     const { onLevelChange } = options;
 
     const agentStore = useAgentStore();
@@ -20,7 +25,7 @@ export function useAgent(options = {}) {
 
     // Re-registers the level monitoring callback after audio starts so the
     // caller's onLevelChange handler is always wired to the current analyser nodes.
-    async function startAudio() {
+    async function startAudio(): Promise<void> {
         try {
             microphoneBus.emit({ requesting: true, granted: false, denied: false });
             await agentStore.startAudio();
@@ -39,22 +44,22 @@ export function useAgent(options = {}) {
         }
     }
 
-    function stopAudio() {
+    function stopAudio(): void {
         agentStore.stopAudio();
         microphoneBus.emit({ requesting: false, ready: false });
         onLevelChange?.(0);
     }
 
-    async function connect(params = {}) {
+    async function connect(params: ConnectParams = {}): Promise<void> {
         await agentStore.connect(params);
     }
 
-    function disconnect() {
+    function disconnect(): void {
         agentStore.disconnect();
     }
 
-    const sendMessage = (text) => agentStore.sendMessage(text);
-    const clearMessages = () => agentStore.clearMessages();
+    const sendMessage = (text: string): void => agentStore.sendMessage(text);
+    const clearMessages = (): void => agentStore.clearMessages();
 
     return {
         connect,

@@ -2,13 +2,13 @@
     <button class="base-button button-reset">{{ label }}</button>
 </template>
 
-<script setup>
-    defineProps({
-        label: {
-            type: String,
-            default: 'Button',
-        },
+<script setup lang="ts">
+    interface Props {
+        label?: string
+    }
 
+    withDefaults(defineProps<Props>(), {
+        label: 'Button',
     });
 </script>
 <style lang="scss" scoped>

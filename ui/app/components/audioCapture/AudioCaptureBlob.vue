@@ -6,32 +6,27 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
     import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
+    import type { GradientStop } from '@/types/ui';
     import { useWindowSize, useDebounceFn, useIntersectionObserver, useDocumentVisibility, usePreferredReducedMotion } from '@vueuse/core';
 
-    const props = defineProps({
-        gradientStops: {
-            type: Array,
-            default: () => [
-                { position: 0, r: 250, g: 210, b: 200, a: 0.75 },
-                { position: 0.35, r: 181, g: 73, b: 3, a: 0.25 },
-                { position: 1, r: 89, g: 41, b: 12, a: 0.15 },
-            ],
-        },
-        intensity: {
-            type: Number,
-            default: 0,
-            validator: (v) => v >= 0 && v <= 1,
-        },
-        bottomAlign: {
-            type: Boolean,
-            default: false,
-        },
-        hide: {
-            type: Boolean,
-            default: false,
-        },
+    interface Props {
+        gradientStops?: GradientStop[]
+        intensity?: number
+        bottomAlign?: boolean
+        hide?: boolean
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        gradientStops: () => [
+            { position: 0, r: 250, g: 210, b: 200, a: 0.75 },
+            { position: 0.35, r: 181, g: 73, b: 3, a: 0.25 },
+            { position: 1, r: 89, g: 41, b: 12, a: 0.15 },
+        ],
+        intensity: 0,
+        bottomAlign: false,
+        hide: false,
     });
 
     // Animation, shape, and flare tuning constants.
@@ -130,8 +125,8 @@
     // Duration of the gradient color crossfade in seconds.
     const COLOR_FADE_DURATION_SECS = 1.2;
 
-    let currentStops = [...props.gradientStops];
-    let nextStops = null;
+    let currentStops: GradientStop[] = [...props.gradientStops];
+    let nextStops: GradientStop[] | null = null;
     // 1 = transition complete, fully on currentStops.
     let colorFadeProgress = 1;
 
@@ -316,10 +311,10 @@
     // Draws one concentric ring pass for a flare layer with noise-displaced vertices.
     // sizeMultiplier and layerOpacity are scalars to avoid per-frame object spread.
     function drawFlareLayer(
-        ctx, centerX, centerY, baseRadius,
-        timeX, timeY, noiseOffset,
-        sizeMultiplier, layerOpacity, shimmerFactor,
-        flareIntensity, morphIntensity, noiseScale,
+        ctx: CanvasRenderingContext2D, centerX: number, centerY: number, baseRadius: number,
+        timeX: number, timeY: number, noiseOffset: number,
+        sizeMultiplier: number, layerOpacity: number, shimmerFactor: number,
+        flareIntensity: number, morphIntensity: number, noiseScale: number,
     ) {
         const { rings, segments } = config.flare;
         const layerRadius = baseRadius * sizeMultiplier;
@@ -353,7 +348,11 @@
     }
 
     // Draws the primary and optional secondary lens flare at the given blob position.
-    function drawLensFlare(ctx, blobCenterX, blobCenterY, blobRadius, timeX, timeY, noiseOffset, time, flareIntensity, morphIntensity, noiseScale) {
+    function drawLensFlare(
+        ctx: CanvasRenderingContext2D, blobCenterX: number, blobCenterY: number,
+        blobRadius: number, timeX: number, timeY: number, noiseOffset: number,
+        time: number, flareIntensity: number, morphIntensity: number, noiseScale: number,
+    ) {
         if (!config.flare.enabled) return;
 
         const { offset, size, layers, secondary, shimmer } = config.flare;
@@ -414,54 +413,58 @@
     }
 
     // Draws one full blob at the given centerY and alpha, including its lens flare.
-    function drawBlob(centerY, alpha, pulsedRadius, timeX, timeY, morphIntensity, noiseScale, flareIntensity, stops) {
+    function drawBlob(
+        centerY: number, alpha: number, pulsedRadius: number,
+        timeX: number, timeY: number, morphIntensity: number,
+        noiseScale: number, flareIntensity: number, stops: GradientStop[],
+    ) {
         const centerX = displayWidth / 2;
         const segmentRatio = maxSegments / config.angularSegments;
 
-        ctx.save();
-        ctx.globalAlpha = alpha;
+        ctx!.save();
+        ctx!.globalAlpha = alpha;
 
         for (let ring = config.radialRings; ring >= 0; ring--) {
             const normalizedRadius = ring / config.radialRings;
             const ringRadius = pulsedRadius * normalizedRadius;
             const color = getGradientColor(normalizedRadius, stops);
 
-            ctx.beginPath();
+            ctx!.beginPath();
 
             for (let i = 0; i <= config.angularSegments; i++) {
                 const cacheIndex = (i * segmentRatio) | 0;
-                const cosAngle = cosTable[cacheIndex];
-                const sinAngle = sinTable[cacheIndex];
+                const cosAngle = cosTable[cacheIndex]!;
+                const sinAngle = sinTable[cacheIndex]!;
 
                 const morphedRadius = getMorphedRadius(cosAngle, sinAngle, ringRadius, timeX, timeY, noiseOffset, morphIntensity, noiseScale);
                 const x = centerX + cosAngle * morphedRadius;
                 const y = centerY + sinAngle * morphedRadius;
 
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+                if (i === 0) ctx!.moveTo(x, y);
+                else ctx!.lineTo(x, y);
             }
 
-            ctx.closePath();
-            ctx.fillStyle = color;
-            ctx.fill();
+            ctx!.closePath();
+            ctx!.fillStyle = color;
+            ctx!.fill();
         }
 
-        drawLensFlare(ctx, centerX, centerY, pulsedRadius, timeX, timeY, noiseOffset, time, flareIntensity, morphIntensity, noiseScale);
+        drawLensFlare(ctx!, centerX, centerY, pulsedRadius, timeX, timeY, noiseOffset, time, flareIntensity, morphIntensity, noiseScale);
 
-        ctx.restore();
+        ctx!.restore();
     }
 
     // Canvas context, dimensions, and frame timing state.
-    const gradientCanvas = ref(null);
-    let canvas = null;
-    let ctx = null;
+    const gradientCanvas = ref<HTMLCanvasElement | null>(null);
+    let canvas: HTMLCanvasElement | null = null;
+    let ctx: CanvasRenderingContext2D | null = null;
     let dpr = 1;
     let displayWidth = 0;
     let displayHeight = 0;
     let time = 0;
     let morphPhase = 0;
     let noiseOffset = 0;
-    let animationFrameId = null;
+    let animationFrameId: number | null = null;
     let lastFrameTime = 0;
 
     const frameInterval = 1000 / config.targetFps;
@@ -472,6 +475,7 @@
     // cause the canvas to be initialized at 0×0.
     function updateCanvasSize() {
         if (!canvas) return;
+        if (!ctx) return;
 
         displayWidth = canvas.offsetWidth;
         displayHeight = canvas.offsetHeight;
@@ -489,12 +493,13 @@
     }
 
     // Main render loop — advances time, smooths intensity, crossfades blobs, and draws.
-    function animate(timestamp) {
+    function animate(timestamp: number) {
         // Loop exits here; watch(shouldAnimate) restarts it when visible again.
         if (!shouldAnimate.value) {
             animationFrameId = null;
             return;
         }
+        if (!ctx) return;
 
         const elapsed = timestamp - lastFrameTime;
 

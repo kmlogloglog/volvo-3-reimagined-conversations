@@ -26,10 +26,11 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+    import type { Ref } from 'vue';
     import BaseChatTextArea from '@/components/baseComponents/uiElements/BaseChatTextArea.vue';
     import ChatStream from '@/components/chat/ChatStream.vue';
-    import { EMITS } from '@/constants/emits.js';
+    import { EMITS } from '@/constants/emits';
     import { AGENT } from '@/constants/agent';
     import { useAgentStore } from '@/stores/agent';
     import { storeToRefs } from 'pinia';
@@ -38,10 +39,10 @@
     const { connected } = storeToRefs(agentStore);
 
     const chatMessage = ref('');
-    const chatTextareaRef = useTemplateRef('chatTextareaRef');
+    const chatTextareaRef = useTemplateRef<{ focus: () => void }>('chatTextareaRef');
 
     // Reconnects the WebSocket if it has dropped before forwarding the message to the agent.
-    async function handleChatSubmit(message) {
+    async function handleChatSubmit(message: string) {
         if (!connected.value) {
             console.info('Connection dropped! Reconnecting...');
             try {
@@ -55,12 +56,12 @@
         agentStore.sendMessage(message);
     };
 
-    const panelScrollRef = ref(null);
+    const panelScrollRef = ref<HTMLElement | null>(null);
     // Provided to descendant components (e.g. ChatSpeechBubble) so they can
     // adjust scroll position after dynamic content changes like "read more" expansion.
-    provide('scrollContainer', panelScrollRef);
+    provide<Ref<HTMLElement | null>>('scrollContainer', panelScrollRef);
 
-    function onSpeechBubbleExpand({ heightDelta, scrollBefore }) {
+    function onSpeechBubbleExpand({ heightDelta, scrollBefore }: { heightDelta: number; scrollBefore: number }) {
         if (panelScrollRef.value && heightDelta !== 0) {
             panelScrollRef.value.scrollTop = scrollBefore + heightDelta;
         }
