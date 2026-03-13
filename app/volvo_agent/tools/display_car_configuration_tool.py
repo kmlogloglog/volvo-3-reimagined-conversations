@@ -2,11 +2,11 @@ import logging
 
 from google.adk.tools import FunctionTool, ToolContext
 
-from ..utils import load_car_images
+from ..utils import load_car_assets
 
 logger = logging.getLogger(__name__)
 
-CAR_IMAGES = load_car_images()
+CAR_ASSETS = load_car_assets()
 
 
 def display_car_configuration(tool_context: ToolContext) -> dict:
@@ -32,7 +32,7 @@ def display_car_configuration(tool_context: ToolContext) -> dict:
 
     logger.info(f"display_car_configuration called: {current_config}")
 
-    model_images = CAR_IMAGES.get(model_name, {})
+    model_images = CAR_ASSETS.get(model_name, {})
 
     # 1. Collect 3 Exterior Images
     exterior_data = (

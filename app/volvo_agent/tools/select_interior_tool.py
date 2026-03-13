@@ -2,12 +2,12 @@ import logging
 
 from google.adk.tools import FunctionTool, ToolContext
 
-from ..utils import load_car_configurations, load_car_images
+from ..utils import load_car_assets, load_car_configurations
 
 logger = logging.getLogger(__name__)
 
 CAR_CONFIGS = load_car_configurations()
-CAR_IMAGES = load_car_images()
+CAR_ASSETS = load_car_assets()
 
 
 def select_interior(tool_context: ToolContext, interior_id: str) -> dict:
@@ -42,9 +42,9 @@ def select_interior(tool_context: ToolContext, interior_id: str) -> dict:
 
     logger.info(f"select_interior called: model={model_name}, interior={interior_id}")
 
-    # Fetch interior upholstery image from car_images
-    model_images = CAR_IMAGES.get(model_name, {})
-    image_url = model_images.get("upholstery", {}).get(interior_id)
+    # Fetch interior upholstery image from car_assets
+    model_images = CAR_ASSETS.get(model_name, {})
+    image_url = model_images.get("interiors", {}).get(interior_id, {}).get("upholstery")
     images_payload = [image_url] if image_url else []
 
     payload_data = {

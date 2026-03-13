@@ -2,13 +2,13 @@ import logging
 
 from google.adk.tools import FunctionTool, ToolContext
 
-from ..utils import load_car_configurations, load_car_images
+from ..utils import load_car_assets, load_car_configurations
 
 logger = logging.getLogger(__name__)
 
 # Load once at module level
 CAR_CONFIGS = load_car_configurations()
-CAR_IMAGES = load_car_images()
+CAR_ASSETS = load_car_assets()
 
 
 def select_exterior_color(tool_context: ToolContext, color_id: str) -> dict:
@@ -43,7 +43,7 @@ def select_exterior_color(tool_context: ToolContext, color_id: str) -> dict:
 
     # Get descriptive data from configs, gradient stops from images
     selected_color_data = exteriors.get(color_id, {})
-    model_images = CAR_IMAGES.get(model_name, {})
+    model_images = CAR_ASSETS.get(model_name, {})
     gradient_stops = (
         model_images.get("exteriors", {}).get(color_id, {}).get("gradient_stops")
     )

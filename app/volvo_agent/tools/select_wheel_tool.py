@@ -2,12 +2,12 @@ import logging
 
 from google.adk.tools import FunctionTool, ToolContext
 
-from ..utils import load_car_configurations, load_car_images
+from ..utils import load_car_assets, load_car_configurations
 
 logger = logging.getLogger(__name__)
 
 CAR_CONFIGS = load_car_configurations()
-CAR_IMAGES = load_car_images()
+CAR_ASSETS = load_car_assets()
 
 
 def select_wheel(tool_context: ToolContext, wheel_id: str) -> dict:
@@ -40,9 +40,9 @@ def select_wheel(tool_context: ToolContext, wheel_id: str) -> dict:
 
     logger.info(f"select_wheel called: model={model_name}, wheel={wheel_id}")
 
-    # Fetch wheel image specifically from car_images
-    model_images = CAR_IMAGES.get(model_name, {})
-    wheel_closeups = model_images.get("wheel_closeups", {})
+    # Fetch wheel image from car_assets
+    model_images = CAR_ASSETS.get(model_name, {})
+    wheel_closeups = model_images.get("wheels", {})
 
     image_url = wheel_closeups.get(wheel_id)
     images_payload = [image_url] if image_url else []

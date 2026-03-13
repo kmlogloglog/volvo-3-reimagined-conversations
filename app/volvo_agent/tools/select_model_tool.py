@@ -2,12 +2,12 @@ import logging
 
 from google.adk.tools import FunctionTool, ToolContext
 
-from ..utils import load_car_images
+from ..utils import load_car_assets
 
 logger = logging.getLogger(__name__)
 
 # Load once at module level
-CAR_IMAGES = load_car_images()
+CAR_ASSETS = load_car_assets()
 
 
 def select_model(tool_context: ToolContext, model_name: str) -> dict:
@@ -21,7 +21,7 @@ def select_model(tool_context: ToolContext, model_name: str) -> dict:
     Returns:
         A dictionary containing the UI action to display the silhouette and the agent context.
     """
-    images_data = CAR_IMAGES
+    images_data = CAR_ASSETS
     model_data = images_data.get(model_name, {})
 
     # Validation: Check if model exists in configurations/images
