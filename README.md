@@ -12,7 +12,7 @@ Volvo Vän is designed to be a companion that helps users with car-related queri
 
 ## Architecture
 -   **Backend**: Python (FastAPI + Google ADK)
--   **Frontend**: Vanilla JavaScript + HTML/CSS (No build step required)
+-   **Frontend**: Nuxt.js (production) + vanilla HTML/JS debug interface
 -   **Protocol**: WebSocket for bidirectional audio/text streaming
 
 ## Prerequisites
@@ -204,24 +204,33 @@ This command:
 │       ├── config/                   # Prompts & configuration
 │       │   └── prompts.py            # Agent system prompt
 │       ├── knowledge/                # Static knowledge base (JSON)
-│       ├── schemas/                  # Pydantic models (car config, test drive)
+│       │   ├── car_configurations.json   # Agent context (descriptions, display names)
+│       │   └── car_assets.json           # Frontend data (images, gradient stops)
+│       ├── schemas/                  # Pydantic models (car config, test drive, profiling)
 │       ├── services/                 # Session, Memory & service registry
 │       │   ├── registry.py           # Service singletons (session, memory, genai)
 │       │   ├── firestore_memory_service.py  # LLM summary consolidation
 │       │   └── firestore_session_service.py # Firestore-backed session service
-│       ├── tools/                    # Agent tools
-│       │   ├── update_and_display_car_configuration_tool.py
+│       ├── tools/                    # Agent tools (see docs/frontend-payloads.md)
+│       │   ├── select_model_tool.py
+│       │   ├── select_exterior_color_tool.py
+│       │   ├── select_interior_tool.py
+│       │   ├── select_wheel_tool.py
+│       │   ├── display_car_configuration_tool.py
 │       │   ├── find_retailer_tool.py
 │       │   ├── book_test_drive_tool.py
 │       │   └── save_user_insight_tool.py
 │       └── utils/                    # Shared utilities (JSON loading, fuzzy match)
 │
-├── ui/                               # Frontend (Nuxt)
-├── debug_frontend/                   # Debug interface
+├── ui/                               # Frontend (Nuxt) — see ui/README.md
+├── debug_frontend/                   # Debug interface (vanilla HTML/JS)
+├── docs/                             # Additional documentation
+│   ├── frontend-payloads.md          # UI action payload reference
+│   └── firebase-storage-structure.md # Image storage layout
 ├── Makefile                          # Command shortcuts
 ├── pyproject.toml                    # Dependencies
 ├── Dockerfile                        # Deployment container definition
-└── README.md                         # Documentation
+└── README.md                         # This file
 ```
 
 ## Useful Commands
