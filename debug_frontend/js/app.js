@@ -878,6 +878,41 @@ function connectWebsocket() {
                 messageDiv.appendChild(bubbleDiv);
                 messagesDiv.appendChild(messageDiv);
                 scrollToBottom();
+              } else if (componentName === 'exterior' && uiAction.data.selected_color) {
+                const colorData = uiAction.data.selected_color;
+                const messageDiv = document.createElement("div");
+                messageDiv.className = "message agent";
+                const bubbleDiv = document.createElement("div");
+                bubbleDiv.className = "bubble component-bubble";
+
+                let gradientHtml = '';
+                if (colorData.gradient_stops && colorData.gradient_stops.length > 0) {
+                  const stops = colorData.gradient_stops.map(s => {
+                    const pct = Math.round(s.position * 100);
+                    return `rgba(${s.r}, ${s.g}, ${s.b}, ${s.a ?? 1}) ${pct}%`;
+                  }).join(', ');
+                  gradientHtml = `
+                    <div style="
+                      width: 100%;
+                      height: 80px;
+                      border-radius: 8px;
+                      background: linear-gradient(to right, ${stops});
+                      margin-bottom: 8px;
+                      border: 1px solid #ddd;
+                    "></div>
+                  `;
+                }
+
+                bubbleDiv.innerHTML = `
+                  <div class="component-content">
+                    <h4 style="margin-top: 0; margin-bottom: 8px; color: var(--primary-color);">🎨 Exterior Color</h4>
+                    ${gradientHtml}
+                    <p style="margin: 4px 0;"><strong>${colorData.display_name || colorData.id}</strong></p>
+                  </div>
+                `;
+                messageDiv.appendChild(bubbleDiv);
+                messagesDiv.appendChild(messageDiv);
+                scrollToBottom();
               } else {
                 const images = uiAction.data.images || (uiAction.data.image_url ? [uiAction.data.image_url] : []);
 

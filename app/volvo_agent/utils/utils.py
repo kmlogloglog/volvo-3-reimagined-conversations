@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # Define paths to knowledge base
 KNOWLEDGE_ROOT = Path(__file__).resolve().parent.parent / "knowledge"
 CONFIG_FILE = "car_configurations.json"
-IMAGES_FILE = "car_images.json"
+ASSETS_FILE = "car_assets.json"
 
 
 def load_json(path: Path, filename: str) -> dict:
@@ -47,14 +47,14 @@ def load_car_configurations() -> dict:
     return load_json(path=KNOWLEDGE_ROOT, filename=CONFIG_FILE)
 
 
-def load_car_images() -> dict:
+def load_car_assets() -> dict:
     """
-    Load car images from JSON file
+    Load car assets (images, gradient stops) from JSON file
 
     Returns:
-        dict: The car images.
+        dict: The car assets.
     """
-    return load_json(path=KNOWLEDGE_ROOT, filename=IMAGES_FILE)
+    return load_json(path=KNOWLEDGE_ROOT, filename=ASSETS_FILE)
 
 
 def fuzzy_match(selected_option: str, valid_options: list[str]) -> str:

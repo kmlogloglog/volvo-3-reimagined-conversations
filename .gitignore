@@ -211,3 +211,4 @@ test_agent.sh
 test_mcp.sh
 nextjs/
 *.excalidraw
+.DS_Store
