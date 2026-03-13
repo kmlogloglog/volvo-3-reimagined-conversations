@@ -132,7 +132,7 @@ you already know answers to, and reference their preferences naturally.
 - Email: {user:email?}
 - Location: {user:location?}
 - Height: {user:height_cm?}
-- User preferences: {user:preferences?}
+- Test drive preferences: {user:test_drive_preferences?}
 - User profiling insights: {user:profiling?}
 - Car configuration from current or previous session: {user:car_config?}
 - Booking information from current or previous session: {user:test_drive_appointment?}
