@@ -1,6 +1,6 @@
 <template>
     <div ref="containerRef" class="blob-mask">
-        <canvas ref="maskCanvas"></canvas>
+        <canvas ref="maskCanvas" :class="{ 'blob-mask-canvas-visible': isImageLoaded }"></canvas>
     </div>
 </template>
 
@@ -13,11 +13,15 @@
         // Size of the image relative to the container, in percent (0–100).
         // 100 = contain-fit to the full container; 50 = contain-fit within a 50% box.
         imageSize?: number
+        // Uniform scale multiplier applied on top of the contain-fit dimensions.
+        // 1.0 = no extra scaling; 1.1 = 10% larger than the contain-fit size.
+        imageScale?: number
     }
 
     const props = withDefaults(defineProps<Props>(), {
         imageSrc: '',
         imageSize: 100,
+        imageScale: 1,
     });
 
     // Animation and shape tuning constants.
@@ -32,11 +36,11 @@
 
         // Multiplier on animationSpeed that controls how quickly the blob shape morphs.
         // ↑ shape changes more rapidly  ↓ shape holds its form longer between morphs
-        morphSpeed: 0.35,
+        morphSpeed: 0.4,
 
         // Radius of the blob as a fraction of the shorter canvas dimension (0–1).
         // ↑ larger spotlight covering more of the image  ↓ smaller, tighter reveal
-        baseSize: 0.36,
+        baseSize: 0.4,
 
         // Number of vertices around the blob perimeter used to approximate the shape.
         // ↑ smoother silhouette, higher CPU cost  ↓ more polygonal look, cheaper
@@ -178,9 +182,16 @@
         // --- Step 1: contain-fit image within the imageSize percentage box ---
         // Behaves like <img width="100%" max-width="100%">: scales to fit without
         // overflowing the available area, maintaining aspect ratio.
+        // imagePadding converts the 1.25rem design token to pixels so the image
+        // is inset from all four canvas edges without affecting the mask shape.
+        const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const imagePadding = rootFontSize * 1.25;
+        const paddedW = displayWidth - imagePadding * 2;
+        const paddedH = displayHeight - imagePadding * 2;
+
         const scale = props.imageSize / 100;
-        const availW = displayWidth * scale;
-        const availH = displayHeight * scale;
+        const availW = paddedW * scale;
+        const availH = paddedH * scale;
 
         const imgAspect = loadedImage.width / loadedImage.height;
         const availAspect = availW / availH;
@@ -196,10 +207,13 @@
             drawW = availH * imgAspect;
         }
 
-        const drawX = (displayWidth - drawW) / 2;
-        const drawY = (displayHeight - drawH) / 2;
+        const scaledW = drawW * props.imageScale;
+        const scaledH = drawH * props.imageScale;
 
-        ctx.drawImage(loadedImage, drawX, drawY, drawW, drawH);
+        const drawX = imagePadding + (paddedW - scaledW) / 2;
+        const drawY = imagePadding + (paddedH - scaledH) / 2;
+
+        ctx.drawImage(loadedImage, drawX, drawY, scaledW, scaledH);
 
         // --- Step 2: mask the image through the blob shape ---
         // We fill the blob path with a blurred opaque shape and composite it
@@ -232,6 +246,7 @@
     let animationFrameId: number | null = null;
     let lastFrameTime = 0;
     let loadedImage: HTMLImageElement | null = null;
+    const isImageLoaded = ref(false);
     let resizeObserver: ResizeObserver | null = null;
 
     const frameInterval = 1000 / config.targetFps;
@@ -299,11 +314,14 @@
 
     function loadImage(src: string): void {
         loadedImage = null;
+        isImageLoaded.value = false;
         if (!src) return;
 
         const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => { loadedImage = img; };
+        img.onload = () => {
+            loadedImage = img;
+            isImageLoaded.value = true;
+        };
         img.src = src;
     }
 
@@ -376,7 +394,13 @@
 }
 
 .blob-mask canvas {
-    width: 100%;
     height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    width: 100%;
+
+    &.blob-mask-canvas-visible {
+        opacity: 1;
+    }
 }
 </style>

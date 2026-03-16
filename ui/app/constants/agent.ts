@@ -6,9 +6,8 @@ export const AGENT = Object.freeze({
     INTRODUCTION: 'Introduce yourself! If you have introduced yourself already, do not introduce yourself again, but say something new to keep the conversation going.',
 
     RESPONSE_NAME: {
-        CAR_CONFIGURATION: 'update_and_display_car_configuration',
+        CAR_CONFIGURATION: 'display_car_configuration',
         FIND_RETAILER: 'find_retailer',
-        TEST_DRIVE_CONFIRMATION: 'test_drive_confirmation',
         BOOK_TEST_DRIVE: 'book_test_drive',
     },
     RESPONSE_ACTION: {
@@ -17,6 +16,15 @@ export const AGENT = Object.freeze({
     GOOGLE_MAPS: {
         RATIO: 1.35,
         ZOOM: 15,
+    },
+    COMPONENT_NAME: {
+        TEST_DRIVE_CONFIRMATION: 'test_drive_confirmation',
+        FINAL_CONFIGURATION: 'final_configuration',
+        MAPS_VIEW: 'maps_view',
+        EXTERIOR: 'exterior',
+        INTERIOR: 'interior',
+        MODEL: 'model',
+        WHEELS: 'wheels',
     },
 });
 

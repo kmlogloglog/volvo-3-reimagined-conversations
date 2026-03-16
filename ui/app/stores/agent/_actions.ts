@@ -2,16 +2,30 @@ import { AGENT } from '@/constants/agent';
 import { BUS } from '@/constants/bus';
 import { useEventBus } from '@vueuse/core';
 import type { ChatMessage } from '@/types/chat';
-import type { AgentEvent, ConnectParams } from '@/types/agent';
+import type { AgentEvent, ConnectParams, Coordinates } from '@/types/agent';
+import type { GradientStop } from '@/types/ui';
+import type { AgentState } from './_state';
+
+declare global {
+    interface Window {
+        webkitAudioContext: typeof AudioContext;
+    }
+}
 
 const log = {
-    info: (label, ...args) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
-    success: (label, ...args) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
-    warn: (label, ...args) => console.warn(`%c${label}`, 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
-    error: (label, ...args) => console.error(`%c${label}`, 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', ...args),
+    info: (label: string, ...args: unknown[]) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
+    success: (label: string, ...args: unknown[]) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
+    warn: (label: string, ...args: unknown[]) => console.warn(`%c${label}`, 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
+    error: (label: string, ...args: unknown[]) => console.error(`%c${label}`, 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', ...args),
 };
 
-export default {
+// makeActions types `this` as the full store context (state + actions) so that action
+// methods referencing `this.someState` or `this.someAction()` are properly type-checked.
+function makeActions<T extends object>(obj: T & ThisType<AgentState & T>): T {
+    return obj;
+}
+
+export default makeActions({
     // Converts a Float32 audio buffer to Int16 for transmission over WebSocket.
     float32ToInt16(float32: Float32Array): Int16Array {
         const int16 = new Int16Array(float32.length);
@@ -101,8 +115,11 @@ export default {
         }
     },
 
-    handleImageResponse(imageUrls: string[]): void {
+    handleImageResponse(imageUrls: string[], componentName: string, gradientStops?: GradientStop[]): void {
+        console.log('imageUrls', imageUrls);
         this.backgroundImages = imageUrls;
+        this.componentName = componentName;
+        this.gradientStops = gradientStops ?? null;
     },
 
     // Dispatches an incoming WebSocket event to the correct handler based on its content.
@@ -123,38 +140,59 @@ export default {
 
                 if (uiAction?.action === AGENT.RESPONSE_ACTION.DISPLAY_COMPONENT) {
                     const functionName = part.functionResponse?.name;
+                    const componentName = uiAction.component_name;
 
-                    if (functionName === AGENT.RESPONSE_NAME.CAR_CONFIGURATION) {
-                        const phase = uiAction.phase;
-                        this.phase = (typeof phase === 'number' && phase >= 0 && phase <= 5) ? phase : -1;
-                        this.handleImageResponse(uiAction.data.images);
+                    if (Object.values(AGENT.COMPONENT_NAME).includes(componentName as string)) {
+                        const selectedColor = uiAction.data?.selected_color as Record<string, unknown> | undefined;
+                        const gradientStops = (
+                            (uiAction.data?.gradient_stops as GradientStop[] | undefined)
+                            ?? (selectedColor?.gradient_stops as GradientStop[] | undefined)
+                        );
+
+                        if (componentName === AGENT.COMPONENT_NAME.TEST_DRIVE_CONFIRMATION
+                            || componentName === AGENT.COMPONENT_NAME.MAPS_VIEW) {
+                            // Preserve existing backgroundImages so the final_configuration
+                            // carousel remains visible through the retailer and booking steps.
+                            this.componentName = componentName;
+                        } else {
+                            this.handleImageResponse(
+                                (uiAction.data?.images as string[]) ?? [],
+                                componentName as string,
+                                gradientStops,
+                            );
+                        }
                     }
 
                     if (functionName === AGENT.RESPONSE_NAME.FIND_RETAILER) {
                         this.retailerDetails = {
-                            retailerName: uiAction.data?.retailer_name || '',
-                            retailerAddress: uiAction.data?.address || '',
-                            retailerLocation: uiAction.data?.location || '',
-                            retailerId: uiAction.data?.retailer_id || '',
+                            retailerName: (uiAction.data?.retailer_name as string) ?? '',
+                            retailerAddress: (uiAction.data?.address as string) ?? '',
+                            retailerLocation: (uiAction.data?.location as string) ?? '',
+                            retailerId: (uiAction.data?.retailer_id as string) ?? '',
                             retailerCoordinates: {
-                                lat: uiAction.data?.retailer_lat || 0,
-                                lng: uiAction.data?.retailer_lng || 0,
+                                lat: (uiAction.data?.retailer_lat as number) ?? 0,
+                                lng: (uiAction.data?.retailer_lng as number) ?? 0,
                             },
                         };
                     }
 
                     if (functionName === AGENT.RESPONSE_NAME.BOOK_TEST_DRIVE) {
+                        const prefs = uiAction.data?.preferences as Record<string, unknown> | undefined;
                         this.testDriveDetails = {
-                            date: uiAction.data?.date || '',
-                            time: uiAction.data?.time || '',
-                            retailerName: uiAction.data?.retailer_name || '',
-                            retailerAddress: uiAction.data?.retailer_address || '',
-                            retailerCoordinates: uiAction.data?.retailer_location || { lat: 0, lng: 0 },
-                            userName: uiAction.data?.user_name || '',
-                            userEmail: uiAction.data?.user_email || '',
+                            date: (uiAction.data?.date as string) ?? '',
+                            time: (uiAction.data?.time as string) ?? '',
+                            retailerName: (uiAction.data?.retailer_name as string) ?? '',
+                            retailerAddress: (uiAction.data?.retailer_address as string) ?? undefined,
+                            retailerPhone: (uiAction.data?.retailer_phone as string) ?? undefined,
+                            retailerCoordinates: (uiAction.data?.retailer_location as Coordinates) ?? { lat: null, lng: null },
+                            userName: (uiAction.data?.user_name as string) ?? '',
+                            userEmail: (uiAction.data?.user_email as string) ?? '',
+                            preferences: {
+                                height: (prefs?.height as string) ?? null,
+                                music: (prefs?.music as string) ?? null,
+                                light: (prefs?.light as string) ?? null,
+                            },
                         };
-                    } else {
-                        this.testDriveDetails = null;
                     }
 
                     log.info('Function', `Name: ${functionName}`);
@@ -339,15 +377,18 @@ export default {
             return;
         }
 
-        const inputDataArray = new Uint8Array(this.inputAnalyser.frequencyBinCount);
-        const outputDataArray = new Uint8Array(this.analyser.frequencyBinCount);
+        const inputAnalyser = this.inputAnalyser;
+        const analyser = this.analyser;
+
+        const inputDataArray = new Uint8Array(inputAnalyser.frequencyBinCount);
+        const outputDataArray = new Uint8Array(analyser.frequencyBinCount);
 
         const boosterInputLevel = 1.25;
 
         const draw = () => {
             this.animationId = requestAnimationFrame(draw);
-            this.inputAnalyser.getByteFrequencyData(inputDataArray);
-            this.analyser.getByteFrequencyData(outputDataArray);
+            inputAnalyser.getByteFrequencyData(inputDataArray);
+            analyser.getByteFrequencyData(outputDataArray);
 
             const inputLevel = Math.round(inputDataArray.reduce((a, b) => a + b, 0) / inputDataArray.length);
             const outputLevel = Math.round(outputDataArray.reduce((a, b) => a + b, 0) / outputDataArray.length);
@@ -392,7 +433,7 @@ export default {
                 try {
                     await this.audioContext.audioWorklet.addModule('/js/audio-modules/pcm-player-processor.js');
                 } catch (e) {
-                    throw new Error(`Player worklet loading failed: ${e.message}`);
+                    throw new Error(`Player worklet loading failed: ${(e as Error).message}`);
                 }
             }
 
@@ -405,7 +446,7 @@ export default {
                 try {
                     await this.recorderContext.audioWorklet.addModule('/js/audio-modules/pcm-recorder-processor.js');
                 } catch (e) {
-                    throw new Error(`Recorder worklet loading failed: ${e.message}`);
+                    throw new Error(`Recorder worklet loading failed: ${(e as Error).message}`);
                 }
             }
 
@@ -414,8 +455,8 @@ export default {
 
             if (!this.audioPlayerNode) {
                 this.audioPlayerNode = new AudioWorkletNode(this.audioContext, 'pcm-player-processor');
-                this.audioPlayerNode.connect(this.analyser);
-                this.analyser.connect(this.audioContext.destination);
+                this.audioPlayerNode.connect(this.analyser!);
+                this.analyser!.connect(this.audioContext.destination);
             }
 
             // Connect to WebSocket before setting up the recorder so no
@@ -440,7 +481,7 @@ export default {
 
                     micSource.disconnect();
                     micSource.connect(this.audioRecorderNode);
-                    micSource.connect(this.inputAnalyser);
+                    micSource.connect(this.inputAnalyser!);
                 } catch (err) {
                     log.error('AUDIO', 'Failed to set up recorder:', err);
                 }
@@ -466,6 +507,7 @@ export default {
             sender: AGENT.USER,
             content: { text },
             timestamp: new Date(),
+            finished: true,
         });
 
         this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
@@ -497,4 +539,4 @@ export default {
     setUserName(name: string): void {
         this.userName = name;
     },
-};
+});

@@ -1,5 +1,5 @@
 <template>
-    <div ref="containerRef" class="image-container">
+    <div ref="containerRef" class="image-container" :class="{ 'image-container-ready': allImagesLoaded }">
         <VolvoLogo
             color="var(--color-white)"
             drop-shadow="var(--color-black)"
@@ -142,11 +142,17 @@
 .image-container {
     height: 100%;
     left: 0;
+    opacity: 0;
     overflow: hidden;
     position: fixed;
     top: 0;
     touch-action: pan-y;
+    transition: opacity 0.8s ease;
     width: 100%;
+
+    &-ready {
+        opacity: 1;
+    }
 
     .logo {
         height: auto;
@@ -179,8 +185,8 @@
     .background-image {
         height: 100%;
         object-fit: cover;
-        width: 100%;
         user-select: none;
+        width: 100%;
         -webkit-user-drag: none;
     }
 }

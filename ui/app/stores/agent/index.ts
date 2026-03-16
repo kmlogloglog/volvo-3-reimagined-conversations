@@ -1,36 +1,8 @@
 import { defineStore } from 'pinia';
-import type { ChatMessage } from '@/types/chat';
-import type { RetailerDetails, TestDriveDetails } from '@/types/agent';
+import type { AgentState } from './_state';
 import actions from './_actions';
 import getters from './_getters';
-
-export interface AgentState {
-    userName: string | null;
-    conversation: ChatMessage[];
-    audioLevel: number;
-    backgroundImages: string[] | null;
-    phase: number;
-    retailerDetails: RetailerDetails | null;
-    testDriveDetails: TestDriveDetails | null;
-    connected: boolean;
-    connecting: boolean;
-    listening: boolean;
-    speaking: boolean;
-    audioContext: AudioContext | null;
-    analyser: AnalyserNode | null;
-    inputAnalyser: AnalyserNode | null;
-    recorderContext: AudioContext | null;
-    websocket: WebSocket | null;
-    mediaStream: MediaStream | null;
-    audioPlayerNode: AudioWorkletNode | null;
-    audioRecorderNode: AudioWorkletNode | null;
-    currentMessageId: string | null;
-    currentUserMessageId: string | null;
-    connectionPromise: Promise<void> | null;
-    animationId: number | null;
-    startingAudio: boolean;
-    micPermissionGranted: boolean;
-}
+export type { AgentState } from './_state';
 
 export const useAgentStore = defineStore('agentStore', {
     state: (): AgentState => ({
@@ -38,7 +10,8 @@ export const useAgentStore = defineStore('agentStore', {
         conversation: [],
         audioLevel: 0,
         backgroundImages: null,
-        phase: -1,
+        componentName: null,
+        gradientStops: null,
         retailerDetails: null,
         testDriveDetails: null,
 

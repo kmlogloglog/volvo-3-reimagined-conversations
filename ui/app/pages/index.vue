@@ -1,7 +1,16 @@
 <template>
     <div class="view">
+        <Transition name="bg-single">
+            <div v-if="isModelComponent" class="image-stage-wrapper">
+                <BackgroundImageSingle
+                    :src="agentStore.backgroundImages?.[0]"
+                    @image-loaded="onImageLoaded" />
+            </div>
+        </Transition>
+
         <BackgroundImages
-            :src="agentStore.backgroundImages" />
+            v-if="isCarouselVisible"
+            :src="agentStore.backgroundImages ?? undefined" />
 
         <div class="base-view">
             <div class="base-view-inner">
@@ -24,12 +33,16 @@
 
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel"
-            :bottom-align="agentStore.backgroundImages?.length > 0"
-            :hide="false" />
+            :scale="blobScale"
+            :vertical-offset="blobVerticalOffset"
+            :bottom-align="isCarouselVisible"
+            :gradient-stops="blobGradientStops"
+            :hide="isBlobMaskComponent" />
 
-        <!-- <BlobMask
-            image-size="80"
-            image-src="/assets/images/EX30_rim_JG21_20inch 1.png" /> -->
+        <BlobMask
+            v-if="isBlobMaskComponent"
+            :image-src="agentStore.backgroundImages?.[0]"
+            :image-scale="agentStore.componentName === AGENT.COMPONENT_NAME.INTERIOR ? 1.1 : 1" />
 
         <Transition name="fade">
             <AudioListeningMessage
@@ -48,9 +61,10 @@
     import { useAgentStore } from '@/stores/agent';
     import { useEventBus } from '@vueuse/core';
     import AudioCaptureBlob from '@/components/audioCapture/AudioCaptureBlob.vue';
-    // import BlobMask from '@/components/blobMask/BlobMask.vue';
+    import BlobMask from '@/components/blobMask/BlobMask.vue';
     import AudioCaptureMeter from '@/components/audioCapture/AudioCaptureMeter.vue';
     import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
+    import BackgroundImageSingle from '@/components/imageViewer/BackgroundImageSingle.vue';
     import AudioListeningMessage from '@/components/audioCapture/AudioListeningMessage.vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
     import DealerDetailsCard from '@/components/dealerDetailsCard/DealerDetailsCard.vue';
@@ -58,6 +72,55 @@
     const agentStore = useAgentStore();
     const agent = useAgent();
     const route = useRoute();
+
+    const { listening: isListening } = storeToRefs(agentStore);
+
+    // Layout & background
+
+    const CAROUSEL_COMPONENTS = [
+        AGENT.COMPONENT_NAME.FINAL_CONFIGURATION,
+        AGENT.COMPONENT_NAME.MAPS_VIEW,
+        AGENT.COMPONENT_NAME.TEST_DRIVE_CONFIRMATION,
+    ];
+
+    const BLOB_MASK_COMPONENTS = [
+        AGENT.COMPONENT_NAME.WHEELS,
+        AGENT.COMPONENT_NAME.INTERIOR,
+    ];
+
+    const isModelComponent = computed(() => agentStore.componentName === AGENT.COMPONENT_NAME.MODEL);
+    const isCarouselVisible = computed(() => CAROUSEL_COMPONENTS.includes(agentStore.componentName as string));
+    const isBlobMaskComponent = computed(() => BLOB_MASK_COMPONENTS.includes(agentStore.componentName as string));
+
+    // Blob shape & appearance
+
+    // Reset only when the component step changes so that image src updates within
+    // the same step don't collapse and re-expand the blob scale.
+    const imageReady = ref(false);
+
+    watch(() => agentStore.componentName, () => {
+        imageReady.value = false;
+    });
+
+    function onImageLoaded() {
+        imageReady.value = true;
+    }
+
+    const blobScale = computed(() =>
+        isModelComponent.value && imageReady.value ? 2.5 : 1,
+    );
+
+    const blobVerticalOffset = computed(() =>
+        isModelComponent.value && imageReady.value ? '-15%' : '0%',
+    );
+
+    const blobGradientStops = computed(() =>
+        agentStore.componentName === AGENT.COMPONENT_NAME.EXTERIOR && agentStore.gradientStops
+            ? agentStore.gradientStops
+            : undefined,
+    );
+
+    // Connection & intro
 
     // Tracks which mode triggered the intro message: 'audio', 'chat', or null.
     const introSentBy = ref<'audio' | 'chat' | null>(null);
@@ -85,13 +148,13 @@
         }
     });
 
-    const { listening: isListening } = storeToRefs(agentStore);
-
     watch(isListening, (newVal) => {
         if (newVal && !isChatActive.value) {
             sendIntro('audio');
         }
     });
+
+    // User interactions
 
     function handleMicrophoneClick(enabled: boolean) {
         if (enabled) {
@@ -175,6 +238,18 @@
 
 .fade-enter-from,
 .fade-leave-to {
+    opacity: 0;
+}
+
+// Leave-only — entry is handled by BackgroundImageSingle's internal load-driven fade.
+.bg-single-leave-active {
+    filter: blur(0px);
+    opacity: 1;
+    transition: opacity 1s ease, filter 1s ease;
+}
+
+.bg-single-leave-to {
+    filter: blur(16px);
     opacity: 0;
 }
 </style>

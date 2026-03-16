@@ -1,24 +1,32 @@
 export interface Coordinates {
-    lat: number;
-    lng: number;
+    lat: number | null;
+    lng: number | null;
 }
 
 export interface RetailerDetails {
     retailerName: string;
-    retailerAddress: string;
+    retailerAddress: string | null;
     retailerLocation: string;
     retailerId: string;
     retailerCoordinates: Coordinates;
+}
+
+export interface TestDrivePreferences {
+    height: string | null;
+    music: string | null;
+    light: string | null;
 }
 
 export interface TestDriveDetails {
     date: string;
     time: string;
     retailerName: string;
-    retailerAddress: string;
+    retailerAddress: string | undefined;
+    retailerPhone: string | undefined;
     retailerCoordinates: Coordinates;
     userName: string;
     userEmail: string;
+    preferences: TestDrivePreferences;
 }
 
 export interface ConnectParams {
@@ -36,7 +44,7 @@ interface FunctionResponse {
     response: {
         ui_action?: {
             action: string;
-            phase?: number;
+            component_name?: string;
             data?: Record<string, unknown>;
         };
     };

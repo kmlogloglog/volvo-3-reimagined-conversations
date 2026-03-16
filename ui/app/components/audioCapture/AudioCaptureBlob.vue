@@ -16,18 +16,26 @@
         intensity?: number
         bottomAlign?: boolean
         hide?: boolean
+        scale?: number
+        verticalOffset?: string
     }
 
     const props = withDefaults(defineProps<Props>(), {
-        gradientStops: () => [
-            { position: 0, r: 250, g: 210, b: 200, a: 0.75 },
-            { position: 0.35, r: 181, g: 73, b: 3, a: 0.25 },
-            { position: 1, r: 89, g: 41, b: 12, a: 0.15 },
-        ],
+        gradientStops: undefined,
         intensity: 0,
         bottomAlign: false,
         hide: false,
+        scale: 1,
+        verticalOffset: '0%',
     });
+
+    // Stable default — defined outside withDefaults so the reference never changes
+    // between renders, preventing the gradient watcher from firing spuriously.
+    const DEFAULT_GRADIENT_STOPS: GradientStop[] = [
+        { position: 0, r: 250, g: 210, b: 200, a: 0.75 },
+        { position: 0.35, r: 181, g: 73, b: 3, a: 0.25 },
+        { position: 1, r: 89, g: 41, b: 12, a: 0.15 },
+    ];
 
     // Animation, shape, and flare tuning constants.
     const config = {
@@ -125,12 +133,13 @@
     // Duration of the gradient color crossfade in seconds.
     const COLOR_FADE_DURATION_SECS = 1.2;
 
-    let currentStops: GradientStop[] = [...props.gradientStops];
+    let currentStops: GradientStop[] = [...DEFAULT_GRADIENT_STOPS];
     let nextStops: GradientStop[] | null = null;
     // 1 = transition complete, fully on currentStops.
     let colorFadeProgress = 1;
 
     watch(() => props.gradientStops, (newStops) => {
+        if (!newStops) return;
         // Snapshot mid-fade position in case a second change arrives during transition.
         currentStops = resolvedStops();
         nextStops = [...newStops];
@@ -146,8 +155,8 @@
         const resolved = [];
 
         for (let i = 0; i < len; i++) {
-            const a = currentStops[Math.min(i, currentStops.length - 1)];
-            const b = nextStops[Math.min(i, nextStops.length - 1)];
+            const a = currentStops[Math.min(i, currentStops.length - 1)]!;
+            const b = nextStops[Math.min(i, nextStops.length - 1)]!;
             resolved.push({
                 position: a.position + (b.position - a.position) * t,
                 r: a.r + (b.r - a.r) * t,
@@ -181,8 +190,8 @@
 
     useIntersectionObserver(
         containerRef,
-        ([{ isIntersecting: visible }]) => {
-            isIntersecting.value = visible;
+        (entries) => {
+            isIntersecting.value = entries[0]?.isIntersecting ?? false;
         },
         { threshold: 0.1 },
     );
@@ -203,17 +212,17 @@
     }
 
     // Smoothstep curve used internally by Perlin noise.
-    function fade(t) {
+    function fade(t: number): number {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
 
     // Linear interpolation between a and b.
-    function lerp(t, a, b) {
+    function lerp(t: number, a: number, b: number): number {
         return a + t * (b - a);
     }
 
     // Gradient contribution for a single Perlin lattice point.
-    function grad(hash, x, y, z) {
+    function grad(hash: number, x: number, y: number, z: number): number {
         const h = hash & 15;
         const u = h < 8 ? x : y;
         const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
@@ -221,7 +230,7 @@
     }
 
     // 3D Perlin noise, returns a value in roughly [-1, 1].
-    function noise(x, y, z) {
+    function noise(x: number, y: number, z: number): number {
         const X = Math.floor(x) & 255;
         const Y = Math.floor(y) & 255;
         const Z = Math.floor(z) & 255;
@@ -234,20 +243,20 @@
         const v = fade(y);
         const w = fade(z);
 
-        const A = permutation[X] + Y;
-        const AA = permutation[A] + Z;
-        const AB = permutation[A + 1] + Z;
-        const B = permutation[X + 1] + Y;
-        const BA = permutation[B] + Z;
-        const BB = permutation[B + 1] + Z;
+        const A = permutation[X]! + Y;
+        const AA = permutation[A]! + Z;
+        const AB = permutation[A + 1]! + Z;
+        const B = permutation[X + 1]! + Y;
+        const BA = permutation[B]! + Z;
+        const BB = permutation[B + 1]! + Z;
 
         return lerp(w,
                     lerp(v,
-                         lerp(u, grad(permutation[AA], x, y, z), grad(permutation[BA], x - 1, y, z)),
-                         lerp(u, grad(permutation[AB], x, y - 1, z), grad(permutation[BB], x - 1, y - 1, z))),
+                         lerp(u, grad(permutation[AA]!, x, y, z), grad(permutation[BA]!, x - 1, y, z)),
+                         lerp(u, grad(permutation[AB]!, x, y - 1, z), grad(permutation[BB]!, x - 1, y - 1, z))),
                     lerp(v,
-                         lerp(u, grad(permutation[AA + 1], x, y, z - 1), grad(permutation[BA + 1], x - 1, y, z - 1)),
-                         lerp(u, grad(permutation[AB + 1], x, y - 1, z - 1), grad(permutation[BB + 1], x - 1, y - 1, z - 1))));
+                         lerp(u, grad(permutation[AA + 1]!, x, y, z - 1), grad(permutation[BA + 1]!, x - 1, y, z - 1)),
+                         lerp(u, grad(permutation[AB + 1]!, x, y - 1, z - 1), grad(permutation[BB + 1]!, x - 1, y - 1, z - 1))));
     }
 
     // Precomputed sin/cos tables shared by blob and flare to avoid per-vertex trig calls.
@@ -262,7 +271,16 @@
     }
 
     // Returns the noise-displaced radius for a single vertex.
-    function getMorphedRadius(cosAngle, sinAngle, baseRadius, timeX, timeY, noiseOffset, morphIntensity, noiseScale) {
+    function getMorphedRadius(
+        cosAngle: number,
+        sinAngle: number,
+        baseRadius: number,
+        timeX: number,
+        timeY: number,
+        noiseOffset: number,
+        morphIntensity: number,
+        noiseScale: number,
+    ): number {
         const noiseValue = noise(
             cosAngle * noiseScale + noiseOffset + timeX,
             sinAngle * noiseScale + noiseOffset + timeY,
@@ -273,16 +291,16 @@
 
     // Samples the gradient stop array and returns an rgba string for the given radius.
     // stops is resolved once per frame in animate() to avoid repeated calls per ring.
-    function getGradientColor(normalizedRadius, stops) {
+    function getGradientColor(normalizedRadius: number, stops: GradientStop[]): string {
         const clampedPos = Math.max(0, Math.min(1, normalizedRadius));
 
-        let stop1 = stops[0];
-        let stop2 = stops[stops.length - 1];
+        let stop1 = stops[0]!;
+        let stop2 = stops[stops.length - 1]!;
 
         for (let i = 0; i < stops.length - 1; i++) {
-            if (clampedPos >= stops[i].position && clampedPos <= stops[i + 1].position) {
-                stop1 = stops[i];
-                stop2 = stops[i + 1];
+            if (clampedPos >= stops[i]!.position && clampedPos <= stops[i + 1]!.position) {
+                stop1 = stops[i]!;
+                stop2 = stops[i + 1]!;
                 break;
             }
         }
@@ -299,7 +317,7 @@
     }
 
     // Returns an rgba color for a flare ring, applying radial falloff and shimmer.
-    function getFlareColor(normalizedRadius, layerOpacity, shimmerFactor, flareIntensity) {
+    function getFlareColor(normalizedRadius: number, layerOpacity: number, shimmerFactor: number, flareIntensity: number): string {
         const { color } = config.flare;
         const v = 1 - normalizedRadius;
         // Approximates pow(v, 2.5) without Math.pow.
@@ -330,8 +348,8 @@
 
             for (let i = 0; i <= segments; i++) {
                 const cacheIndex = (i * segmentRatio) | 0;
-                const cosAngle = cosTable[cacheIndex];
-                const sinAngle = sinTable[cacheIndex];
+                const cosAngle = cosTable[cacheIndex]!;
+                const sinAngle = sinTable[cacheIndex]!;
 
                 const morphedRadius = getMorphedRadius(cosAngle, sinAngle, ringRadius, timeX, timeY, noiseOffset, flareMorphIntensity, noiseScale);
                 const x = centerX + cosAngle * morphedRadius;
@@ -643,11 +661,18 @@
         blobVisible.value = !val;
     });
 
-    const blobContainerStyle = computed(() => ({
-        opacity: blobVisible.value ? 1 : 0,
-        transform: `translateZ(0) scale(${blobVisible.value ? 1 : 0})`,
-        transition: blobTransitionEnabled.value ? 'opacity 0.4s ease, transform 0.4s ease' : 'none',
-    }));
+    const blobContainerStyle = computed(() => {
+        // When hiding, keep transitions snappy so the blob exits quickly.
+        // When visible, slow the transform down so position and scale changes feel deliberate.
+        const transformDuration = props.hide ? '0.5s' : '1.4s';
+        return {
+            opacity: blobVisible.value ? 1 : 0,
+            transform: `translateZ(0) translateY(${props.verticalOffset}) scale(${blobVisible.value ? props.scale : 0})`,
+            transition: blobTransitionEnabled.value
+                ? `opacity 0.4s ease, transform ${transformDuration} ease`
+                : 'none',
+        };
+    });
 
     // Restarts the loop when the component becomes visible; the loop self-exits when hidden.
     watch(shouldAnimate, (val) => {
