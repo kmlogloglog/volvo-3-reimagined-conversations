@@ -1,5 +1,6 @@
 {
     "EX30": {
+        "recommended_for": "People who value individuality, conscious consumption, city living, smart design, personal space, ease of navigation, modern aesthetics, and sustainability. Ideal for weekend getaways, singles, couples, or those with minimalist needs.",
         "wheels": {
             "19_5": {
                 "display_name": "19″ 5-spoke glossy black diamond cut",
@@ -62,6 +63,7 @@
         }
     },
     "EX60": {
+        "recommended_for": "People who value balance, practicality, family activities, weekend getaways, and longer road trips. Ideal for those seeking comfort, safety, and adaptability to varied situations and diverse needs. Often suited for households with 3-4 people or those who value quiet luxury.",
         "wheels": {
             "21": {
                 "display_name": "21″ 5-spoke glossy black/matt graphite diamond cut",
@@ -148,6 +150,7 @@
         }
     },
     "EX90": {
+        "recommended_for": "People who value luxury, ample space, premium comfort, and safety for larger groups. Ideal for long journeys, commanding presence, and cutting-edge technology. Often suited for larger families, those who frequently transport many passengers, or anyone who desires ultimate comfort and presence.",
         "wheels": {
             "21_8": {
                 "display_name": "21″ 8-spoke glossy black/matt graphite diamond cut",
