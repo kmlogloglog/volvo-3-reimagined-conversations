@@ -1,0 +1,91 @@
+// ========================================
+// Light Theme (Default)
+// ========================================
+:root {
+    // Background gradients
+    --color-background-solid-top: #696E76;
+    --color-background-solid-middle-top: #61676E;
+    --color-background-solid-middle-middle: #B0AAA5;
+    --color-background-solid-middle-bottom: #EDDFBA;
+    --color-background-solid-bottom: #EDDFBA;
+
+    // Typography
+    --font-color-primary: var(--color-black);
+    --font-color-secondary: var(--color-grey-700);
+
+    // Buttons
+    --button-color-background: var(--color-black);
+    --button-color-font: var(--color-white);
+
+    // Carousel navigation buttons
+    --carousel-button-color-background: var(--color-white);
+    --carousel-button-color-font: var(--color-black);
+
+    // Input fields
+    --input-color-background: var(--color-white);
+    --input-color-font: var(--color-black);
+    --input-color-font-placeholder: var(--color-grey-700);
+    --input-color-font-placeholder-disabled: var(--color-grey-900);
+
+    // Speech bubbles
+    --speech-bubble-color-background: var(--color-white);
+    --speech-bubble-color-font: var(--color-black);
+
+    // Icons
+    --icon-color-background: var(--color-white);
+
+    // Navigation
+    --navigation-color-background: var(--color-white);
+    --navigation-button-color-background: transparent;
+    --navigation-button-color-font: var(--color-grey-600);
+    --navigation-button-active-color-background: var(--color-grey-700);
+    --navigation-button-active-color-font: var(--color-white);
+    --navigation-button-disabled-color-font: var(--color-grey-900);
+    --navigation-button-disabled-color-background: var(--color-grey-800)
+}
+
+// ========================================
+// Dark Theme
+// ========================================
+.dark {
+    // Background gradients
+    --color-background-solid-top: #363D46;
+    --color-background-solid-middle-top: #22272D;
+    --color-background-solid-middle-middle: #1F2225;
+    --color-background-solid-middle-bottom: #151618;
+    --color-background-solid-bottom: #151618;
+
+    // Typography
+    --font-color-primary: var(--color-white);
+    --font-color-secondary: var(--color-grey-700);
+
+    // Buttons
+    --button-color-background: var(--color-white);
+    --button-color-font: var(--color-black);
+
+    // Carousel navigation buttons
+    --carousel-button-color-background: var(--color-black);
+    --carousel-button-color-font: var(--color-white);
+
+    // Input fields
+    --input-color-background: var(--color-black);
+    --input-color-font: var(--color-white);
+    --input-color-font-placeholder: var(--color-grey-700);
+    --input-color-font-placeholder-disabled: var(--color-grey-300);
+
+    // Speech bubbles
+    --speech-bubble-color-background: var(--color-black);
+    --speech-bubble-color-font: var(--color-white);
+
+    // Icons
+    --icon-color-background: var(--color-black);
+
+    // Navigation
+    --navigation-color-background: var(--color-black);
+    --navigation-button-color-background: transparent;
+    --navigation-button-color-font: var(--color-grey-600);
+    --navigation-button-active-color-background: var(--color-grey-200);
+    --navigation-button-active-color-font: var(--color-white);
+    --navigation-button-disabled-color-font: var(--color-grey-300);
+    --navigation-button-disabled-color-background: var(--color-grey-100)
+}

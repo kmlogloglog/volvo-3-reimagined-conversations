@@ -318,4 +318,19 @@ else:
             Path(__file__).parent.parent / "debug_frontend" / "index.html"
         )
 
-    # Nuxt UI removed — dashboard served separately via React/Vite
+    @app.get("/preview")
+    async def preview_split() -> FileResponse:
+        """Split-screen preview: Nuxt conversational UI + React dashboard side-by-side."""
+        return FileResponse(
+            Path(__file__).parent.parent / "preview.html"
+        )
+
+    # React dashboard — built output served at /dashboard
+    dashboard_dir = Path(__file__).parent.parent / "dist"
+    if dashboard_dir.exists():
+        app.mount("/dashboard", StaticFiles(directory=dashboard_dir, html=True), name="dashboard")
+
+    # Nuxt conversational UI — built output served at root (must be last)
+    ui_public_dir = Path(__file__).parent.parent / "ui" / ".output" / "public"
+    if ui_public_dir.exists():
+        app.mount("/", StaticFiles(directory=ui_public_dir, html=True), name="ui")

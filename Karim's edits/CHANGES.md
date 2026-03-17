@@ -2,6 +2,35 @@
 
 ---
 
+## 17/03/2026 — Split-Screen Preview: Conversational UI + Live Dashboard
+
+### What changed
+- Restored `ui/` Nuxt conversational app from `main` branch into `karim-edits`
+- Created `preview.html` — a split-screen page showing both UIs side-by-side:
+  - **Left panel**: Nuxt Freja conversational UI (voice + chat → writes to Firestore)
+  - **Right panel**: React dashboard (reads from same Firestore via `onSnapshot`)
+- Updated `app/main.py`:
+  - `/preview` → serves `preview.html`
+  - `/dashboard` → serves React dashboard built output (`dist/`)
+  - `/` → serves Nuxt built output (`ui/.output/public/`) — only mounts if the build exists
+- Updated `vite.config.ts`: sets `base: '/dashboard/'` and `outDir: 'dist'` so the React build resolves assets correctly under the `/dashboard/` sub-path
+
+### How the live loop works
+1. User speaks to Freja (left panel, Nuxt UI) via WebSocket → FastAPI backend
+2. Agent writes state (`profiling`, `car_config`, etc.) to Firestore `users/{userId}/user_state/volvo_vaen`
+3. React dashboard (right panel) hears the change via `onSnapshot` and updates in real-time — no refresh needed
+
+### Files added/modified
+| File | Change |
+|------|--------|
+| `ui/` | Restored from `main` |
+| `preview.html` | New — split-screen HTML wrapper |
+| `app/main.py` | Added `/preview`, `/dashboard`, and conditional Nuxt + dashboard mounts |
+| `vite.config.ts` | Added `base: '/dashboard/'` and `outDir: 'dist'` |
+| `Karim's edits/CHANGES.md` | This entry |
+
+---
+
 ## 17/03/2026 — Clone VMLYR Repo, Dashboard Integration & Live Firestore Listener
 
 ### What changed
