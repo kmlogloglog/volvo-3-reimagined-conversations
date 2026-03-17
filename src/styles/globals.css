@@ -1,0 +1,394 @@
+/* Global styles — animations, scrollbar, noise texture */
+
+/* ═══════════════════════════════════════════════════════
+   THEME TOKENS
+   Light = default (:root). Dark = html.dark overrides.
+═══════════════════════════════════════════════════════ */
+
+:root {
+  /* Backgrounds */
+  --van-base:          #F7F5F0;
+  --van-surface:       rgba(255, 255, 255, 0.88);
+  --van-surface-hover: rgba(0, 0, 0, 0.025);
+  --van-sidebar:       rgba(237, 234, 226, 0.92);
+  --van-header:        rgba(247, 245, 240, 0.94);
+
+  /* Borders */
+  --van-border:        rgba(0, 0, 0, 0.08);
+  --van-border-hover:  rgba(0, 0, 0, 0.14);
+
+  /* Text */
+  --van-text-primary:   #111111;
+  --van-text-secondary: #525252;
+  --van-text-muted:     #737373;
+  --van-text-dim:       #9ca3af;
+
+  /* Misc */
+  --van-scrollbar:        #c8c5be;
+  --van-scrollbar-hover:  #a09d96;
+  --van-card-shadow:      0 4px 24px rgba(0, 0, 0, 0.08);
+  --van-orb-a:            rgba(251, 191, 36, 0.12);
+  --van-orb-b:            rgba(14, 165, 233, 0.10);
+}
+
+html.dark {
+  --van-base:          #030303;
+  --van-surface:       rgba(10, 10, 10, 0.5);
+  --van-surface-hover: rgba(255, 255, 255, 0.02);
+  --van-sidebar:       rgba(3, 3, 3, 0.5);
+  --van-header:        rgba(3, 3, 3, 0.8);
+
+  --van-border:        rgba(255, 255, 255, 0.05);
+  --van-border-hover:  rgba(255, 255, 255, 0.10);
+
+  --van-text-primary:   #ffffff;
+  --van-text-secondary: #737373;
+  --van-text-muted:     #525252;
+  --van-text-dim:       #404040;
+
+  --van-scrollbar:        #262626;
+  --van-scrollbar-hover:  #404040;
+  --van-card-shadow:      0 4px 24px rgba(0, 0, 0, 0.35);
+  --van-orb-a:            rgba(120, 113, 180, 0.10);
+  --van-orb-b:            rgba(180, 140, 20, 0.10);
+}
+
+/* ── Structural CSS classes (used by GlassCard, Sidebar, Header) ── */
+
+.van-glass {
+  background: var(--van-surface);
+  border-color: var(--van-border);
+}
+
+.van-sidebar-bg {
+  background: var(--van-sidebar);
+  border-color: var(--van-border);
+}
+
+.van-header-bg {
+  background: var(--van-header);
+  border-color: var(--van-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ── Base element colors ────────────────────────────────────────── */
+
+html, body, #root {
+  background-color: var(--van-base);
+  color: var(--van-text-primary);
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────── */
+
+::-webkit-scrollbar-thumb {
+  background: var(--van-scrollbar);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--van-scrollbar-hover);
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIGHT MODE TAILWIND UTILITY OVERRIDES
+   html.light has specificity (0,2,1) vs Tailwind's (0,1,0)
+   — wins without !important.
+═══════════════════════════════════════════════════════ */
+
+/* Text */
+html.light .text-white                { color: var(--van-text-primary); }
+html.light .text-white\/40            { color: rgba(0, 0, 0, 0.40); }
+html.light .text-neutral-300          { color: #374151; }
+html.light .text-neutral-400          { color: #4b5563; }
+
+/* bg-white/x → flip to black/x */
+html.light .bg-white\/5               { background-color: rgb(0 0 0 / 0.04); }
+html.light .bg-white\/10              { background-color: rgb(0 0 0 / 0.07); }
+html.light .bg-white\/\[0\.02\]       { background-color: rgb(0 0 0 / 0.025); }
+html.light .bg-white\/\[0\.03\]       { background-color: rgb(0 0 0 / 0.03); }
+html.light .bg-white\/\[0\.04\]       { background-color: rgb(0 0 0 / 0.04); }
+
+/* border-white/x → flip to black/x */
+html.light .border-white\/5           { border-color: rgb(0 0 0 / 0.08); }
+html.light .border-white\/10          { border-color: rgb(0 0 0 / 0.12); }
+html.light .border-white\/20          { border-color: rgb(0 0 0 / 0.16); }
+html.light .border-white\/\[0\.02\]   { border-color: rgb(0 0 0 / 0.04); }
+
+/* Hardcoded dark backgrounds in components */
+html.light .bg-\[\#030303\]           { background-color: var(--van-base); }
+html.light .bg-\[\#030303\]\/50       { background-color: rgb(247 245 240 / 0.80); }
+html.light .bg-\[\#030303\]\/80       { background-color: rgb(247 245 240 / 0.92); }
+html.light .bg-\[\#0A0A0A\]\/50       { background-color: var(--van-surface); }
+
+/* Inputs / selects */
+html.light input::placeholder         { color: #9ca3af; }
+html.light .placeholder\:text-neutral-600::placeholder { color: #9ca3af; }
+
+/* ── Typography defaults ─────────────────────────────── */
+
+/* Prevent ragged line endings on headings */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  text-rendering: optimizeLegibility;
+}
+
+/* Prevent orphaned words in body copy */
+p, li, figcaption {
+  text-wrap: pretty;
+}
+
+/* Improve kerning on all text */
+* {
+  text-rendering: geometricPrecision;
+}
+
+/* ── Scrollbar ───────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Chart path draw animation — ref 02 */
+.chart-path {
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: draw 2s ease-out forwards;
+}
+
+/* Reveal animation with stagger delays — ref 01 */
+.animate-reveal {
+  animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+@keyframes revealUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Noise texture background utility — ref 02 */
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* Chart gradient utility — ref 01 */
+.chart-gradient {
+  background: linear-gradient(
+    180deg,
+    rgba(251, 191, 36, 0.1) 0%,
+    rgba(251, 191, 36, 0) 100%
+  );
+}
+
+/* Floating tooltip animation — ref 02 */
+.animate-float {
+  animation: subtle-float 6s ease-in-out infinite;
+}
+
+/* Tab content fade + slide transition — used by TogglePanel / AnalyticsToggle */
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glass panel — ref 02 lines 50-54, lighter variant for secondary containers */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ANIMATED GRADIENT BORDERS (GlassCard)
+═══════════════════════════════════════════════════════ */
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-rotate {
+  to { --angle: 360deg; }
+}
+
+@keyframes shimmer-sweep {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(200%) rotate(45deg); }
+}
+
+/* Rotating conic-gradient border on hover */
+.van-glass {
+  position: relative;
+}
+
+.van-glass::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 50%,
+    rgba(251, 191, 36, 0.2) 70%,
+    rgba(186, 230, 253, 0.15) 85%,
+    transparent 100%
+  );
+  animation: border-rotate 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.van-glass:hover::before {
+  opacity: 1;
+}
+
+/* Subtle shimmer overlay */
+.van-glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(251, 191, 36, 0.03) 50%,
+    transparent 60%
+  );
+  animation: shimmer-sweep 15s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PULSE GLOW ANIMATION
+═══════════════════════════════════════════════════════ */
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.15); }
+  50% { box-shadow: 0 0 35px rgba(251, 191, 36, 0.3); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BUTTON RIPPLE
+═══════════════════════════════════════════════════════ */
+
+.van-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.van-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, transparent 70%);
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.van-ripple:active::after {
+  transform: scale(2.5);
+  opacity: 1;
+  transition: transform 0s, opacity 0s;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SHIMMER SKELETON (replaces animate-pulse)
+═══════════════════════════════════════════════════════ */
+
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.van-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOCUS RING PULSE
+═══════════════════════════════════════════════════════ */
+
+@keyframes focus-ring-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3); }
+  50% { box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.15); }
+}
+
+:focus-visible {
+  outline: none;
+  animation: focus-ring-pulse 1.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOOLTIP ENTRANCE (Radix)
+═══════════════════════════════════════════════════════ */
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+[data-radix-popper-content-wrapper] {
+  animation: tooltip-in 0.15s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SVG DRAW-IN ANIMATION
+═══════════════════════════════════════════════════════ */
+
+@keyframes svg-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-svg-draw {
+  animation: svg-draw 1.2s ease-out forwards;
+}

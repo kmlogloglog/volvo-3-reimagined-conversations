@@ -1,0 +1,107 @@
+{
+  "profileData": {
+    "demographics": {
+      "name": "Jon",
+      "email": "jon@sweden.se",
+      "city": "Malmö",
+      "maritalStatus": "married",
+      "childrenCount": 3,
+      "affordability": "high"
+    },
+    "psychographics": {
+      "familyLogistician": true,
+      "styleConsciousCommuter": false,
+      "highMileCruiser": false,
+      "interests": ["work"],
+      "values": ["design", "practicality"]
+    },
+    "mobilityNeeds": {
+      "dailyUsage": "mixed",
+      "weekendUsage": ["family_activities"],
+      "passengerCount": 5,
+      "cargoNeeds": "medium",
+      "currentCar": "Volvo CX90",
+      "numberOfCars": 2,
+      "carRenewal": "renew",
+      "reasonForBuying": null
+    }
+  },
+
+  "analyticalScores": {
+    "segmentRanking": {
+      "affluentProgressive": 22,
+      "affluentSocialClimber": 15,
+      "establishedElite": 40,
+      "technocentricTrendsetter": 23,
+      "dominantSegment": "establishedElite"
+    },
+    "propensityToBuy": {
+      "score": 38,
+      "stage": "consideration"
+    },
+    "affinities": {
+      "powertrain": [
+        { "value": "electric", "strength": "medium" },
+        { "value": "mildHybrid", "strength": "low" }
+      ],
+      "models": [
+        { "value": "EX60", "strength": "high" },
+        { "value": "CX60", "strength": "medium" },
+        { "value": "EX90", "strength": "low" }
+      ],
+      "personalDrivers": [
+        { "value": "responsibility", "strength": "high" },
+        { "value": "security", "strength": "high" },
+        { "value": "qualityOfLife", "strength": "medium" }
+      ],
+      "productAttributes": [
+        { "value": "safety", "strength": "high" },
+        { "value": "luxury", "strength": "medium" },
+        { "value": "technology", "strength": "medium" },
+        { "value": "performance", "strength": "low" }
+      ]
+    }
+  },
+
+  "recommendations": {
+    "engagementStrategy": "Jon is a pragmatic family man who values proven quality and design-led functionality. Lead with the EX60's interior space and safety credentials — he'll appreciate specifics over superlatives. He currently owns a CX90, so frame the conversation as an evolution within the Volvo family rather than a new brand experience. Keep the tone confident and factual; avoid anything that feels like a sales pitch.",
+
+    "nextBestActions": [
+      {
+        "action": "completeConfiguration",
+        "likelihood": 77,
+        "reasoning": "Jon is in consideration stage and has shown interest in specific models. A personalised configuration will deepen engagement and move him toward decision."
+      },
+      {
+        "action": "bookTestDrive",
+        "likelihood": 43,
+        "reasoning": "As an existing Volvo owner exploring the EX60, a test drive comparing the electric experience to his current CX90 would be compelling."
+      },
+      {
+        "action": "completeOrder",
+        "likelihood": 12,
+        "reasoning": "Propensity score is still in consideration range. Premature to push toward order completion."
+      }
+    ],
+
+    "contentRecommendations": [
+      { "topic": "Interior design & space", "relevanceScore": 85 },
+      { "topic": "Safety features & ratings", "relevanceScore": 82 },
+      { "topic": "Road trip planning with EV", "relevanceScore": 73 }
+    ]
+  },
+
+  "channelConsent": {
+    "conversational": true,
+    "email": false,
+    "sms": false
+  },
+
+  "meta": {
+    "profileCompleteness": 72,
+    "confidenceScore": 68,
+    "lastUpdated": "2026-01-27T14:32:00+01:00",
+    "sessionsAnalyzed": 3,
+    "profileCharacteristics": "Jon, family man and successful professional. Values practicality and reliability, without sacrificing appearance and joy of driving. Car is the enabler of life, but an extension of himself."
+  }
+}

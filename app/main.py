@@ -318,6 +318,4 @@ else:
             Path(__file__).parent.parent / "debug_frontend" / "index.html"
         )
 
-    # Mount Nuxt UI at root (Must be last to avoid capturing other routes)
-    ui_public_dir = Path(__file__).parent.parent / "ui" / ".output" / "public"
-    app.mount("/", StaticFiles(directory=ui_public_dir, html=True), name="ui")
+    # Nuxt UI removed — dashboard served separately via React/Vite

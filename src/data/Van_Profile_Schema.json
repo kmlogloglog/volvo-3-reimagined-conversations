@@ -1,0 +1,220 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Vän User Profile Schema",
+  "description": "Firestore document schema for users/{userId}/profile. Populated by the Vän Profiling Agent at session end. Maps directly to the Profiling & Prediction Dashboard.",
+  "type": "object",
+  "required": ["profileData", "analyticalScores", "recommendations", "channelConsent", "meta"],
+  "additionalProperties": false,
+  "properties": {
+
+    "profileData": {
+      "description": "Dashboard: Left Column — Profile Data",
+      "type": "object",
+      "required": ["demographics", "psychographics", "mobilityNeeds"],
+      "properties": {
+
+        "demographics": {
+          "description": "Fact extraction from explicit user statements.",
+          "type": "object",
+          "properties": {
+            "name":           { "type": ["string", "null"] },
+            "email":          { "type": ["string", "null"], "format": "email" },
+            "city":           { "type": ["string", "null"] },
+            "maritalStatus":  { "type": ["string", "null"], "enum": ["married", "single", "divorced", "partner", null] },
+            "childrenCount":  { "type": ["integer", "null"], "minimum": 0 },
+            "affordability":  { "type": "string", "enum": ["high", "medium", "low"], "default": "medium" }
+          }
+        },
+
+        "psychographics": {
+          "description": "Lifestyle persona flags inferred from vocabulary triggers.",
+          "type": "object",
+          "properties": {
+            "familyLogistician":      { "type": "boolean", "default": false },
+            "styleConsciousCommuter": { "type": "boolean", "default": false },
+            "highMileCruiser":        { "type": "boolean", "default": false },
+            "interests":              { "type": ["array", "null"], "items": { "type": "string" } },
+            "values":                 { "type": ["array", "null"], "items": { "type": "string" } }
+          }
+        },
+
+        "mobilityNeeds": {
+          "description": "Vehicle usage patterns extracted from conversation.",
+          "type": "object",
+          "properties": {
+            "dailyUsage":      { "type": ["string", "null"], "enum": ["city", "highway", "mixed", null] },
+            "weekendUsage":    {
+              "type": ["array", "null"],
+              "items": { "type": "string", "enum": ["cabin", "sports", "errands", "family_activities"] }
+            },
+            "passengerCount":  { "type": ["integer", "null"], "minimum": 1 },
+            "cargoNeeds":      { "type": ["string", "null"], "enum": ["high", "medium", "low", null] },
+            "currentCar":      { "type": ["string", "null"] },
+            "numberOfCars":    { "type": ["integer", "null"], "minimum": 0 },
+            "carRenewal":      { "type": ["string", "null"], "enum": ["renew", "first_buy", null] },
+            "reasonForBuying": { "type": ["string", "null"] }
+          }
+        }
+      }
+    },
+
+    "analyticalScores": {
+      "description": "Dashboard: Center Column — Analytical Scores",
+      "type": "object",
+      "required": ["segmentRanking", "propensityToBuy", "affinities"],
+      "properties": {
+
+        "segmentRanking": {
+          "description": "Attitudinal segment bar chart. Scores must sum to 100.",
+          "type": "object",
+          "required": ["affluentProgressive", "affluentSocialClimber", "establishedElite", "technocentricTrendsetter", "dominantSegment"],
+          "properties": {
+            "affluentProgressive":     { "type": "integer", "minimum": 0, "maximum": 100 },
+            "affluentSocialClimber":   { "type": "integer", "minimum": 0, "maximum": 100 },
+            "establishedElite":        { "type": "integer", "minimum": 0, "maximum": 100 },
+            "technocentricTrendsetter": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "dominantSegment": {
+              "type": "string",
+              "enum": ["affluentProgressive", "affluentSocialClimber", "establishedElite", "technocentricTrendsetter"]
+            }
+          }
+        },
+
+        "propensityToBuy": {
+          "description": "Sales funnel progress bar. Score 0–100 maps to stage.",
+          "type": "object",
+          "required": ["score", "stage"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "stage": { "type": "string", "enum": ["awareness", "consideration", "decision"] }
+          }
+        },
+
+        "affinities": {
+          "description": "Affinities wheel / circle chart with four quadrants.",
+          "type": "object",
+          "required": ["powertrain", "models", "personalDrivers", "productAttributes"],
+          "properties": {
+            "powertrain": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["value", "strength"],
+                "properties": {
+                  "value":    { "type": "string", "enum": ["electric", "plugInHybrid", "mildHybrid"] },
+                  "strength": { "type": "string", "enum": ["high", "medium", "low"] }
+                }
+              }
+            },
+            "models": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["value", "strength"],
+                "properties": {
+                  "value":    { "type": "string", "enum": ["EX90", "EX60", "EX30", "CX90", "CX60", "CX40"] },
+                  "strength": { "type": "string", "enum": ["high", "medium", "low"] }
+                }
+              }
+            },
+            "personalDrivers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["value", "strength"],
+                "properties": {
+                  "value":    { "type": "string", "enum": ["socialValidation", "responsibility", "fun", "security", "qualityOfLife"] },
+                  "strength": { "type": "string", "enum": ["high", "medium", "low"] }
+                }
+              }
+            },
+            "productAttributes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["value", "strength"],
+                "properties": {
+                  "value":    { "type": "string", "enum": ["performance", "luxury", "technology", "safety"] },
+                  "strength": { "type": "string", "enum": ["high", "medium", "low"] }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "recommendations": {
+      "description": "Dashboard: Right Column — Recommendations",
+      "type": "object",
+      "required": ["engagementStrategy", "nextBestActions", "contentRecommendations"],
+      "properties": {
+
+        "engagementStrategy": {
+          "description": "AI-generated strategic advice paragraph for sales team.",
+          "type": "string",
+          "minLength": 50,
+          "maxLength": 500
+        },
+
+        "nextBestActions": {
+          "description": "Top 3 recommended actions ranked by likelihood.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["action", "likelihood", "reasoning"],
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": ["bookTestDrive", "completeConfiguration", "completeOrder", "contactDealer", "viewContent"]
+              },
+              "likelihood": { "type": "integer", "minimum": 0, "maximum": 100 },
+              "reasoning":  { "type": "string" }
+            }
+          }
+        },
+
+        "contentRecommendations": {
+          "description": "Top 3 content topics suggested based on user affinities.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["topic", "relevanceScore"],
+            "properties": {
+              "topic":          { "type": "string" },
+              "relevanceScore": { "type": "integer", "minimum": 0, "maximum": 100 }
+            }
+          }
+        }
+      }
+    },
+
+    "channelConsent": {
+      "description": "Explicit permission tracking for outbound communication.",
+      "type": "object",
+      "required": ["conversational", "email", "sms"],
+      "properties": {
+        "conversational": { "type": "boolean", "default": true },
+        "email":          { "type": "boolean", "default": false },
+        "sms":            { "type": "boolean", "default": false }
+      }
+    },
+
+    "meta": {
+      "description": "Profile metadata for dashboard display and system tracking.",
+      "type": "object",
+      "required": ["profileCompleteness", "confidenceScore", "lastUpdated", "sessionsAnalyzed"],
+      "properties": {
+        "profileCompleteness":    { "type": "integer", "minimum": 0, "maximum": 100 },
+        "confidenceScore":        { "type": "integer", "minimum": 0, "maximum": 100 },
+        "lastUpdated":            { "type": "string", "format": "date-time" },
+        "sessionsAnalyzed":       { "type": "integer", "minimum": 1 },
+        "profileCharacteristics": { "type": ["string", "null"], "maxLength": 300 }
+      }
+    }
+  }
+}
