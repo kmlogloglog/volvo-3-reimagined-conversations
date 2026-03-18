@@ -1,16 +1,17 @@
 <template>
     <div class="view">
         <Transition name="bg-single">
-            <div v-if="isModelComponent" class="image-stage-wrapper">
-                <BackgroundImageSingle
-                    :src="agentStore.backgroundImages?.[0]"
-                    @image-loaded="onImageLoaded" />
-            </div>
+            <BackgroundImageSilhouette
+                v-if="isModelComponent"
+                :src="agentStore.backgroundImages?.[0]"
+                @image-loaded="onImageLoaded" />
         </Transition>
 
-        <BackgroundImages
-            v-if="isCarouselVisible"
-            :src="agentStore.backgroundImages ?? undefined" />
+        <Transition name="bg-carousel">
+            <BackgroundImages
+                v-if="isCarouselVisible"
+                :src="carouselSrc" />
+        </Transition>
 
         <div class="base-view">
             <div class="base-view-inner">
@@ -34,13 +35,14 @@
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel"
             :scale="blobScale"
-            :vertical-offset="blobVerticalOffset"
             :bottom-align="isCarouselVisible"
             :gradient-stops="blobGradientStops"
             :hide="isBlobMaskComponent" />
 
         <BlobMask
-            v-if="isBlobMaskComponent"
+            class="blob-mask-component"
+            :class="{ 'blob-mask-component-visible': isBlobMaskComponent }"
+            :visible="isBlobMaskComponent"
             :image-src="agentStore.backgroundImages?.[0]"
             :image-scale="agentStore.componentName === AGENT.COMPONENT_NAME.INTERIOR ? 1.1 : 1" />
 
@@ -64,7 +66,7 @@
     import BlobMask from '@/components/blobMask/BlobMask.vue';
     import AudioCaptureMeter from '@/components/audioCapture/AudioCaptureMeter.vue';
     import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
-    import BackgroundImageSingle from '@/components/imageViewer/BackgroundImageSingle.vue';
+    import BackgroundImageSilhouette from '@/components/imageViewer/BackgroundImageSilhouette.vue';
     import AudioListeningMessage from '@/components/audioCapture/AudioListeningMessage.vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
     import DealerDetailsCard from '@/components/dealerDetailsCard/DealerDetailsCard.vue';
@@ -92,6 +94,20 @@
     const isCarouselVisible = computed(() => CAROUSEL_COMPONENTS.includes(agentStore.componentName as string));
     const isBlobMaskComponent = computed(() => BLOB_MASK_COMPONENTS.includes(agentStore.componentName as string));
 
+    // Frozen carousel images — only updated while the carousel is actually visible.
+    // Prevents a mid-leave src change from triggering an internal crossfade inside
+    // BackgroundImages that fights the outer leave transition.
+    const carouselSrc = ref<string[] | undefined>(undefined);
+    watch(
+        [isCarouselVisible, () => agentStore.backgroundImages],
+        ([visible, images]) => {
+            if (visible) {
+                carouselSrc.value = (images as string[]) ?? undefined;
+            }
+        },
+        { immediate: true },
+    );
+
     // Blob shape & appearance
 
     // Reset only when the component step changes so that image src updates within
@@ -107,11 +123,7 @@
     }
 
     const blobScale = computed(() =>
-        isModelComponent.value && imageReady.value ? 2.5 : 1,
-    );
-
-    const blobVerticalOffset = computed(() =>
-        isModelComponent.value && imageReady.value ? '-15%' : '0%',
+        isModelComponent.value && imageReady.value ? 3 : 1,
     );
 
     const blobGradientStops = computed(() =>
@@ -241,15 +253,39 @@
     opacity: 0;
 }
 
-// Leave-only — entry is handled by BackgroundImageSingle's internal load-driven fade.
+// Leave-only — entry is handled by BackgroundImageSilhouette's internal load-driven fade.
 .bg-single-leave-active {
+    transition: opacity 1s ease, filter 1s ease;
+}
+
+.bg-single-leave-from {
     filter: blur(0px);
     opacity: 1;
-    transition: opacity 1s ease, filter 1s ease;
 }
 
 .bg-single-leave-to {
     filter: blur(16px);
     opacity: 0;
+}
+
+.bg-carousel-enter-active,
+.bg-carousel-leave-active {
+    transition: opacity 1s ease;
+}
+
+.bg-carousel-enter-from,
+.bg-carousel-leave-to {
+    opacity: 0;
+}
+
+.blob-mask-component {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+
+    &-visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
 }
 </style>

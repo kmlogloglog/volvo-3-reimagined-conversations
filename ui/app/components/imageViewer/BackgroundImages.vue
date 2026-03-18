@@ -59,6 +59,7 @@ $blur: 16px;
     position: fixed;
     top: 0;
     width: 100%;
+    z-index: 0;
 }
 
 .carousel-layer {

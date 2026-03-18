@@ -10,6 +10,7 @@ export const useAgentStore = defineStore('agentStore', {
         conversation: [],
         audioLevel: 0,
         backgroundImages: null,
+        carouselImages: null,
         componentName: null,
         gradientStops: null,
         retailerDetails: null,

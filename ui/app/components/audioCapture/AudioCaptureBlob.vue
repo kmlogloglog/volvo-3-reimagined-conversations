@@ -17,7 +17,6 @@
         bottomAlign?: boolean
         hide?: boolean
         scale?: number
-        verticalOffset?: string
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -26,11 +25,10 @@
         bottomAlign: false,
         hide: false,
         scale: 1,
-        verticalOffset: '0%',
     });
 
-    // Stable default — defined outside withDefaults so the reference never changes
-    // between renders, preventing the gradient watcher from firing spuriously.
+    // Defined outside withDefaults so the reference never changes between
+    // renders, preventing the gradient watcher from firing spuriously.
     const DEFAULT_GRADIENT_STOPS: GradientStop[] = [
         { position: 0, r: 250, g: 210, b: 200, a: 0.75 },
         { position: 0.35, r: 181, g: 73, b: 3, a: 0.25 },
@@ -39,18 +37,14 @@
 
     // Animation, shape, and flare tuning constants.
     const config = {
-        // Animation
         targetFps: 30,
 
-        // Animation speed
         idleAnimationSpeed: 0.015,
         maxAnimationSpeedBoost: 0.016,
 
-        // Morph speed
         idleMorphSpeed: 0.5,
         maxMorphSpeedBoost: 0.25,
 
-        // Blob shape
         baseSize: 0.2,
         radialRings: 16,
         angularSegments: 40,
@@ -59,12 +53,11 @@
         pulseSpeed: 0.7,
         idlePulseAmount: 0.15,
 
-        // Noise scale (controls shape smoothness)
         idleNoiseScale: 0.6,
-        // Negative value = smoother shape at peak intensity.
+        // Negative = smoother shape at peak intensity
         maxNoiseScaleBoost: -0.3,
 
-        // Idle state (floor - never goes below this)
+        // Idle floor — never goes below this
         idleMorphIntensity: 0.8,
         idleSizeMultiplier: 1.0,
         idleFlareIntensity: 0.25,
@@ -104,49 +97,38 @@
         bottomAlignIdleSizeMultiplier: 0.6,
         bottomAlignMaxSizeMultiplierBoost: 1.8,
 
-        // How long the crossfade takes, in seconds.
         fadeDurationSecs: 0.4,
 
-        // Delay before the fade-IN starts, in seconds.
-        // The fade-out always starts immediately.
+        // Delay before the fade-IN starts (fade-out always starts immediately)
         fadeInDelaySecs: 0.3,
     };
 
-    // Smoothed intensity — plain variable to avoid reactive overhead.
     let smoothedIntensity = 0;
+    let smoothedScale = 1;
 
-    // Attack/release rates control how fast the blob responds to intensity changes.
     const smoothing = {
-        // Higher = faster rise when intensity increases.
+        // Higher = faster rise
         attack: 0.1,
-        // Higher = faster decay when intensity decreases.
+        // Higher = faster decay
         release: 0.1,
     };
 
-    // Each blob has its own alpha so fade-out and fade-in can be timed independently.
-    // centerAlpha starts at 1, bottomAlpha at 0.
     let centerAlpha = 1;
     let bottomAlpha = 0;
-    // Seconds remaining before the incoming blob's fade-in starts.
     let fadeInDelayRemaining = 0;
 
-    // Duration of the gradient color crossfade in seconds.
     const COLOR_FADE_DURATION_SECS = 1.2;
 
     let currentStops: GradientStop[] = [...DEFAULT_GRADIENT_STOPS];
     let nextStops: GradientStop[] | null = null;
-    // 1 = transition complete, fully on currentStops.
     let colorFadeProgress = 1;
 
     watch(() => props.gradientStops, (newStops) => {
-        if (!newStops) return;
-        // Snapshot mid-fade position in case a second change arrives during transition.
         currentStops = resolvedStops();
-        nextStops = [...newStops];
+        nextStops = [...(newStops ?? DEFAULT_GRADIENT_STOPS)];
         colorFadeProgress = 0;
     });
 
-    // Interpolates between currentStops and nextStops based on colorFadeProgress.
     function resolvedStops() {
         if (!nextStops || colorFadeProgress >= 1) return currentStops;
 
@@ -169,20 +151,16 @@
         return resolved;
     }
 
-    // Cached root font size to avoid getComputedStyle calls every frame.
     let cachedRemPx = 16;
 
-    // Reads root font size and updates the cache.
     function updateRemCache() {
         cachedRemPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     }
 
-    // Returns the Y coordinate for the bottom-aligned blob position.
     function getBottomCenterY() {
         return displayHeight - config.bottomAlignOffsetRem * cachedRemPx;
     }
 
-    // Pauses animation when the tab is hidden or the component is off-screen.
     const { width: windowWidth, height: windowHeight } = useWindowSize();
     const documentVisibility = useDocumentVisibility();
     const containerRef = ref(null);
@@ -205,23 +183,19 @@
         return true;
     });
 
-    // Perlin noise permutation table — deterministic, non-random.
     const permutation = new Uint8Array(512);
     for (let i = 0; i < 256; i++) {
         permutation[i] = permutation[i + 256] = (i * 167 + 53) & 255;
     }
 
-    // Smoothstep curve used internally by Perlin noise.
     function fade(t: number): number {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
 
-    // Linear interpolation between a and b.
     function lerp(t: number, a: number, b: number): number {
         return a + t * (b - a);
     }
 
-    // Gradient contribution for a single Perlin lattice point.
     function grad(hash: number, x: number, y: number, z: number): number {
         const h = hash & 15;
         const u = h < 8 ? x : y;
@@ -229,7 +203,7 @@
         return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
     }
 
-    // 3D Perlin noise, returns a value in roughly [-1, 1].
+    // Returns a value in roughly [-1, 1].
     function noise(x: number, y: number, z: number): number {
         const X = Math.floor(x) & 255;
         const Y = Math.floor(y) & 255;
@@ -259,7 +233,6 @@
                          lerp(u, grad(permutation[AB + 1]!, x, y - 1, z - 1), grad(permutation[BB + 1]!, x - 1, y - 1, z - 1))));
     }
 
-    // Precomputed sin/cos tables shared by blob and flare to avoid per-vertex trig calls.
     const maxSegments = Math.max(config.angularSegments, config.flare.segments);
     const cosTable = new Float32Array(maxSegments + 1);
     const sinTable = new Float32Array(maxSegments + 1);
@@ -270,7 +243,6 @@
         sinTable[i] = Math.sin(angle);
     }
 
-    // Returns the noise-displaced radius for a single vertex.
     function getMorphedRadius(
         cosAngle: number,
         sinAngle: number,
@@ -289,8 +261,6 @@
         return baseRadius * (1 + noiseValue * morphIntensity);
     }
 
-    // Samples the gradient stop array and returns an rgba string for the given radius.
-    // stops is resolved once per frame in animate() to avoid repeated calls per ring.
     function getGradientColor(normalizedRadius: number, stops: GradientStop[]): string {
         const clampedPos = Math.max(0, Math.min(1, normalizedRadius));
 
@@ -316,18 +286,15 @@
         return `rgba(${r},${g},${b},${a})`;
     }
 
-    // Returns an rgba color for a flare ring, applying radial falloff and shimmer.
     function getFlareColor(normalizedRadius: number, layerOpacity: number, shimmerFactor: number, flareIntensity: number): string {
         const { color } = config.flare;
         const v = 1 - normalizedRadius;
-        // Approximates pow(v, 2.5) without Math.pow.
+        // pow(v, 2.5) approximation
         const falloff = v * v * Math.sqrt(v);
         const alpha = falloff * layerOpacity * flareIntensity * (1 + shimmerFactor);
         return `rgba(${color.r},${color.g},${color.b},${Math.min(1, alpha)})`;
     }
 
-    // Draws one concentric ring pass for a flare layer with noise-displaced vertices.
-    // sizeMultiplier and layerOpacity are scalars to avoid per-frame object spread.
     function drawFlareLayer(
         ctx: CanvasRenderingContext2D, centerX: number, centerY: number, baseRadius: number,
         timeX: number, timeY: number, noiseOffset: number,
@@ -365,7 +332,6 @@
         }
     }
 
-    // Draws the primary and optional secondary lens flare at the given blob position.
     function drawLensFlare(
         ctx: CanvasRenderingContext2D, blobCenterX: number, blobCenterY: number,
         blobRadius: number, timeX: number, timeY: number, noiseOffset: number,
@@ -430,7 +396,6 @@
         ctx.restore();
     }
 
-    // Draws one full blob at the given centerY and alpha, including its lens flare.
     function drawBlob(
         centerY: number, alpha: number, pulsedRadius: number,
         timeX: number, timeY: number, morphIntensity: number,
@@ -472,7 +437,6 @@
         ctx!.restore();
     }
 
-    // Canvas context, dimensions, and frame timing state.
     const gradientCanvas = ref<HTMLCanvasElement | null>(null);
     let canvas: HTMLCanvasElement | null = null;
     let ctx: CanvasRenderingContext2D | null = null;
@@ -487,10 +451,8 @@
 
     const frameInterval = 1000 / config.targetFps;
 
-    // Reads the canvas layout size and resizes the backing buffer to match DPR.
-    // Uses offsetWidth/offsetHeight instead of getBoundingClientRect so that
-    // CSS transforms on the container (e.g. scale(0) when hidden) do not
-    // cause the canvas to be initialized at 0×0.
+    // Uses offsetWidth/offsetHeight instead of getBoundingClientRect so CSS
+    // transforms (e.g. scale(0) when hidden) don't cause 0×0 initialization.
     function updateCanvasSize() {
         if (!canvas) return;
         if (!ctx) return;
@@ -506,13 +468,10 @@
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
 
-        // Refresh cached rem value on every resize.
         updateRemCache();
     }
 
-    // Main render loop — advances time, smooths intensity, crossfades blobs, and draws.
     function animate(timestamp: number) {
-        // Loop exits here; watch(shouldAnimate) restarts it when visible again.
         if (!shouldAnimate.value) {
             animationFrameId = null;
             return;
@@ -528,14 +487,14 @@
 
         lastFrameTime = timestamp - (elapsed % frameInterval);
 
-        // Asymmetric smoothing: fast attack, slow release.
         const target = props.intensity;
         const factor = target > smoothedIntensity ? smoothing.attack : smoothing.release;
         smoothedIntensity += (target - smoothedIntensity) * factor;
 
+        smoothedScale += (props.scale - smoothedScale) * 0.05;
+
         const elapsedSecs = elapsed / 1000;
 
-        // Advance color crossfade.
         if (nextStops && colorFadeProgress < 1) {
             colorFadeProgress = Math.min(1, colorFadeProgress + elapsedSecs / COLOR_FADE_DURATION_SECS);
             if (colorFadeProgress >= 1) {
@@ -544,25 +503,20 @@
             }
         }
 
-        // Resolve stops once per frame to avoid repeated calls inside the ring loop.
+        // Resolve stops once per frame.
         const stops = resolvedStops();
 
-        // Outgoing blob fades out immediately; incoming waits fadeInDelaySecs before fading in.
         const fadeStep = elapsedSecs / config.fadeDurationSecs;
 
         if (props.bottomAlign) {
-            // Center fades out immediately
             centerAlpha = Math.max(0, centerAlpha - fadeStep);
-            // Bottom fades in after delay
             if (fadeInDelayRemaining > 0) {
                 fadeInDelayRemaining = Math.max(0, fadeInDelayRemaining - elapsedSecs);
             } else {
                 bottomAlpha = Math.min(1, bottomAlpha + fadeStep);
             }
         } else {
-            // Bottom fades out immediately
             bottomAlpha = Math.max(0, bottomAlpha - fadeStep);
-            // Center fades in after delay
             if (fadeInDelayRemaining > 0) {
                 fadeInDelayRemaining = Math.max(0, fadeInDelayRemaining - elapsedSecs);
             } else {
@@ -570,13 +524,12 @@
             }
         }
 
-        // Scale animation parameters between idle floor and max boost based on intensity.
         const boost = smoothedIntensity;
         const animationSpeed = config.idleAnimationSpeed + boost * config.maxAnimationSpeedBoost;
         const morphSpeed = config.idleMorphSpeed + boost * config.maxMorphSpeedBoost;
         const morphIntensity = config.idleMorphIntensity + boost * config.maxMorphIntensityBoost;
         const noiseScale = config.idleNoiseScale + boost * config.maxNoiseScaleBoost;
-        const sizeMultiplier = config.idleSizeMultiplier + boost * config.maxSizeMultiplierBoost;
+        const sizeMultiplier = smoothedScale * config.idleSizeMultiplier + boost * config.maxSizeMultiplierBoost;
         const flareIntensity = config.idleFlareIntensity + boost * config.maxFlareIntensityBoost;
 
         time += animationSpeed;
@@ -588,7 +541,7 @@
         const idlePulse = Math.sin(time * config.pulseSpeed) * config.idlePulseAmount * (1 - boost);
         const pulsedRadius = baseRadius * (1 + idlePulse);
 
-        const bottomSizeMultiplier = config.bottomAlignIdleSizeMultiplier + boost * config.bottomAlignMaxSizeMultiplierBoost;
+        const bottomSizeMultiplier = smoothedScale * config.bottomAlignIdleSizeMultiplier + boost * config.bottomAlignMaxSizeMultiplierBoost;
         const bottomBaseRadius = Math.min(displayWidth, displayHeight) * config.baseSize * bottomSizeMultiplier;
         const bottomPulsedRadius = bottomBaseRadius * (1 + idlePulse);
 
@@ -609,17 +562,14 @@
         animationFrameId = requestAnimationFrame(animate);
     }
 
-    // Sets up the canvas context and starts the animation loop.
     function initBlob() {
         if (!gradientCanvas.value) return;
 
         canvas = gradientCanvas.value;
         ctx = canvas.getContext('2d', { alpha: true });
 
-        // Also initializes cachedRemPx.
         updateCanvasSize();
 
-        // Snap to initial alignment without a fade.
         centerAlpha = props.bottomAlign ? 0 : 1;
         bottomAlpha = props.bottomAlign ? 1 : 0;
         fadeInDelayRemaining = 0;
@@ -632,7 +582,6 @@
         animate(lastFrameTime);
     }
 
-    // Cancels any pending animation frame.
     function destroyBlob() {
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
@@ -647,13 +596,11 @@
     watch([windowWidth, windowHeight], debouncedUpdateCanvasSize);
 
     watch(() => props.bottomAlign, () => {
-        // Reset fade delay so the incoming blob waits before appearing.
         fadeInDelayRemaining = config.fadeInDelaySecs;
     });
 
-    // Drives the show/hide scale+fade animation.
-    // Transition is only enabled after mount so an initially-hidden blob snaps to
-    // scale(0)/opacity:0 immediately rather than playing the shrink animation.
+    // Transition is only enabled after mount so an initially-hidden blob
+    // snaps to scale(0)/opacity:0 instead of animating.
     const blobVisible = ref(!props.hide);
     const blobTransitionEnabled = ref(false);
 
@@ -662,19 +609,16 @@
     });
 
     const blobContainerStyle = computed(() => {
-        // When hiding, keep transitions snappy so the blob exits quickly.
-        // When visible, slow the transform down so position and scale changes feel deliberate.
         const transformDuration = props.hide ? '0.5s' : '1.4s';
         return {
             opacity: blobVisible.value ? 1 : 0,
-            transform: `translateZ(0) translateY(${props.verticalOffset}) scale(${blobVisible.value ? props.scale : 0})`,
+            transform: `translateZ(0) scale(${blobVisible.value ? 1 : 0})`,
             transition: blobTransitionEnabled.value
                 ? `opacity 0.4s ease, transform ${transformDuration} ease`
                 : 'none',
         };
     });
 
-    // Restarts the loop when the component becomes visible; the loop self-exits when hidden.
     watch(shouldAnimate, (val) => {
         if (val && !animationFrameId) {
             lastFrameTime = performance.now();
@@ -684,8 +628,6 @@
 
     onMounted(() => {
         initBlob();
-        // Enable transitions only after the initial paint so an initially-hidden
-        // blob starts at scale(0) instantly rather than animating from scale(1).
         requestAnimationFrame(() => {
             blobTransitionEnabled.value = true;
         });

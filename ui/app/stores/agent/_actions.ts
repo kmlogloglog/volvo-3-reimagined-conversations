@@ -19,14 +19,12 @@ const log = {
     error: (label: string, ...args: unknown[]) => console.error(`%c${label}`, 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', ...args),
 };
 
-// makeActions types `this` as the full store context (state + actions) so that action
-// methods referencing `this.someState` or `this.someAction()` are properly type-checked.
+// Types `this` as the full store context so actions can reference state/other actions.
 function makeActions<T extends object>(obj: T & ThisType<AgentState & T>): T {
     return obj;
 }
 
 export default makeActions({
-    // Converts a Float32 audio buffer to Int16 for transmission over WebSocket.
     float32ToInt16(float32: Float32Array): Int16Array {
         const int16 = new Int16Array(float32.length);
         for (let i = 0; i < float32.length; i++) {
@@ -37,7 +35,7 @@ export default makeActions({
         return int16;
     },
 
-    // Decodes a URL-safe base64 string (as returned by the agent) to an ArrayBuffer for audio playback.
+    // URL-safe base64 (agent format) → ArrayBuffer for audio playback.
     base64ToArray(base64: string): ArrayBuffer {
         const base64Clean = base64.replace(/-/g, '+').replace(/_/g, '/');
         const binaryString = atob(base64Clean);
@@ -53,7 +51,6 @@ export default makeActions({
         this.conversation.push(msg);
     },
 
-    // Upserts the in-progress user transcription message; creates a new entry on the first delta for a turn.
     handleUserTranscription(text: string, finished = false): void {
         if (!this.currentUserMessageId) {
             this.currentUserMessageId = `${Date.now().toString()}_${AGENT.USER}`;
@@ -82,7 +79,6 @@ export default makeActions({
         }
     },
 
-    // Appends a text delta to the current agent message, deduplicating re-sent chunks and pruning stale turns.
     handleTextResponse(text: string, finished = false): void {
         if (!this.currentMessageId) {
             this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
@@ -102,12 +98,11 @@ export default makeActions({
             const currentText = msg.content.text || '';
             msg.finished = finished;
 
-            // Guard against duplicate deltas — ADK sometimes resends the last chunk.
+            // ADK sometimes resends the last chunk.
             if (currentText.endsWith(text) && text.length > 1) return;
             msg.content.text = `${currentText}${text}`;
         }
 
-        // Prune stale unfinished agent messages that belong to a previous turn.
         this.conversation = this.conversation.filter(msg => msg.id === this.currentMessageId || msg.sender !== AGENT.AGENT || msg.finished);
 
         if (finished) {
@@ -120,10 +115,12 @@ export default makeActions({
         this.backgroundImages = imageUrls;
         this.componentName = componentName;
         this.gradientStops = gradientStops ?? null;
+
+        if (componentName === AGENT.COMPONENT_NAME.FINAL_CONFIGURATION) {
+            this.carouselImages = imageUrls;
+        }
     },
 
-    // Dispatches an incoming WebSocket event to the correct handler based on its content.
-    // Handles audio chunks, text deltas, transcriptions, ui_action directives, and turn signals.
     handleAgentEvent(event: AgentEvent): void {
         let textHandled = false;
         if (event.content && event.content.parts) {
@@ -151,8 +148,10 @@ export default makeActions({
 
                         if (componentName === AGENT.COMPONENT_NAME.TEST_DRIVE_CONFIRMATION
                             || componentName === AGENT.COMPONENT_NAME.MAPS_VIEW) {
-                            // Preserve existing backgroundImages so the final_configuration
-                            // carousel remains visible through the retailer and booking steps.
+                            // Restore carousel images saved during FINAL_CONFIGURATION,
+                            // since backgroundImages may have been overwritten by
+                            // intermediate steps like WHEELS or INTERIOR.
+                            this.backgroundImages = this.carouselImages;
                             this.componentName = componentName;
                         } else {
                             this.handleImageResponse(
@@ -220,7 +219,6 @@ export default makeActions({
         }
     },
 
-    // Tears down all audio nodes, contexts, and the level-monitoring rAF loop, resetting audio state.
     stopAudio(): void {
         log.info('AUDIO', 'Stopping...');
 
@@ -273,8 +271,6 @@ export default makeActions({
         this.micPermissionGranted = false;
     },
 
-    // Opens a WebSocket connection with a 5-second timeout, wiring all event handlers.
-    // Deduplicates concurrent calls by returning the same in-flight promise.
     async connect({ userId, sessionId }: ConnectParams = {}): Promise<void> {
         if (this.connected) return Promise.resolve();
         if (this.connectionPromise) return this.connectionPromise;
@@ -336,7 +332,7 @@ export default makeActions({
                 this.connectionPromise = null;
                 this.websocket = null;
 
-                // Drop any unfinished agent messages so ChatTypeIndicator doesn't get stuck.
+                // Drop unfinished agent messages so ChatTypeIndicator doesn't get stuck.
                 this.conversation = this.conversation.filter(
                     msg => msg.sender !== AGENT.AGENT || msg.finished,
                 );
@@ -370,8 +366,6 @@ export default makeActions({
         connectionBus.emit({ connecting: false, connected: false });
     },
 
-    // Starts an rAF loop that reads both input and output analyser frequency data and reports a
-    // normalised 0–1 audio level, boosting microphone input so it reads comparably to speaker output.
     startLevelMonitoring(onLevelChange: ((level: number) => void) | null = null): void {
         if (!this.inputAnalyser || !this.analyser) {
             return;
@@ -383,8 +377,6 @@ export default makeActions({
         const inputDataArray = new Uint8Array(inputAnalyser.frequencyBinCount);
         const outputDataArray = new Uint8Array(analyser.frequencyBinCount);
 
-        const boosterInputLevel = 1.25;
-
         const draw = () => {
             this.animationId = requestAnimationFrame(draw);
             inputAnalyser.getByteFrequencyData(inputDataArray);
@@ -393,16 +385,13 @@ export default makeActions({
             const inputLevel = Math.round(inputDataArray.reduce((a, b) => a + b, 0) / inputDataArray.length);
             const outputLevel = Math.round(outputDataArray.reduce((a, b) => a + b, 0) / outputDataArray.length);
 
-            this.audioLevel = Math.round(((Math.max(inputLevel * boosterInputLevel, outputLevel)) / 255) * 1000) / 1000;
+            this.audioLevel = Math.round(((Math.max(inputLevel, outputLevel)) / 255) * 1000) / 1000;
             onLevelChange?.(this.audioLevel);
         };
 
         draw();
     },
 
-    // Initialises the full audio pipeline: requests mic permission, creates two AudioContexts (16 kHz
-    // recorder and 24 kHz player), loads AudioWorklet modules, connects to the WebSocket, and starts
-    // streaming PCM chunks. Safe to call while already running — exits early if already active.
     async startAudio(): Promise<void> {
         if (this.listening || this.startingAudio) return;
 
@@ -459,8 +448,7 @@ export default makeActions({
                 this.analyser!.connect(this.audioContext.destination);
             }
 
-            // Connect to WebSocket before setting up the recorder so no
-            // chunks are dropped while this.connected is still false
+            // Connect before setting up the recorder so no chunks are dropped
             if (!this.connected) {
                 await this.connect();
             }
@@ -500,7 +488,6 @@ export default makeActions({
         }
     },
 
-    // Adds user and agent placeholder messages to the conversation, then sends the text over WebSocket.
     sendMessage(text: string): void {
         this.addMessage({
             id: `${Date.now().toString()}_${AGENT.USER}`,

@@ -1,80 +1,83 @@
 <template>
     <div ref="containerRef" class="blob-mask">
-        <canvas ref="maskCanvas" :class="{ 'blob-mask-canvas-visible': isImageLoaded }"></canvas>
+        <div class="blob-mask-backdrop"></div>
+        <TransitionGroup
+            :key="resetKey"
+            name="blob-image-swap"
+            tag="div"
+            class="blob-mask-images">
+            <img
+                v-for="instance in instances"
+                :key="instance.id"
+                :src="instance.src"
+                class="blob-mask-images-img"
+                :class="{ 'blob-mask-images-img-visible': loadedIds.has(instance.id) }"
+                :style="{ transform: `scale(${instance.scale})` }"
+                @load="onLoad(instance.id)" />
+        </TransitionGroup>
+        <canvas ref="maskCanvas" class="blob-mask-canvas"></canvas>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
+    import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue';
     import { useIntersectionObserver, useDocumentVisibility, usePreferredReducedMotion } from '@vueuse/core';
 
     interface Props {
         imageSrc?: string
-        // Size of the image relative to the container, in percent (0–100).
-        // 100 = contain-fit to the full container; 50 = contain-fit within a 50% box.
-        imageSize?: number
         // Uniform scale multiplier applied on top of the contain-fit dimensions.
         // 1.0 = no extra scaling; 1.1 = 10% larger than the contain-fit size.
         imageScale?: number
+        // Signals whether the component is actively shown. On transition
+        // to true, all image state is reset and the current imageSrc is
+        // preloaded fresh. The canvas hole persists when false to allow
+        // smooth outer CSS fade-outs.
+        visible?: boolean
     }
 
     const props = withDefaults(defineProps<Props>(), {
         imageSrc: '',
-        imageSize: 100,
         imageScale: 1,
+        visible: true,
     });
 
-    // Animation and shape tuning constants.
-    // All values are tweak-friendly — comments describe the visual effect of increasing/decreasing each.
     const config = {
-        // Target render rate. Lower = less CPU but choppier motion. Rarely needs changing.
         targetFps: 24,
 
-        // How fast the blob drifts and rotates over time.
         // ↑ faster, more energetic movement  ↓ slower, more meditative drift
         animationSpeed: 0.008,
 
-        // Multiplier on animationSpeed that controls how quickly the blob shape morphs.
         // ↑ shape changes more rapidly  ↓ shape holds its form longer between morphs
         morphSpeed: 0.4,
 
-        // Radius of the blob as a fraction of the shorter canvas dimension (0–1).
-        // ↑ larger spotlight covering more of the image  ↓ smaller, tighter reveal
+        // Fraction of shorter canvas dimension (0–1).
+        // ↑ larger spotlight  ↓ smaller, tighter reveal
         baseSize: 0.4,
 
-        // Number of vertices around the blob perimeter used to approximate the shape.
-        // ↑ smoother silhouette, higher CPU cost  ↓ more polygonal look, cheaper
+        // ↑ smoother silhouette, higher CPU cost  ↓ more polygonal, cheaper
         angularSegments: 40,
 
-        // How much the noise field displaces each vertex away from a perfect circle.
         // ↑ wilder, more spiky organic shape  ↓ closer to a smooth circle
         morphIntensity: 0.5,
 
-        // Spatial frequency of the noise field that drives the shape.
-        // ↑ faster detail changes, more wrinkled surface  ↓ broader, gentler undulations
+        // ↑ faster detail changes, more wrinkled  ↓ broader, gentler undulations
         noiseScale: 0.5,
 
-        // Speed of the gentle size pulsation (breathing effect).
         // ↑ quicker breathing rhythm  ↓ slower, deeper breaths
         pulseSpeed: 0.7,
 
-        // How much the blob radius swells and shrinks with each pulse (fraction of baseSize).
         // ↑ more visible inhale/exhale  ↓ subtler, nearly static size
         pulseAmount: 0.08,
 
-        // Gaussian blur radius (px) applied to the mask edge before compositing.
-        // Controls how soft the transition is between revealed image and transparency.
         // ↑ more feathered, dreamy vignette  ↓ crisper, harder spotlight edge
         edgeBlur: 30,
     };
 
-    // Noise permutation table — deterministic, non-random.
     const permutation = new Uint8Array(512);
     for (let i = 0; i < 256; i++) {
         permutation[i] = permutation[i + 256] = (i * 167 + 53) & 255;
     }
 
-    // Smoothstep curve used internally by Perlin noise.
     function fade(t: number): number {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
@@ -83,7 +86,6 @@
         return a + t * (b - a);
     }
 
-    // Gradient contribution for a single Perlin lattice point.
     function grad(hash: number, x: number, y: number, z: number): number {
         const h = hash & 15;
         const u = h < 8 ? x : y;
@@ -91,7 +93,7 @@
         return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
     }
 
-    // 3D Perlin noise, returns a value in roughly [-1, 1].
+    // Returns a value in roughly [-1, 1].
     function noise(x: number, y: number, z: number): number {
         const X = Math.floor(x) & 255;
         const Y = Math.floor(y) & 255;
@@ -121,7 +123,6 @@
                          lerp(u, grad(permutation[AB + 1]!, x, y - 1, z - 1), grad(permutation[BB + 1]!, x - 1, y - 1, z - 1))));
     }
 
-    // Precomputed sin/cos tables to avoid per-vertex trig calls.
     const cosTable = new Float32Array(config.angularSegments + 1);
     const sinTable = new Float32Array(config.angularSegments + 1);
 
@@ -131,7 +132,6 @@
         sinTable[i] = Math.sin(angle);
     }
 
-    // Returns the noise-displaced radius for a single blob vertex.
     function getMorphedRadius(cosAngle: number, sinAngle: number, baseRadius: number, timeX: number, timeY: number): number {
         const noiseValue = noise(
             cosAngle * config.noiseScale + noiseOffset + timeX,
@@ -141,7 +141,6 @@
         return baseRadius * (1 + noiseValue * config.morphIntensity);
     }
 
-    // Traces the organic blob outline as a canvas path (does not fill/stroke).
     function traceBlobPath(centerX: number, centerY: number, radius: number, timeX: number, timeY: number) {
         if (!ctx) return;
         ctx.beginPath();
@@ -161,11 +160,14 @@
         ctx.closePath();
     }
 
-    // Draws the image contain-fitted to the canvas, then masks it through the
-    // animated blob shape. The mask is blurred so edges feather softly.
-    function drawMaskedImage() {
-        if (!loadedImage) return;
+    function drawOverlay() {
         if (!ctx) return;
+
+        ctx.clearRect(0, 0, displayWidth, displayHeight);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, displayWidth, displayHeight);
+
+        if (!imageReady.value) return;
 
         const centerX = displayWidth / 2;
         const centerY = displayHeight / 2;
@@ -177,67 +179,75 @@
         const timeX = Math.cos(morphPhase) * loopRadius;
         const timeY = Math.sin(morphPhase) * loopRadius;
 
-        ctx.clearRect(0, 0, displayWidth, displayHeight);
-
-        // --- Step 1: contain-fit image within the imageSize percentage box ---
-        // Behaves like <img width="100%" max-width="100%">: scales to fit without
-        // overflowing the available area, maintaining aspect ratio.
-        // imagePadding converts the 1.25rem design token to pixels so the image
-        // is inset from all four canvas edges without affecting the mask shape.
-        const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const imagePadding = rootFontSize * 1.25;
-        const paddedW = displayWidth - imagePadding * 2;
-        const paddedH = displayHeight - imagePadding * 2;
-
-        const scale = props.imageSize / 100;
-        const availW = paddedW * scale;
-        const availH = paddedH * scale;
-
-        const imgAspect = loadedImage.width / loadedImage.height;
-        const availAspect = availW / availH;
-        let drawW, drawH;
-
-        if (imgAspect > availAspect) {
-            // Image is wider than the box — constrain by width.
-            drawW = availW;
-            drawH = availW / imgAspect;
-        } else {
-            // Image is taller than the box — constrain by height.
-            drawH = availH;
-            drawW = availH * imgAspect;
-        }
-
-        const scaledW = drawW * props.imageScale;
-        const scaledH = drawH * props.imageScale;
-
-        const drawX = imagePadding + (paddedW - scaledW) / 2;
-        const drawY = imagePadding + (paddedH - scaledH) / 2;
-
-        ctx.drawImage(loadedImage, drawX, drawY, scaledW, scaledH);
-
-        // --- Step 2: mask the image through the blob shape ---
-        // We fill the blob path with a blurred opaque shape and composite it
-        // as 'destination-in'. This keeps image pixels only where the (blurred)
-        // blob is opaque, making everything else transparent.
-        // The blur creates the feathered spotlight edge without touching the image.
         traceBlobPath(centerX, centerY, pulsedRadius, timeX, timeY);
-
         ctx.filter = `blur(${config.edgeBlur}px)`;
-        ctx.globalCompositeOperation = 'destination-in';
+        ctx.globalCompositeOperation = 'destination-out';
         ctx.fillStyle = '#fff';
         ctx.fill();
 
-        // Reset state for the next frame.
         ctx.filter = 'none';
         ctx.globalCompositeOperation = 'source-over';
     }
 
-    // Canvas context, dimensions, and frame timing.
+    let idCounter = 0;
+    const instances = ref<Array<{ id: number; src: string; scale: number }>>([]);
+    const loadedIds = reactive(new Set<number>());
+    let pendingId: number | null = null;
+    const imageReady = ref(false);
+    let preloadGeneration = 0;
+    // Incrementing forces Vue to recreate the TransitionGroup,
+    // killing any in-progress leave animations from stale images.
+    const resetKey = ref(0);
+
+    function onLoad(id: number) {
+        loadedIds.add(id);
+        if (id === pendingId) {
+            pendingId = null;
+            instances.value = instances.value.filter(i => i.id === id);
+        }
+    }
+
+    function preloadAndShow(src: string, scale: number) {
+        const gen = ++preloadGeneration;
+        const isFirstImage = instances.value.length === 0 || loadedIds.size === 0;
+
+        if (isFirstImage) {
+            imageReady.value = false;
+        }
+
+        const img = new Image();
+        const newId = idCounter++;
+
+        const onReady = () => {
+            if (gen !== preloadGeneration) return;
+
+            if (isFirstImage) {
+                instances.value = [{ id: newId, src, scale }];
+            } else {
+                pendingId = newId;
+                instances.value.push({ id: newId, src, scale });
+            }
+
+            imageReady.value = true;
+        };
+
+        img.onload = onReady;
+        img.onerror = onReady;
+        img.src = src;
+    }
+
+    watch(
+        () => props.imageSrc,
+        (newSrc) => {
+            if (!newSrc || !props.visible) return;
+            preloadAndShow(newSrc, props.imageScale);
+        },
+    );
+
     const maskCanvas = ref<HTMLCanvasElement | null>(null);
     const containerRef = ref<HTMLElement | null>(null);
     let canvas: HTMLCanvasElement | null = null;
     let ctx: CanvasRenderingContext2D | null = null;
-    let dpr = 1;
     let displayWidth = 0;
     let displayHeight = 0;
     let time = 0;
@@ -245,13 +255,10 @@
     let noiseOffset = 0;
     let animationFrameId: number | null = null;
     let lastFrameTime = 0;
-    let loadedImage: HTMLImageElement | null = null;
-    const isImageLoaded = ref(false);
     let resizeObserver: ResizeObserver | null = null;
 
     const frameInterval = 1000 / config.targetFps;
 
-    // Pause animation when the tab is hidden or the component leaves the viewport.
     const documentVisibility = useDocumentVisibility();
     const isIntersecting = ref(false);
     const prefersReducedMotion = usePreferredReducedMotion();
@@ -271,7 +278,6 @@
         return true;
     });
 
-    // Rate-limited rAF loop that advances time and redraws the masked image at targetFps.
     function animate(timestamp: number): void {
         if (!shouldAnimate.value) {
             animationFrameId = null;
@@ -290,12 +296,11 @@
         time += config.animationSpeed;
         morphPhase += config.animationSpeed * config.morphSpeed;
 
-        drawMaskedImage();
+        drawOverlay();
 
         animationFrameId = requestAnimationFrame(animate);
     }
 
-    // Resizes the canvas backing buffer to match the CSS layout size at the current DPR (capped at 2×).
     function updateCanvasSize() {
         if (!canvas) return;
         if (!ctx) return;
@@ -303,7 +308,7 @@
         displayWidth = canvas.offsetWidth;
         displayHeight = canvas.offsetHeight;
 
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
         canvas.width = displayWidth * dpr;
         canvas.height = displayHeight * dpr;
@@ -312,20 +317,6 @@
         ctx.scale(dpr, dpr);
     }
 
-    function loadImage(src: string): void {
-        loadedImage = null;
-        isImageLoaded.value = false;
-        if (!src) return;
-
-        const img = new Image();
-        img.onload = () => {
-            loadedImage = img;
-            isImageLoaded.value = true;
-        };
-        img.src = src;
-    }
-
-    // Initialises the canvas context, wires a ResizeObserver for layout changes, and starts the animation loop.
     function initMask() {
         if (!maskCanvas.value) return;
 
@@ -334,9 +325,8 @@
 
         updateCanvasSize();
 
-        // ResizeObserver fires after layout but before paint, so the canvas pixel
-        // buffer is always updated in the same frame the CSS size changes —
-        // preventing the browser from ever rendering a stretched frame.
+        // ResizeObserver fires before paint, so the canvas buffer is always
+        // updated in the same frame the CSS size changes — no stretched frames.
         resizeObserver = new ResizeObserver(() => {
             updateCanvasSize();
         });
@@ -347,7 +337,6 @@
         noiseOffset = Math.random() * 1000;
         lastFrameTime = performance.now();
 
-        loadImage(props.imageSrc);
         animate(lastFrameTime);
     }
 
@@ -362,8 +351,6 @@
         }
     }
 
-    watch(() => props.imageSrc, loadImage);
-
     watch(shouldAnimate, (val) => {
         if (val && !animationFrameId) {
             lastFrameTime = performance.now();
@@ -371,8 +358,26 @@
         }
     });
 
+    watch(() => props.visible, (val) => {
+        if (!val) return;
+
+        resetKey.value++;
+        instances.value = [];
+        loadedIds.clear();
+        pendingId = null;
+        imageReady.value = false;
+
+        if (props.imageSrc) {
+            preloadAndShow(props.imageSrc, props.imageScale);
+        }
+    });
+
     onMounted(() => {
         initMask();
+
+        if (props.visible && props.imageSrc) {
+            preloadAndShow(props.imageSrc, props.imageScale);
+        }
     });
 
     onUnmounted(() => {
@@ -381,6 +386,8 @@
 </script>
 
 <style lang="scss" scoped>
+$duration: 1200ms;
+
 .blob-mask {
     height: 100%;
     left: 50%;
@@ -390,17 +397,58 @@
     top: 0;
     transform: translateX(-50%);
     width: 100%;
-    will-change: transform;
 }
 
-.blob-mask canvas {
+.blob-mask-backdrop {
+    background-color: var(--app-background-color);
     height: 100%;
-    opacity: 0;
-    transition: opacity 0.8s ease;
+    inset: 0;
+    position: absolute;
     width: 100%;
+    z-index: 1;
+}
 
-    &.blob-mask-canvas-visible {
-        opacity: 1;
+.blob-mask-images {
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+
+    &-img {
+        height: 100%;
+        inset: 1.25rem;
+        object-fit: contain;
+        opacity: 0;
+        position: absolute;
+        transition: opacity 0.8s ease;
+        width: calc(100% - 2.5rem);
+
+        &-visible {
+            opacity: 1;
+        }
     }
+}
+
+.blob-mask-canvas {
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 3;
+}
+
+// Leave transition for old images during crossfade.
+.blob-image-swap-leave-active {
+    transition: opacity $duration ease;
+    z-index: 3;
+}
+
+.blob-image-swap-leave-from {
+    opacity: 1;
+}
+
+.blob-image-swap-leave-to {
+    opacity: 0;
 }
 </style>

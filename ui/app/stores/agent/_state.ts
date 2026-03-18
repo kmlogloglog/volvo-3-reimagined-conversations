@@ -7,6 +7,7 @@ export interface AgentState {
     conversation: ChatMessage[];
     audioLevel: number;
     backgroundImages: string[] | null;
+    carouselImages: string[] | null;
     componentName: string | null;
     gradientStops: GradientStop[] | null;
     retailerDetails: RetailerDetails | null;
