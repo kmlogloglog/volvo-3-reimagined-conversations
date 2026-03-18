@@ -216,5 +216,4 @@ nextjs/
 .claude/settings.local.json
 
 # GitHub Copilot / local agent config
-.github/
 .DS_Store
