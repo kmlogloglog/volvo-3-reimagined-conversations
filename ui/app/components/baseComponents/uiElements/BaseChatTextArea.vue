@@ -7,7 +7,7 @@
             type="text"
             class="chat-text-input"
             :disabled="loading"
-            placeholder="Ask Volvo Vän"
+            placeholder="Ask Freja"
             @keydown.enter.exact.prevent="onSubmit"></textarea>
         <button
             type="button"

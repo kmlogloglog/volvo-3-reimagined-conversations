@@ -173,7 +173,7 @@ When a new session starts, the **Preload Memory Callback** makes the consolidate
 The frontend is built with pure web technologies for maximum performance and simplicity.
 
 -   **Auto-Connect**: The application connects automatically on load.
--   **Inline Text Input**: Click "Ask Volvo Vän" to type messages. Focus is maintained for continuous conversation.
+-   **Inline Text Input**: Click "Ask Freja" to type messages. Focus is maintained for continuous conversation.
 -   **Push-to-Talk (PTT)**: Hold **Spacebar** to speak, release to mute. (Disabled while typing).
 -   **Microphone Toggle**: Click the mic icon to toggle mute/unmute permanently.
 
