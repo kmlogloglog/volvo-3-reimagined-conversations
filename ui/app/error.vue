@@ -1,5 +1,5 @@
 <template>
-    <div id="error" :style="backgroundStyle">
+    <div id="error">
         <div class="app-screen">
             <div class="content">
                 <h1 class="text-center">{{ error.statusCode }}</h1>
@@ -13,12 +13,12 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+    import type { NuxtError } from '#app';
     import { useError, clearError } from '#app';
     import BaseButton from './components/baseComponents/uiElements/BaseButton.vue';
 
-    const error = useError();
-    const { backgroundStyle } = useBackground();
+    const error = useError() as Ref<NuxtError>;
 
     function handleError() {
         clearError({ redirect: '/' });

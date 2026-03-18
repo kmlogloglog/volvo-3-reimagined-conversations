@@ -1,0 +1,6 @@
+@mixin panel-scroll {
+    margin: auto 0 0;
+    overflow-anchor: none;
+    overflow: auto;
+    padding: 2.5rem 1.875rem 0;
+}

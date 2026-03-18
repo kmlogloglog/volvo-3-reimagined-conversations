@@ -1,67 +1,130 @@
 <template>
-    <div
-        class="view">
-        <BackgroundImagesCarousel
+    <div class="view">
+        <BackgroundImages
             :src="agentStore.backgroundImages" />
-        <div
-            class="base-view"
-            :class="{ 'full-height': isFullHeightPage }">
-            <NuxtLoadingIndicator
-                color="var(--color-white)" />
-            <div
-                v-show="!isLoading"
-                class="base-view-inner">
-                <slot></slot>
+
+        <div class="base-view">
+            <div class="base-view-inner">
+                <DealerDetailsCard
+                    v-if="agentStore.testDriveDetails"
+                    v-bind="agentStore.testDriveDetails" />
+                <ChatPanel v-else-if="isChatActive" />
             </div>
         </div>
 
         <NavigationBar
-            :is-page-loading="isLoading"
-            @[EMITS.NAVIGATION_CHANGE]="onNavigate" />
+            @[EMITS.RECORD_CLICK]="handleMicrophoneClick"
+            @[EMITS.CHAT_CLICK]="handleChatClick" />
 
-        <!--
-        Do not use AudioCaptureCircles together with full screen background image.
-        AudioCaptureCircles breaks iOS Safari's background rendering behind browser chrome
-        -->
         <ClientOnly>
-            <AudioCaptureWaves
-                v-if="route.name === NAVIGATION.AUDIO.name"
-                class="audio-waves"
+            <AudioCaptureMeter
+                v-if="$router.currentRoute.value.query.meter === 'true'"
                 :level="agentStore.audioLevel" />
-            <AudioCaptureCircles
-                :enabled="!agentStore.backgroundImages" />
         </ClientOnly>
+
+        <AudioCaptureBlob
+            :intensity="agentStore.audioLevel"
+            :bottom-align="agentStore.backgroundImages?.length > 0"
+            :hide="false" />
+
+        <!-- <BlobMask
+            image-size="80"
+            image-src="/assets/images/EX30_rim_JG21_20inch 1.png" /> -->
+
+        <Transition name="fade">
+            <AudioListeningMessage
+                v-if="isListening" />
+        </Transition>
     </div>
 </template>
 
-<script setup>
-    import { EMITS } from '@/constants/emits.js';
-    import { NAVIGATION } from '@/constants/navigation';
-    import { navigateTo, useRoute } from '#app';
+<script setup lang="ts">
+    import type { ConnectionBusPayload } from '@/types/bus';
+    import { BUS } from '@/constants/bus';
+    import { EMITS } from '@/constants/emits';
+    import { AGENT } from '@/constants/agent';
+    import { storeToRefs } from 'pinia';
+    import { useAgent } from '@/composables/useAgent';
     import { useAgentStore } from '@/stores/agent';
-    import BackgroundImagesCarousel from '@/components/backgroundImage/BackgroundImagesCarousel.vue';
-    import AudioCaptureCircles from '@/components/animations/AudioCaptureCircles.vue';
-    import AudioCaptureWaves from '@/components/animations/AudioCaptureWaves.vue';
-
-    const emit = defineEmits([
-        EMITS.NAVIGATION_CHANGE,
-        EMITS.PHOTO_CAPTURED,
-        EMITS.FILES_UPLOADED,
-        EMITS.CLOSE,
-    ]);
+    import { useEventBus } from '@vueuse/core';
+    import AudioCaptureBlob from '@/components/audioCapture/AudioCaptureBlob.vue';
+    // import BlobMask from '@/components/blobMask/BlobMask.vue';
+    import AudioCaptureMeter from '@/components/audioCapture/AudioCaptureMeter.vue';
+    import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
+    import AudioListeningMessage from '@/components/audioCapture/AudioListeningMessage.vue';
+    import ChatPanel from '@/components/chat/ChatPanel.vue';
+    import DealerDetailsCard from '@/components/dealerDetailsCard/DealerDetailsCard.vue';
 
     const agentStore = useAgentStore();
+    const agent = useAgent();
     const route = useRoute();
 
-    const { isLoading } = useLoadingIndicator();
+    // Tracks which mode triggered the intro message: 'audio', 'chat', or null.
+    const introSentBy = ref<'audio' | 'chat' | null>(null);
 
-    function onNavigate(name) {
-        navigateTo(`/${name}`);
-        emit(EMITS.NAVIGATION_CHANGE, name);
+    function sendIntro(mode: 'audio' | 'chat') {
+        agent.sendMessage(AGENT.INTRODUCTION);
+        introSentBy.value = mode;
     }
 
-    const isFullHeightPage = computed(() => {
-        return [NAVIGATION.PHOTO.name, NAVIGATION.UPLOAD.name].includes(route.name);
+    const busConnection = useEventBus<ConnectionBusPayload>(BUS.AGENT_CONNECTION);
+    const isConnected = ref(false);
+
+    busConnection.on((payload) => {
+        isConnected.value = !payload.connecting && !!payload.connected;
+    });
+
+    watch(isConnected, (newVal) => {
+        if (!newVal) {
+            introSentBy.value = null;
+            return;
+        }
+
+        if (isChatActive.value && !isListening.value && introSentBy.value !== 'chat') {
+            sendIntro('chat');
+        }
+    });
+
+    const { listening: isListening } = storeToRefs(agentStore);
+
+    watch(isListening, (newVal) => {
+        if (newVal && !isChatActive.value) {
+            sendIntro('audio');
+        }
+    });
+
+    function handleMicrophoneClick(enabled: boolean) {
+        if (enabled) {
+            agent.startAudio();
+            return;
+        }
+
+        agent.stopAudio();
+        if (introSentBy.value === 'audio') {
+            introSentBy.value = null;
+        }
+    }
+
+    const isChatActive = ref(false);
+
+    // Toggles the chat panel and sends the intro message on open, guarding against duplicate intros.
+    function handleChatClick(enabled: boolean) {
+        isChatActive.value = enabled;
+
+        if (!enabled) {
+            if (introSentBy.value === 'chat') {
+                introSentBy.value = null;
+            }
+            return;
+        }
+
+        if (isConnected.value && !isListening.value) {
+            sendIntro('chat');
+        }
+    }
+
+    onMounted(() => {
+        agentStore.connect({ userId: route.query.user as string | undefined, sessionId: route.query.session as string | undefined });
     });
 
 </script>
@@ -79,25 +142,41 @@
     width: 100%;
 
     .base-view {
+        -webkit-overflow-scrolling: touch;
+        align-content: center;
+        flex: 1;
         margin: 0 auto;
         overflow-y: auto;
+        overflow: hidden;
         position: relative;
         width: 100%;
-        z-index: 10;
-        overflow: hidden;
-        -webkit-overflow-scrolling: touch;
+        z-index: 20;
 
         &.full-height {
             flex: 1;
         }
 
         &-inner {
+            display: flex;
+            flex-direction: column;
             height: 100%;
             margin: 0 auto;
             max-width: var(--max-width);
             position: relative;
+            width: 100%;
             z-index: 10;
         }
     }
 }
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.25s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
 </style>

@@ -1,59 +1,99 @@
 <template>
-    <div class="navigation">
-        <nav class="navigation-groups">
+    <ClientOnly>
+        <Teleport to="body">
+            <Transition name="alert-drop">
+                <div
+                    v-if="micDenied"
+                    class="mic-access-alert"
+                    role="alert">
+                    <span class="mic-access-alert-title">Microphone access denied</span>
+                    <span class="mic-access-alert-hint">Allow microphone access in your browser's site settings</span>
+                </div>
+            </Transition>
+        </Teleport>
+
+        <nav class="navigation">
+            <NavigationBarFoldOut
+                :options="foldOutOptions"
+                direction="up-right"
+                @select="handleFoldOutSelect" />
             <NavigationBarAudioButton
-                ref="recordingControlsRef"
+                :disabled="micRequesting"
                 :is-recording="isAudioRecording"
-                :active="isActive(NAVIGATION.AUDIO.id)"
-                :loading="(isActive(NAVIGATION.UPLOAD.id) && connecting) || micRequesting"
-                :disabled="micRequesting || (isActive(NAVIGATION.AUDIO.id) && (connecting || isPageLoading))"
+                :loading="(connecting  || micRequesting) && isAudioRecording"
                 @[EMITS.RECORD_CLICK]="handleMicrophoneClick" />
-            <NavigationBarButton
-                :icon="NAVIGATION.CHAT.icon"
-                :active="isActive(NAVIGATION.CHAT.id)"
-                :disabled="micRequesting"
-                @click="setActive(NAVIGATION.CHAT)" />
-            <NavigationBarButton
-                class="navigation-photo"
-                :icon="NAVIGATION.PHOTO.icon"
-                :active="isActive(NAVIGATION.PHOTO.id)"
-                :disabled="micRequesting"
-                @click="setActive(NAVIGATION.PHOTO)" />
-            <NavigationBarButton
-                :icon="NAVIGATION.UPLOAD.icon"
-                :active="isActive(NAVIGATION.UPLOAD.id)"
-                :disabled="micRequesting"
-                @click="setActive(NAVIGATION.UPLOAD)" />
         </nav>
-    </div>
+    </ClientOnly>
 </template>
 
-<script setup>
-    import NavigationBarButton from './NavigationBarButton.vue';
-    import NavigationBarAudioButton from './NavigationBarAudioButton.vue';
-    import { NAVIGATION } from '@/constants/navigation';
-    import { EMITS } from '@/constants/emits.js';
-    import { BUS } from '@/constants/bus.js';
+<script setup lang="ts">
+    import type { FoldoutOption } from '@/types/ui';
+    import type { ConnectionBusPayload, MicrophoneBusPayload } from '@/types/bus';
+    import NavigationBarAudioButton from '@/components/navigation/NavigationBarAudioButton.vue';
+    import NavigationBarFoldOut from '@/components/navigation/NavigationBarFoldout.vue';
+    import { useAgentStore } from '@/stores/agent';
+    import { ROUTE } from '@/constants/route';
+    import { EMITS } from '@/constants/emits';
+    import { BUS } from '@/constants/bus';
     import { useEventBus } from '@vueuse/core';
+    import { storeToRefs } from 'pinia';
 
-    const busMicrophone = useEventBus(BUS.MICROPHONE);
-    const busConnection = useEventBus(BUS.AGENT_CONNECTION);
-    const busRecord = useEventBus(BUS.TOGGLE_RECORD);
+    const emits = defineEmits<{
+        recordClick: [enabled: boolean]
+        chatClick: [enabled: boolean]
+        cameraClick: [enabled: boolean]
+    }>();
 
-    const props = defineProps({
-        forceActive: {
-            type: String,
-            default: null,
-        },
-        isPageLoading: {
-            type: Boolean,
-            default: false,
-        },
-    });
+    const busMicrophone = useEventBus<MicrophoneBusPayload>(BUS.MICROPHONE);
+    const busConnection = useEventBus<ConnectionBusPayload>(BUS.AGENT_CONNECTION);
 
     const connected = ref(false);
     const connecting = ref(false);
     const micRequesting = ref(false);
+    const micDenied = ref(false);
+    const isAudioRecording = ref(false);
+    const isChatActive = ref(false);
+    const isCameraActive = ref(false);
+
+    const foldOutOptions = computed<FoldoutOption[]>(() => [
+        {
+            id: ROUTE.CHAT.id,
+            label: ROUTE.CHAT.label,
+            icon: ROUTE.CHAT.icon,
+            active: isChatActive.value,
+        },
+        {
+            id: ROUTE.CAMERA.id,
+            label: ROUTE.CAMERA.label,
+            icon: ROUTE.CAMERA.icon,
+            disabled: true,
+        },
+    ]);
+
+    const agentStore = useAgentStore();
+    const { listening } = storeToRefs(agentStore);
+
+    watch(listening, (val) => {
+        isAudioRecording.value = val;
+    });
+
+    function handleFoldOutSelect(option: FoldoutOption) {
+        if (option.id === ROUTE.CHAT.id) {
+            isChatActive.value = !isChatActive.value;
+            emits(EMITS.CHAT_CLICK, isChatActive.value);
+        } else if (option.id === ROUTE.CAMERA.id) {
+            isCameraActive.value = !isCameraActive.value;
+            emits(EMITS.CAMERA_CLICK, isCameraActive.value);
+        }
+    }
+
+    async function handleMicrophoneClick() {
+        if (micDenied.value) return;
+
+        isAudioRecording.value = !isAudioRecording.value;
+        await nextTick();
+        emits(EMITS.RECORD_CLICK, isAudioRecording.value);
+    }
 
     busConnection.on((payload) => {
         connected.value = payload.connected ?? connected.value;
@@ -62,110 +102,74 @@
 
     busMicrophone.on((payload) => {
         micRequesting.value = payload.requesting ?? micRequesting.value;
+
+        if (payload.denied) {
+            micDenied.value = true;
+            isAudioRecording.value = false;
+        }
+
+        if (payload.granted) {
+            micDenied.value = false;
+        }
     });
-
-    const route = useRoute();
-
-    const emit = defineEmits([EMITS.NAVIGATION_CHANGE, EMITS.OPEN_PHOTO_CAPTURE, EMITS.OPEN_FILE_UPLOAD]);
-
-    const recordingControlsRef = ref(props.forceActive ? props.forceActive : null);
-
-    const activeId = ref(null);
-
-    const isActive = (id) => activeId.value === id;
-
-    function getNavItemByRouteName(name) {
-        return Object.values(NAVIGATION).find(item => item.name === name);
-    }
-
-    function syncWithRoute() {
-        const navItem = getNavItemByRouteName(route.name);
-        if (navItem) {
-            activeId.value = navItem.id;
-        } else {
-            // Unknown route (404, etc.) - reset navigation
-            activeId.value = null;
-            resetAudioState();
-        }
-
-        if(navItem?.id !== NAVIGATION.AUDIO.id) {
-            resetAudioState();
-        }
-    }
-
-    // Actions
-    function setActive(navItem) {
-        const { id, name } = navItem;
-
-        activeId.value = id;
-
-        emit(EMITS.NAVIGATION_CHANGE, name);
-    }
-
-    const isAudioRecording = ref(false);
-
-    function onToggleRecord(isRecording) {
-        busRecord.emit(isRecording);
-    }
-
-    // Handle microphone click logic (moved from NavigationBarAudioButton)
-    async function handleMicrophoneClick() {
-        if (isActive(NAVIGATION.AUDIO.id)) {
-            if (isAudioRecording.value) {
-                // If recording, stop recording
-                isAudioRecording.value = false;
-                await nextTick();
-                onToggleRecord(isAudioRecording.value);
-            } else {
-                // If not recording, start recording
-                isAudioRecording.value = true;
-                await nextTick();
-                onToggleRecord(isAudioRecording.value);
-            }
-        } else {
-            // Select this navigation item
-            setActive(NAVIGATION.AUDIO);
-        }
-    }
-
-    // Reset audio state (moved from NavigationBarAudioButton)
-    function resetAudioState() {
-        isAudioRecording.value = false;
-    }
-
-    // Watch route changes
-    watch(() => route.name, syncWithRoute);
-
-    // Sync with current route on mount
-    onMounted(syncWithRoute);
 </script>
 
 <style lang="scss" scoped>
 .navigation {
-    padding: 0 1.25rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1.875rem 1.25rem;
     width: min(100vw, 768px);
     z-index: 99;
+}
 
-    &-groups {
-        $height: 2.625rem;
+.mic-access-alert {
+    background: #b71c1c;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    left: 50%;
+    max-width: calc(100% - 2.5rem);
+    padding: 0.875rem 1.125rem;
+    position: fixed;
+    right: unset;
+    text-align: center;
+    top: calc(env(safe-area-inset-top, 0px) + 72px);
+    transform: translateX(-50%);
+    width: max-content;
+    z-index: 9999;
 
-        align-items: center;
-        background-color: var(--navigation-color-background);
-        border-radius: calc($height / 2);
-        display: flex;
-        height: $height;
-        padding: 0.1875rem;
-
-        button,
-        :deep(.mic-button) {
-            border: none;
-            flex: 1 0 0%;
-            min-width: 0;
-        }
-
-        .navigation-photo {
-            border: none;
-        }
+    &-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1.3;
     }
+
+    &-hint {
+        font-size: 0.75rem;
+        font-weight: 400;
+        opacity: 0.8;
+        line-height: 1.4;
+    }
+}
+
+.alert-drop-enter-active,
+.alert-drop-leave-active {
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.alert-drop-enter-from,
+.alert-drop-leave-to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-0.5rem);
+}
+
+.alert-drop-enter-to,
+.alert-drop-leave-from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 </style>

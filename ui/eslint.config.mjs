@@ -3,11 +3,13 @@ import withNuxt from './.nuxt/eslint.config.mjs';
 
 export default withNuxt([
     {
-        files: ['**/*.{vue,js,mjs,jsx}'],
+        files: ['**/*.{vue,js,mjs,jsx,ts,tsx}'],
         plugins: {
             '@stylistic': stylistic,
         },
         rules: {
+            '@typescript-eslint/no-explicit-any': 'warn',
+            '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
             '@stylistic/semi': ['error', 'always'],
             '@stylistic/comma-dangle': ['error', 'always-multiline'],
             '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
@@ -60,6 +62,13 @@ export default withNuxt([
         files: ['**/*.vue'],
         rules: {
             '@stylistic/indent': 'off',
+        },
+    },
+
+    {
+        files: ['**/*.{vue,ts,tsx}'],
+        rules: {
+            '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
         },
     },
 ]);

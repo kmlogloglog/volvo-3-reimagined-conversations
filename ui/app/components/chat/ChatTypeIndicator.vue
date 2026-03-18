@@ -6,11 +6,10 @@
     </div>
 </template>
 
-<script setup>
-
+<script setup lang="ts">
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .typing-indicator {
     align-items: center;
     display: flex;
@@ -21,7 +20,7 @@
 .dot {
     animation: bounce 1.4s infinite ease-in-out both;
     aspect-ratio: 1;
-    background: #8e8e93;
+    background: var(--font-color-secondary);
     border-radius: 50%;
     width: .5rem;
 }

@@ -211,4 +211,9 @@ test_agent.sh
 test_mcp.sh
 nextjs/
 *.excalidraw
+
+# Claude settings
+.claude/settings.local.json
+
+# GitHub Copilot / local agent config
 .DS_Store
