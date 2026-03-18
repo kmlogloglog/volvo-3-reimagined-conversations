@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Volvo Vän — Live Preview</title>
+  <title>Vän — Analytics Dashboard</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -11,97 +11,144 @@
       height: 100%;
       width: 100%;
       background: #0a0a0b;
-      font-family: sans-serif;
       overflow: hidden;
     }
 
     .layout {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      /* Dashboard takes ~72%, conversational panel ~28% */
+      grid-template-columns: 1fr 380px;
       height: 100vh;
       width: 100vw;
-      gap: 0;
     }
 
-    .panel {
+    /* ── Dashboard (main) ── */
+    .panel-dashboard {
       position: relative;
       height: 100vh;
       overflow: hidden;
     }
 
-    /* Subtle divider */
-    .panel-right {
-      border-left: 1px solid rgba(255,255,255,0.06);
-    }
-
-    iframe {
+    .panel-dashboard iframe {
       width: 100%;
       height: 100%;
       border: none;
       display: block;
-      background: #0a0a0b;
+      background: #0f0f10;
     }
 
-    /* Label chips — positioned top-center of each panel */
-    .label {
-      position: absolute;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      background: rgba(0,0,0,0.55);
+    /* ── Conversational panel (right) ── */
+    .panel-chat {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      border-left: 1px solid rgba(255,255,255,0.07);
+      background: #000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header bar */
+    .chat-header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      background: rgba(0,0,0,0.6);
       backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 999px;
-      padding: 4px 14px;
+      z-index: 10;
+    }
+
+    .chat-header-title {
       font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      font-family: sans-serif;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.45);
-      pointer-events: none;
-      white-space: nowrap;
+      color: #34d399;
+      font-family: sans-serif;
+      font-weight: 600;
     }
 
-    .label-live::before {
-      content: '';
-      display: inline-block;
+    .live-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
       background: #34d399;
-      margin-right: 6px;
       animation: pulse 1.5s ease-in-out infinite;
-      vertical-align: middle;
-      position: relative;
-      top: -1px;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
+      50%       { opacity: 0.25; }
+    }
+
+    /* iframe fills the rest of the chat panel */
+    .chat-iframe-wrap {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chat-iframe-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Divider drag hint */
+    .divider {
+      position: absolute;
+      top: 0;
+      left: -1px;
+      width: 1px;
+      height: 100%;
+      background: rgba(255,255,255,0.07);
+      cursor: col-resize;
     }
   </style>
 </head>
 <body>
   <div class="layout">
-    <!-- Left: Nuxt conversational UI -->
-    <div class="panel panel-left">
-      <span class="label">Freja — Voice &amp; Chat</span>
-      <iframe
-        src="/"
-        title="Volvo Vän Conversational UI"
-        allow="microphone; autoplay"
-      ></iframe>
-    </div>
 
-    <!-- Right: React dashboard (live Firestore listener) -->
-    <div class="panel panel-right">
-      <span class="label label-live">Dashboard — Live</span>
+    <!-- Left: React dashboard (dominant) -->
+    <div class="panel-dashboard">
       <iframe
-        src="/dashboard"
+        src="/dashboard/"
         title="Vän Analytics Dashboard"
       ></iframe>
     </div>
+
+    <!-- Right: Nuxt conversational UI (compact panel) -->
+    <div class="panel-chat">
+      <div class="chat-header">
+        <span class="chat-header-title">Freja — Voice &amp; Chat</span>
+        <span class="live-badge">
+          <span class="live-dot"></span>
+          Live
+        </span>
+      </div>
+      <div class="chat-iframe-wrap">
+        <iframe
+          src="/index.html"
+          title="Freja Conversational UI"
+          allow="microphone; autoplay; camera"
+        ></iframe>
+      </div>
+    </div>
+
   </div>
 </body>
 </html>

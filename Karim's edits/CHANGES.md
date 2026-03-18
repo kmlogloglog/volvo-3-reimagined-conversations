@@ -2,6 +2,140 @@
 
 ---
 
+## 18/03/2026 — Consolidate to `/preview` as Single View + Auto-Sync Script
+
+### What changed
+
+**Route restructuring in `app/main.py`:**
+- `/` now serves the split-screen preview (was Nuxt full page)
+- `/preview` kept as alias (same split-screen, for existing bookmarks)
+- `/dashboard/` unchanged (React app, used as iframe source)
+- Nuxt stays mounted at `/` as catch-all (explicit routes take priority); iframe loads `/index.html` to avoid recursion
+- `/debug` unchanged (debug payload viewer)
+
+**Updated `preview.html`:**
+- Right iframe `src` changed from `"/"` to `"/index.html"` (avoids recursive iframe loop — `/` now serves preview.html itself, while `/index.html` hits Nuxt via StaticFiles)
+
+**New file: `sync-from-main.sh`:**
+- One-command script to pull latest `ui/` and `app/` from `origin/main` into `karim-edits`
+- Uses `git checkout origin/main -- ui/ app/` (no merge, no conflicts)
+- Rebuilds Nuxt (`npm install && npx nuxi build`)
+- Restarts the FastAPI server on port 8080
+
+### Files modified
+| File | Change |
+|------|--------|
+| `app/main.py` | `/` and `/preview` both serve preview.html; Nuxt stays at `/` catch-all (explicit routes win) |
+| `preview.html` | Right iframe src `"/"` -> `"/index.html"` (avoids recursive iframe) |
+| `sync-from-main.sh` | New — auto-sync script for pulling team changes from main |
+
+---
+
+## 17/03/2026 — Profile Detail: AI Summary + Remove Empty Cards + Format Test Drive
+
+### What changed — modelled on Manolo's actual Firestore data
+
+**New component: `src/components/features/profile/AISummaryCard.tsx`**
+- Reads `agentState` (live Firestore data) and calls Gemini to write a 2–3 sentence human summary of the customer
+- Shows a loading shimmer while generating; result is cached per `userId` (won't regenerate on live state updates)
+- Positioned as the first card in the left column of the profile detail view
+- Prompt includes: name, location, height, selected model/config, profiling insights, test drive booking
+
+**Empty-state guards added — cards return `null` instead of showing empty shells:**
+| Component | Hidden when |
+|---|---|
+| `PsychographicsCard` | All persona flags false + no interests or values |
+| `MobilityNeedsCard` | All fields null (shows only populated rows) |
+| `DemographicsCard` | No data; skips null rows (no "Unknown" fallbacks) |
+| `SegmentRanking` | Sum of all segment scores = 0 |
+| `SegmentDonut` | Sum = 0 |
+| `PropensityGauge` | Score = 0 and stage = 'awareness' (default) |
+| `AffinitiesWheel` | All 4 affinity arrays empty |
+| `AffinitiesRadar` | Fewer than 2 quadrants have data |
+| `NextBestActions` | No next best actions |
+| `ContentRecommendations` | No content recommendations |
+
+**Test drive panel replaced:**
+- Was: raw `JSON.stringify` pre block
+- Now: formatted card with retailer name, street address, and localised appointment date/time
+
+### Files modified
+`AISummaryCard.tsx` (new), `DemographicsCard.tsx`, `PsychographicsCard.tsx`, `MobilityNeedsCard.tsx`, `SegmentRanking.tsx`, `SegmentDonut.tsx`, `PropensityGauge.tsx`, `AffinitiesWheel.tsx`, `AffinitiesRadar.tsx`, `NextBestActions.tsx`, `ContentRecommendations.tsx`, `ProfileDetailPage.tsx`
+
+---
+
+## 17/03/2026 — Profiles List: Pagination (10/page) + Filter Demo Profiles
+
+### What changed
+**File: `src/pages/ProfilesListPage.tsx`**
+- Added `PAGE_SIZE = 10` constant
+- Added `page` state (resets to 1 on every search query change via `useEffect`)
+- `filteredProfiles` useMemo now **filters out demo profiles** first — any profile whose `userId` or `demographics.name` contains "demo" (case-insensitive) is excluded
+- Added `paginatedProfiles` slice: `filteredProfiles.slice((page-1)*10, page*10)`
+- Updated subtitle to "Showing X–Y of Z profiles"
+- Added pagination controls below the grid (Prev / numbered pages / Next), hidden when only 1 page; current page highlighted in amber
+
+---
+
+## 17/03/2026 — Fix "profiling.join is not a function" — Wrong AgentUserState Types
+
+### What changed
+
+**Root cause:** The TypeScript type defined `profiling` as `string[]` and `location` as `string`, but the actual Firestore document stores both as **maps** (objects). `profiling` is `{light, music, driving_environment, height, passenger_count}` and `location` is `{city, nation, street, lat, lng}`. Calling `.join()` on an object throws "join is not a function".
+
+**Fix — `src/services/liveStateService.ts`**
+- `profiling` type changed from `string[]` to `Record<string, string> | string[]` (handles both map and array forms)
+- `location` type changed from `string` to `string | { city?, nation?, street?, lat?, lng? }` (handles both string and map forms)
+- Added `test_drive_preferences` field to the interface
+
+**Fix — `src/services/profileService.ts`**
+- Extract `cityValue` safely: if `location` is a string use it directly, otherwise read `.city` from the map
+- Compute `profilingText` safely: if `profiling` is an array call `.join(' · ')`, if it's a map convert `Object.entries` to `key: value` strings joined by ` · `
+- Replace inline `state.profiling?.join(...)` call with the pre-computed `profilingText`
+
+**Also deployed (same session):** Firestore security rules for `vml-map-xd-volvo` (default DB) updated via Firebase Rules REST API to allow `collectionGroup('user_state')` reads for authenticated users.
+
+### Files modified
+| File | Change |
+|------|--------|
+| `src/services/liveStateService.ts` | Fixed `profiling` and `location` types + added `test_drive_preferences` |
+| `src/services/profileService.ts` | Safe extraction of `cityValue` and `profilingText` from map or array |
+
+---
+
+## 17/03/2026 — Fix "Missing or insufficient permissions" — Firestore Auth Race Condition
+
+### What changed
+
+**Root cause:** React fires `useEffect` bottom-up (deepest child first), so `ProfilesListPage` was calling `fetchAllProfiles()` → Firestore **before** `App.useEffect` had a chance to run `signInAnon()`. The auth token didn't exist yet, causing Firestore to reject the request.
+
+**Fix 1 — `src/services/authService.ts`**
+- Added `ensureAuth()` export: a Promise that resolves immediately if `auth.currentUser` already exists (cached from a prior session), otherwise starts `signInAnonymously` and awaits `onAuthStateChanged` to confirm a non-null user before resolving.
+- This guarantees no Firestore read can ever fire without a valid auth token, regardless of React's component mount order.
+
+**Fix 2 — `src/services/profileService.ts`**
+- Added `import { ensureAuth }` from authService.
+- Added `await ensureAuth()` at the top of both `fetchProfileById()` and `fetchAllProfiles()`.
+- Wrapped `collectionGroup('user_state')` in a try/catch that **surfaces the error** via `console.error` (instead of silently swallowing it), so the missing Firestore rule message is visible for debugging.
+- Added a `KNOWN_USER_IDS = ['manolo', 'demo-user']` fallback: if `collectionGroup` fails (e.g. missing wildcard Firestore rule), the service falls back to direct `getDoc` reads for known users so `manolo` always appears.
+
+### Files modified
+| File | Change |
+|------|--------|
+| `src/services/authService.ts` | Added `ensureAuth()` function |
+| `src/services/profileService.ts` | `await ensureAuth()` before reads + collectionGroup try/catch + known-user fallback |
+
+### Action required (if collectionGroup still fails after auth fix)
+Add this rule in Firebase Console → Firestore → Rules:
+```
+match /{path=**}/user_state/{docId} {
+  allow read: if request.auth != null;
+}
+```
+This enables automatic user discovery without hardcoded IDs.
+
+---
+
 ## 17/03/2026 — Split-Screen Preview: Conversational UI + Live Dashboard
 
 ### What changed
