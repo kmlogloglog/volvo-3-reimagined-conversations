@@ -1,6 +1,7 @@
 import { AGENT } from '@/constants/agent';
 import { BUS } from '@/constants/bus';
 import { useEventBus } from '@vueuse/core';
+import { useDebugLog, log } from '@/composables/useDebugLog';
 import type { ChatMessage } from '@/types/chat';
 import type { AgentEvent, ConnectParams, Coordinates } from '@/types/agent';
 import type { GradientStop } from '@/types/ui';
@@ -11,13 +12,6 @@ declare global {
         webkitAudioContext: typeof AudioContext;
     }
 }
-
-const log = {
-    info: (label: string, ...args: unknown[]) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
-    success: (label: string, ...args: unknown[]) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
-    warn: (label: string, ...args: unknown[]) => console.warn(`%c${label}`, 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
-    error: (label: string, ...args: unknown[]) => console.error(`%c${label}`, 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', ...args),
-};
 
 // Types `this` as the full store context so actions can reference state/other actions.
 function makeActions<T extends object>(obj: T & ThisType<AgentState & T>): T {
@@ -111,7 +105,7 @@ export default makeActions({
     },
 
     handleImageResponse(imageUrls: string[], componentName: string, gradientStops?: GradientStop[]): void {
-        console.log('imageUrls', imageUrls);
+        log.info('IMAGES', imageUrls);
         this.backgroundImages = imageUrls;
         this.componentName = componentName;
         this.gradientStops = gradientStops ?? null;
@@ -136,6 +130,7 @@ export default makeActions({
                 const uiAction = part.functionResponse?.response?.ui_action;
 
                 if (uiAction?.action === AGENT.RESPONSE_ACTION.DISPLAY_COMPONENT) {
+                    useDebugLog().record(event as Record<string, unknown>);
                     const functionName = part.functionResponse?.name;
                     const componentName = uiAction.component_name;
 
@@ -208,6 +203,16 @@ export default makeActions({
         }
 
         if (event.turnComplete) {
+            const debugLog = useDebugLog();
+            const userMsg = this.currentUserMessageId
+                ? this.conversation.find(m => m.id === this.currentUserMessageId)
+                : null;
+            const agentMsg = this.currentMessageId
+                ? this.conversation.find(m => m.id === this.currentMessageId)
+                : null;
+            if (userMsg?.content?.text) debugLog.record({ ...event, author: 'user', text: userMsg.content.text } as Record<string, unknown>);
+            if (agentMsg?.content?.text) debugLog.record({ ...event, author: (event as Record<string, unknown>).author ?? 'agent', text: agentMsg.content.text } as Record<string, unknown>);
+
             this.speaking = false;
             this.currentMessageId = null;
             this.currentUserMessageId = null;
@@ -283,6 +288,7 @@ export default makeActions({
         this.connectionPromise = new Promise((resolve, reject) => {
             const userIdFromQuery = userId || this.userName;
             const sessionIdFromQuery = sessionId || crypto.randomUUID();
+            useDebugLog().setSession(userIdFromQuery ?? null, sessionIdFromQuery);
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const url = `${protocol}//${window.location.host}/ws/${userIdFromQuery}/${sessionIdFromQuery}`;
 
@@ -496,6 +502,7 @@ export default makeActions({
             timestamp: new Date(),
             finished: true,
         });
+        useDebugLog().record({ author: AGENT.USER, text });
 
         this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
 

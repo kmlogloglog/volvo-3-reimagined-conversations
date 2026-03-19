@@ -17,6 +17,8 @@
         bottomAlign?: boolean
         hide?: boolean
         scale?: number
+        // 0 = default animation energy, 1 = fully calm (minimal movement)
+        calmness?: number
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -25,6 +27,7 @@
         bottomAlign: false,
         hide: false,
         scale: 1,
+        calmness: 0,
     });
 
     // Defined outside withDefaults so the reference never changes between
@@ -45,13 +48,13 @@
         idleMorphSpeed: 0.5,
         maxMorphSpeedBoost: 0.25,
 
-        baseSize: 0.2,
+        baseSize: 0.15,
         radialRings: 16,
         angularSegments: 40,
 
         // Idle pulse (fades out as intensity increases)
         pulseSpeed: 0.7,
-        idlePulseAmount: 0.15,
+        idlePulseAmount: 0.125,
 
         idleNoiseScale: 0.6,
         // Negative = smoother shape at peak intensity
@@ -525,9 +528,11 @@
         }
 
         const boost = smoothedIntensity;
-        const animationSpeed = config.idleAnimationSpeed + boost * config.maxAnimationSpeedBoost;
-        const morphSpeed = config.idleMorphSpeed + boost * config.maxMorphSpeedBoost;
-        const morphIntensity = config.idleMorphIntensity + boost * config.maxMorphIntensityBoost;
+        // calm = 1 reduces idle animation to ~10% of its default values
+        const calm = 1 - props.calmness * 0.9;
+        const animationSpeed = config.idleAnimationSpeed * calm + boost * config.maxAnimationSpeedBoost;
+        const morphSpeed = config.idleMorphSpeed * calm + boost * config.maxMorphSpeedBoost;
+        const morphIntensity = config.idleMorphIntensity * calm + boost * config.maxMorphIntensityBoost;
         const noiseScale = config.idleNoiseScale + boost * config.maxNoiseScaleBoost;
         const sizeMultiplier = smoothedScale * config.idleSizeMultiplier + boost * config.maxSizeMultiplierBoost;
         const flareIntensity = config.idleFlareIntensity + boost * config.maxFlareIntensityBoost;
@@ -538,7 +543,7 @@
         ctx.clearRect(0, 0, displayWidth, displayHeight);
 
         const baseRadius = Math.min(displayWidth, displayHeight) * config.baseSize * sizeMultiplier;
-        const idlePulse = Math.sin(time * config.pulseSpeed) * config.idlePulseAmount * (1 - boost);
+        const idlePulse = Math.sin(time * config.pulseSpeed) * config.idlePulseAmount * calm * (1 - boost);
         const pulsedRadius = baseRadius * (1 + idlePulse);
 
         const bottomSizeMultiplier = smoothedScale * config.bottomAlignIdleSizeMultiplier + boost * config.bottomAlignMaxSizeMultiplierBoost;
@@ -661,13 +666,10 @@ $blob-blur: 15px;
 }
 
 .gradient-blob-canvas-wrap {
+    height: 100%;
+    inset: 0;
     position: absolute;
     width: 100%;
-    max-width: var(--max-width);
-    height: 100%;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .gradient-blob canvas {

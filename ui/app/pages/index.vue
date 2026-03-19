@@ -1,5 +1,8 @@
 <template>
     <div class="view">
+        <ClientOnly>
+            <DebugCopyButton />
+        </ClientOnly>
         <Transition name="bg-single">
             <BackgroundImageSilhouette
                 v-if="isModelComponent"
@@ -12,6 +15,11 @@
                 v-if="isCarouselVisible"
                 :src="carouselSrc" />
         </Transition>
+
+        <VolvoLogo
+            color="var(--color-white)"
+            drop-shadow="var(--color-black)"
+            class="view-logo" />
 
         <div class="base-view">
             <div class="base-view-inner">
@@ -35,6 +43,7 @@
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel"
             :scale="blobScale"
+            :calmness="blobCalmness"
             :bottom-align="isCarouselVisible"
             :gradient-stops="blobGradientStops"
             :hide="isBlobMaskComponent" />
@@ -70,6 +79,8 @@
     import AudioListeningMessage from '@/components/audioCapture/AudioListeningMessage.vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
     import DealerDetailsCard from '@/components/dealerDetailsCard/DealerDetailsCard.vue';
+    import DebugCopyButton from '@/components/debug/DebugCopyButton.vue';
+    import VolvoLogo from '@/components/logo/VolvoLogo.vue';
 
     const agentStore = useAgentStore();
     const agent = useAgent();
@@ -124,6 +135,10 @@
 
     const blobScale = computed(() =>
         isModelComponent.value && imageReady.value ? 3 : 1,
+    );
+
+    const blobCalmness = computed(() =>
+        isModelComponent.value && imageReady.value ? 0.5 : 0,
     );
 
     const blobGradientStops = computed(() =>
@@ -210,10 +225,25 @@
     flex-direction: column;
     height: 100dvh;
     justify-content: flex-end;
+    left: 0;
+    margin-inline: auto;
+    max-width: var(--max-width);
     padding-top: env(safe-area-inset-top, 0px);
     position: fixed;
+    right: 0;
     row-gap: 1.25rem;
+    top: 0;
     width: 100%;
+
+    .view-logo {
+        height: auto;
+        left: 50%;
+        position: fixed;
+        top: calc(20px + env(safe-area-inset-top, 0px));
+        transform: translateX(-50%);
+        width: 110px;
+        z-index: 15;
+    }
 
     .base-view {
         -webkit-overflow-scrolling: touch;
@@ -234,8 +264,6 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            margin: 0 auto;
-            max-width: var(--max-width);
             position: relative;
             width: 100%;
             z-index: 10;

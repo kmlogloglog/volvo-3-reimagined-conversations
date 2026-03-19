@@ -15,7 +15,7 @@
                 :style="{ transform: `scale(${instance.scale})` }"
                 @load="onLoad(instance.id)" />
         </TransitionGroup>
-        <canvas ref="maskCanvas" class="blob-mask-canvas"></canvas>
+        <canvas ref="maskCanvas" class="blob-mask-canvas" :style="canvasStyle"></canvas>
     </div>
 </template>
 
@@ -70,7 +70,19 @@
         pulseAmount: 0.08,
 
         // ↑ more feathered, dreamy vignette  ↓ crisper, harder spotlight edge
-        edgeBlur: 30,
+        // Applied via CSS filter: blur() — works consistently across all browsers
+        // including Safari/iOS where canvas shadowBlur renders incorrectly.
+        edgeBlur: 15,
+
+        // The canvas is scaled up via CSS transform so the blurred outer edges
+        // are pushed beyond the container. The blob radius is divided by this
+        // value to keep the hole at the same visual size.
+        maskScale: 1.2,
+    };
+
+    const canvasStyle = {
+        '--edge-blur': `${config.edgeBlur}px`,
+        '--mask-scale': `${config.maskScale}`,
     };
 
     const permutation = new Uint8Array(512);
@@ -141,9 +153,8 @@
         return baseRadius * (1 + noiseValue * config.morphIntensity);
     }
 
-    function traceBlobPath(centerX: number, centerY: number, radius: number, timeX: number, timeY: number) {
-        if (!ctx) return;
-        ctx.beginPath();
+    function traceBlobPath(targetCtx: CanvasRenderingContext2D, centerX: number, centerY: number, radius: number, timeX: number, timeY: number) {
+        targetCtx.beginPath();
 
         for (let i = 0; i <= config.angularSegments; i++) {
             const cosAngle = cosTable[i]!;
@@ -153,11 +164,11 @@
             const x = centerX + cosAngle * morphedRadius;
             const y = centerY + sinAngle * morphedRadius;
 
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
+            if (i === 0) targetCtx.moveTo(x, y);
+            else targetCtx.lineTo(x, y);
         }
 
-        ctx.closePath();
+        targetCtx.closePath();
     }
 
     function drawOverlay() {
@@ -171,7 +182,7 @@
 
         const centerX = displayWidth / 2;
         const centerY = displayHeight / 2;
-        const baseRadius = Math.min(displayWidth, displayHeight) * config.baseSize;
+        const baseRadius = Math.min(displayWidth, displayHeight) * config.baseSize / config.maskScale;
         const pulse = Math.sin(time * config.pulseSpeed) * config.pulseAmount;
         const pulsedRadius = baseRadius * (1 + pulse);
 
@@ -179,13 +190,13 @@
         const timeX = Math.cos(morphPhase) * loopRadius;
         const timeY = Math.sin(morphPhase) * loopRadius;
 
-        traceBlobPath(centerX, centerY, pulsedRadius, timeX, timeY);
-        ctx.filter = `blur(${config.edgeBlur}px)`;
+        // Cut the blob shape out of the black overlay with a hard edge.
+        // CSS filter: blur() on the canvas element handles the soft feathering,
+        // which works consistently on all browsers including Safari / iOS.
         ctx.globalCompositeOperation = 'destination-out';
         ctx.fillStyle = '#fff';
+        traceBlobPath(ctx, centerX, centerY, pulsedRadius, timeX, timeY);
         ctx.fill();
-
-        ctx.filter = 'none';
         ctx.globalCompositeOperation = 'source-over';
     }
 
@@ -390,12 +401,9 @@ $duration: 1200ms;
 
 .blob-mask {
     height: 100%;
-    left: 50%;
-    max-width: var(--max-width);
+    inset: 0;
     pointer-events: none;
     position: absolute;
-    top: 0;
-    transform: translateX(-50%);
     width: 100%;
 }
 
@@ -431,9 +439,13 @@ $duration: 1200ms;
 }
 
 .blob-mask-canvas {
+    -webkit-filter: blur(var(--edge-blur, 0px));
+    filter: blur(var(--edge-blur, 0px));
     height: 100%;
     inset: 0;
     position: absolute;
+    // Scale up so blurred outer edges are pushed beyond the container
+    transform: scale(var(--mask-scale, 1));
     width: 100%;
     z-index: 3;
 }

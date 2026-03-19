@@ -1,10 +1,5 @@
 <template>
     <div ref="containerRef" class="image-container" :class="{ 'image-container-ready': allImagesLoaded }">
-        <VolvoLogo
-            color="var(--color-white)"
-            drop-shadow="var(--color-black)"
-            class="logo" />
-
         <div
             v-if="safeImageCount > 0"
             class="carousel-slider"
@@ -41,7 +36,6 @@
 <script setup lang="ts">
     import { ref, computed, onUnmounted } from 'vue';
     import { useSwipe, useIntervalFn } from '@vueuse/core';
-    import VolvoLogo from '@/components/logo/VolvoLogo.vue';
 
     interface Props {
         src?: string[]
@@ -152,16 +146,6 @@
 
     &-ready {
         opacity: 1;
-    }
-
-    .logo {
-        height: auto;
-        left: 50%;
-        position: fixed;
-        top: calc(20px + env(safe-area-inset-top, 0px));
-        transform: translateX(-50%);
-        width: 110px;
-        z-index: 10;
     }
 }
 

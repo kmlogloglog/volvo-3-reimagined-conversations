@@ -38,8 +38,8 @@ export function useAgent(options: UseAgentOptions = {}) {
             }
 
             microphoneBus.emit({ requesting: false, granted: true, denied: false, ready: true });
-        } catch (error) {
-            microphoneBus.emit({ requesting: false, granted: false, denied: true, error: error.message, ready: false });
+        } catch (error: unknown) {
+            microphoneBus.emit({ requesting: false, granted: false, denied: true, error: error instanceof Error ? error.message : String(error), ready: false });
             throw error;
         }
     }

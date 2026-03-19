@@ -3,7 +3,7 @@ export const AGENT = Object.freeze({
     USER: 'user',
 
     DEFAULT_USER_NAME: 'demo_user',
-    INTRODUCTION: 'Introduce yourself! If you have introduced yourself already, do not introduce yourself again, but say something new to keep the conversation going.',
+    INTRODUCTION: 'Introduce yourself! If you have introduced yourself already, do not introduce yourself again, but say something new to keep the conversation going. If you already know my name, do not ask for it again.',
 
     RESPONSE_NAME: {
         CAR_CONFIGURATION: 'display_car_configuration',
