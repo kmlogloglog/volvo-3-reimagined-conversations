@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { motion } from 'motion/react';
 import GlassCard from '@/components/ui/GlassCard';
@@ -42,6 +42,9 @@ function ColumnHeader({ title }: { title: string }): React.JSX.Element {
 
 export default function ProfileDetailPage(): React.JSX.Element {
   const { userId } = useParams<{ userId: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isAdvanced = searchParams.get('view') === 'advanced';
+
   const profiles = useProfileStore((s) => s.profiles);
   const isLoading = useProfileStore((s) => s.isLoading);
   const error = useProfileStore((s) => s.error);
@@ -52,6 +55,10 @@ export default function ProfileDetailPage(): React.JSX.Element {
   const stopListening = useLiveStateStore((s) => s.stopListening);
   const liveState = useLiveStateStore((s) => s.state);
   const isLive = useLiveStateStore((s) => s.isListening);
+
+  function toggleView() {
+    setSearchParams(isAdvanced ? {} : { view: 'advanced' }, { replace: true });
+  }
 
   useEffect(() => {
     if (userId) void loadProfile(userId);
@@ -112,7 +119,7 @@ export default function ProfileDetailPage(): React.JSX.Element {
   return (
     <div className="space-y-5">
 
-      {/* Top bar: back + name + live badge */}
+      {/* Top bar: back + name + live badge + view toggle */}
       <div className="flex items-center gap-3 flex-wrap">
         <Link
           to="/profiles"
@@ -131,9 +138,37 @@ export default function ProfileDetailPage(): React.JSX.Element {
             Live
           </span>
         )}
+
+        {/* View toggle */}
+        <div className="ml-auto flex items-center gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-0.5">
+          <button
+            type="button"
+            onClick={() => { if (isAdvanced) toggleView(); }}
+            className={`flex items-center gap-1.5 h-7 px-3 rounded-md text-xs font-medium transition-all ${
+              !isAdvanced
+                ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20'
+                : 'text-neutral-500 hover:text-white'
+            }`}
+          >
+            <Icon icon="solar:bolt-circle-linear" width={13} />
+            Quick
+          </button>
+          <button
+            type="button"
+            onClick={() => { if (!isAdvanced) toggleView(); }}
+            className={`flex items-center gap-1.5 h-7 px-3 rounded-md text-xs font-medium transition-all ${
+              isAdvanced
+                ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20'
+                : 'text-neutral-500 hover:text-white'
+            }`}
+          >
+            <Icon icon="solar:chart-2-linear" width={13} />
+            Advanced
+          </button>
+        </div>
       </div>
 
-      {/* Test drive booking card — shown only when the agent has booked one */}
+      {/* Test drive booking card — shown in both views */}
       {liveState?.test_drive_appointment && (() => {
         const appt = liveState.test_drive_appointment as {
           retailer?: { name?: string; location?: { city?: string; nation?: string; street?: string } };
@@ -161,45 +196,63 @@ export default function ProfileDetailPage(): React.JSX.Element {
         );
       })()}
 
-      {/* ── Profiling & Prediction Dashboard — 3 columns ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-
-        {/* Left: Profile Data */}
-        <div>
-          <ColumnHeader title="Profile Data" />
+      {/* ── Quick View — focused overview ── */}
+      {!isAdvanced && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-4">
             <StaggerCard index={0}><AISummaryCard agentState={liveState} userId={userId ?? ''} /></StaggerCard>
             <StaggerCard index={1}><DemographicsCard profile={profile} /></StaggerCard>
-            <StaggerCard index={3}><PsychographicsCard profile={profile} /></StaggerCard>
-            <StaggerCard index={4}><MobilityNeedsCard profile={profile} /></StaggerCard>
-            <StaggerCard index={5}><SegmentRanking profile={profile} /></StaggerCard>
-            <StaggerCard index={6}><SegmentDonut segmentRanking={profile.analyticalScores.segmentRanking} /></StaggerCard>
+            <StaggerCard index={2}><ChannelConsentCard profile={profile} /></StaggerCard>
           </div>
-        </div>
-
-        {/* Center: Analytical Scores */}
-        <div>
-          <ColumnHeader title="Analytical Scores" />
           <div className="space-y-4">
             <StaggerCard index={1}><PropensityGauge profile={profile} /></StaggerCard>
-            <StaggerCard index={2}><AffinitiesWheel profile={profile} /></StaggerCard>
-            <StaggerCard index={3}><AffinitiesRadar affinities={profile.analyticalScores.affinities} /></StaggerCard>
-            <StaggerCard index={4}><AffinityMapCard affinities={profile.analyticalScores.affinities} /></StaggerCard>
+            <StaggerCard index={2}><MobilityNeedsCard profile={profile} /></StaggerCard>
+            <StaggerCard index={3}><EngagementStrategyCard profile={profile} /></StaggerCard>
           </div>
         </div>
+      )}
 
-        {/* Right: Recommendations */}
-        <div>
-          <ColumnHeader title="Recommendations" />
-          <div className="space-y-4">
-            <StaggerCard index={2}><EngagementStrategyCard profile={profile} /></StaggerCard>
-            <StaggerCard index={3}><NextBestActions profile={profile} /></StaggerCard>
-            <StaggerCard index={4}><ContentRecommendations profile={profile} /></StaggerCard>
-            <StaggerCard index={5}><ChannelConsentCard profile={profile} /></StaggerCard>
+      {/* ── Advanced View — full 3-column analytical dashboard ── */}
+      {isAdvanced && (
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+
+          {/* Left: Profile Data */}
+          <div>
+            <ColumnHeader title="Profile Data" />
+            <div className="space-y-4">
+              <StaggerCard index={0}><AISummaryCard agentState={liveState} userId={userId ?? ''} /></StaggerCard>
+              <StaggerCard index={1}><DemographicsCard profile={profile} /></StaggerCard>
+              <StaggerCard index={2}><PsychographicsCard profile={profile} /></StaggerCard>
+              <StaggerCard index={3}><MobilityNeedsCard profile={profile} /></StaggerCard>
+              <StaggerCard index={4}><SegmentRanking profile={profile} /></StaggerCard>
+              <StaggerCard index={5}><SegmentDonut segmentRanking={profile.analyticalScores.segmentRanking} /></StaggerCard>
+            </div>
           </div>
-        </div>
 
-      </div>
+          {/* Center: Analytical Scores */}
+          <div>
+            <ColumnHeader title="Analytical Scores" />
+            <div className="space-y-4">
+              <StaggerCard index={1}><PropensityGauge profile={profile} /></StaggerCard>
+              <StaggerCard index={2}><AffinitiesWheel profile={profile} /></StaggerCard>
+              <StaggerCard index={3}><AffinitiesRadar affinities={profile.analyticalScores.affinities} /></StaggerCard>
+              <StaggerCard index={4}><AffinityMapCard affinities={profile.analyticalScores.affinities} /></StaggerCard>
+            </div>
+          </div>
+
+          {/* Right: Recommendations */}
+          <div>
+            <ColumnHeader title="Recommendations" />
+            <div className="space-y-4">
+              <StaggerCard index={2}><EngagementStrategyCard profile={profile} /></StaggerCard>
+              <StaggerCard index={3}><NextBestActions profile={profile} /></StaggerCard>
+              <StaggerCard index={4}><ContentRecommendations profile={profile} /></StaggerCard>
+              <StaggerCard index={5}><ChannelConsentCard profile={profile} /></StaggerCard>
+            </div>
+          </div>
+
+        </div>
+      )}
     </div>
   );
 }
