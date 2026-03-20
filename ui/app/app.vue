@@ -1,31 +1,24 @@
 <template>
-    <div id="app" :style="backgroundStyle">
-        <CaptureView
-            :show-waves="$route.name === NAVIGATION.AUDIO.name"
-            :show-circles="!agentStore.backgroundImages">
-            <NuxtPage />
-        </CaptureView>
+    <div id="app">
+        <NuxtPage />
     </div>
 </template>
 
-<script setup>
-    import { preloadRouteComponents } from '#app';
-    import { NAVIGATION } from '@/constants/navigation';
-    import CaptureView from '@/views/CaptureView.vue';
+<script setup lang="ts">
     import { useAgentStore } from '@/stores/agent';
-
-    preloadRouteComponents('/');
-    preloadRouteComponents('/ChatView');
-    preloadRouteComponents('/AudioView');
-    preloadRouteComponents('/PhotoView');
-    preloadRouteComponents('/UploadView');
+    import { AGENT } from '@/constants/agent';
 
     const agentStore = useAgentStore();
-    const { backgroundStyle } = useBackground(agentStore);
+
+    // Append a UUID so each browser session gets a unique user identity.
+    onBeforeMount(() => {
+        agentStore.setUserName(`${AGENT.DEFAULT_USER_NAME}_${crypto.randomUUID()}`);
+    });
 </script>
 
 <style scoped lang="scss">
 #app {
+    background-color: var(--app-background-color);
     min-height: calc(150vh + 1px);
 }
 </style>

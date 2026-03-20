@@ -163,6 +163,7 @@ export interface ChannelConsent {
   readonly conversational: boolean;
   readonly email: boolean;
   readonly sms: boolean;
+  readonly cookies: boolean;
 }
 
 // ────────────────────────────────────────────

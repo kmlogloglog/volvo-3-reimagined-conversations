@@ -52,8 +52,10 @@ interface NextBestActionsProps {
   profile: VanProfile;
 }
 
-export default function NextBestActions({ profile }: NextBestActionsProps): React.JSX.Element {
+export default function NextBestActions({ profile }: NextBestActionsProps): React.JSX.Element | null {
   const actions = profile.recommendations.nextBestActions;
+
+  if (actions.length === 0) return null;
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const [actionState, setActionState] = useState<ActionState>('idle');
   const [emailCache, setEmailCache] = useState<Record<string, EmailData>>({});
@@ -79,7 +81,7 @@ export default function NextBestActions({ profile }: NextBestActionsProps): Reac
     setActionState('loading');
     try {
       const aiBody = await geminiGenerate(buildAIPrompt(profile, action));
-      const firstName = (profile.profileData.demographics.name ?? 'Valued Customer').split(' ')[0];
+      const firstName = (profile.profileData.demographics.name ?? 'Valued Customer').split(' ')[0] ?? 'Valued Customer';
       const topModel = getTopModel(profile);
       const meta = ACTION_EMAIL_META[action.action];
 

@@ -40,20 +40,17 @@
     </svg>
 </template>
 
-<script setup>
-    defineProps({
-        width: {
-            type: String,
-            default: '100%',
-        },
-        color: {
-            type: String,
-            default: 'currentColor',
-        },
-        dropShadow: {
-            type: String,
-            default: '',
-        },
+<script setup lang="ts">
+    interface Props {
+        width?: string
+        color?: string
+        dropShadow?: string
+    }
+
+    withDefaults(defineProps<Props>(), {
+        width: '100%',
+        color: 'currentColor',
+        dropShadow: '',
     });
 </script>
 

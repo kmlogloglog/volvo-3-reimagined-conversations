@@ -64,7 +64,7 @@ function calculateQuadrantScore(items: readonly AffinityItem[]): number {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomAxisTick(props: any): React.JSX.Element {
   const { x, y, payload, textAnchor } = props as {
-    x: number; y: number; payload: { value: string }; textAnchor: string;
+    x: number; y: number; payload: { value: string }; textAnchor: React.SVGProps<SVGTextElement>['textAnchor'];
   };
   const words = payload.value.split(' ');
   // Split into two lines: first half / second half
@@ -133,7 +133,9 @@ function CustomTooltip(props: any): React.JSX.Element | null {
 
 export default function AffinitiesRadar({
   affinities,
-}: AffinitiesRadarProps): React.JSX.Element {
+}: AffinitiesRadarProps): React.JSX.Element | null {
+  const totalItems = QUADRANT_KEYS.reduce((sum, k) => sum + affinities[k].length, 0);
+
   const chartData: readonly RadarDatum[] = useMemo(() => {
     return QUADRANT_KEYS.map((key) => ({
       axis: QUADRANT_LABELS[key],
@@ -141,6 +143,10 @@ export default function AffinitiesRadar({
       items: affinities[key],
     }));
   }, [affinities]);
+
+  // Radar needs at least 3 axes with data to be meaningful
+  const populatedAxes = chartData.filter((d) => d.value > 0).length;
+  if (totalItems === 0 || populatedAxes < 2) return null;
 
   return (
     <motion.div

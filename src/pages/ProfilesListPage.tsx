@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Icon } from '@iconify/react';
@@ -7,8 +7,8 @@ import GlassCard from '@/components/ui/GlassCard';
 import ProfileCard from '@/components/features/ProfileCard';
 import JsonUploadModal from '@/components/features/JsonUploadModal';
 import { useProfileStore } from '@/store/profileStore';
-// Auth store import removed — profiles always load from Firestore
-import { useState } from 'react';
+
+const PAGE_SIZE = 10;
 
 export default function ProfilesListPage(): React.JSX.Element {
   const profiles = useProfileStore((s) => s.profiles);
@@ -20,10 +20,16 @@ export default function ProfilesListPage(): React.JSX.Element {
   const navigate = useNavigate();
 
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     void loadProfiles();
   }, [loadProfiles]);
+
+  // Reset to page 1 whenever search changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
 
   const filteredProfiles = useMemo(() => {
     if (!searchQuery.trim()) return profiles;
@@ -36,12 +42,26 @@ export default function ProfilesListPage(): React.JSX.Element {
     });
   }, [profiles, searchQuery]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredProfiles.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedProfiles = filteredProfiles.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  const firstItem = filteredProfiles.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
+  const lastItem = Math.min(currentPage * PAGE_SIZE, filteredProfiles.length);
+
   return (
     <div>
       {/* Header */}
       <SectionHeader
         title="User Profiles"
-        subtitle={`${profiles.length} profile${profiles.length !== 1 ? 's' : ''} loaded`}
+        subtitle={
+          filteredProfiles.length === 0
+            ? 'No profiles'
+            : `Showing ${String(firstItem)}–${String(lastItem)} of ${String(filteredProfiles.length)} profile${filteredProfiles.length !== 1 ? 's' : ''}`
+        }
         action={
           <button
             type="button"
@@ -146,23 +166,67 @@ export default function ProfilesListPage(): React.JSX.Element {
       )}
 
       {/* Profile grid — staggered reveal */}
-      {!isLoading && error === null && filteredProfiles.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredProfiles.map((profile, index) => (
-            <motion.div
-              key={profile.userId}
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.35, delay: index * 0.07, ease: 'easeOut' }}
-            >
-              <ProfileCard
-                profile={profile}
-                onQuickView={() => void navigate(`/profiles/${profile.userId}`)}
-                onAdvancedView={() => void navigate(`/profiles/${profile.userId}?view=advanced`)}
-              />
-            </motion.div>
-          ))}
-        </div>
+      {!isLoading && error === null && paginatedProfiles.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {paginatedProfiles.map((profile, index) => (
+              <motion.div
+                key={profile.userId}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.35, delay: index * 0.07, ease: 'easeOut' }}
+              >
+                <ProfileCard
+                  profile={profile}
+                  onQuickView={() => void navigate(`/profiles/${profile.userId}`)}
+                  onAdvancedView={() => void navigate(`/profiles/${profile.userId}?view=advanced`)}
+                />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Pagination controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3 mt-8">
+              <button
+                type="button"
+                disabled={currentPage === 1}
+                onClick={() => setPage((p) => p - 1)}
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-white/10 bg-white/5 text-xs text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <Icon icon="solar:alt-arrow-left-linear" width={14} />
+                Prev
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    type="button"
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
+                      p === currentPage
+                        ? 'bg-amber-500 text-black'
+                        : 'border border-white/10 bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                disabled={currentPage === totalPages}
+                onClick={() => setPage((p) => p + 1)}
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-white/10 bg-white/5 text-xs text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+                <Icon icon="solar:alt-arrow-right-linear" width={14} />
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       <JsonUploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} />

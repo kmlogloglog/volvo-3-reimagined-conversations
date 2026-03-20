@@ -12,7 +12,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 export interface AgentUserState {
-  profiling?: string[];
+  profiling?: Record<string, string> | string[];
   car_config?: {
     model?: string;
     exterior?: string;
@@ -21,10 +21,11 @@ export interface AgentUserState {
   };
   full_name?: string;
   email?: string;
-  location?: string;
+  location?: string | { city?: string; nation?: string; street?: string; lat?: number | null; lng?: number | null };
   height_cm?: string | number;
   preferences?: string;
   test_drive_appointment?: Record<string, unknown>;
+  test_drive_preferences?: Record<string, unknown>;
 }
 
 /**

@@ -41,12 +41,14 @@ def book_test_drive(
         tool_context.state["user:email"] = user_info.email
     if user_info.height:
         tool_context.state["user:height_cm"] = user_info.height
-    if not tool_context.state.get("user:preferences"):
-        tool_context.state["user:preferences"] = {}
+    if not tool_context.state.get("user:test_drive_preferences"):
+        tool_context.state["user:test_drive_preferences"] = {}
     if user_info.music:
-        tool_context.state["user:preferences"]["music"] = user_info.music
+        tool_context.state["user:test_drive_preferences"]["music"] = user_info.music
     if user_info.light:
-        tool_context.state["user:preferences"]["ambient_light"] = user_info.light
+        tool_context.state["user:test_drive_preferences"]["ambient_light"] = (
+            user_info.light
+        )
 
     # Mock booking logic.
     if not tool_context.state.get("booking_attempted"):

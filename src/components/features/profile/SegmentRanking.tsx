@@ -21,7 +21,7 @@ const SEGMENT_KEYS: readonly SegmentKey[] = [
 
 export default function SegmentRanking({
   profile,
-}: SegmentRankingProps): React.JSX.Element {
+}: SegmentRankingProps): React.JSX.Element | null {
   const { segmentRanking } = profile.analyticalScores;
   const { dominantSegment } = segmentRanking;
 
@@ -30,6 +30,10 @@ export default function SegmentRanking({
     (acc, key) => acc + segmentRanking[key],
     0,
   );
+
+  // No data — don't render an empty card
+  if (sum === 0) return null;
+
   const isValid = sum === 100;
 
   return (

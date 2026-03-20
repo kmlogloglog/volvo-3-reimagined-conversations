@@ -5,12 +5,6 @@
 @use './typography.scss';
 @use './icons.scss';
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 html {
     margin: 0;
     padding: 0;
@@ -25,7 +19,7 @@ body {
     background: transparent;
     overflow: hidden;
     overscroll-behavior: none;
-    background-color: var(--color-background-solid-bottom);
+    background-color: #151618;
 }
 
 #__nuxt {

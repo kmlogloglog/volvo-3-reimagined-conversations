@@ -1,12 +1,20 @@
 import { defineStore } from 'pinia';
+import type { AgentState } from './_state';
 import actions from './_actions';
 import getters from './_getters';
+export type { AgentState } from './_state';
 
 export const useAgentStore = defineStore('agentStore', {
-    state: () => ({
+    state: (): AgentState => ({
+        userName: null,
         conversation: [],
         audioLevel: 0,
         backgroundImages: null,
+        carouselImages: null,
+        componentName: null,
+        gradientStops: null,
+        retailerDetails: null,
+        testDriveDetails: null,
 
         // Connection state
         connected: false,

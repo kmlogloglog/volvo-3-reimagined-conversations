@@ -12,12 +12,14 @@ const FEATURES = [
   { icon: 'solar:user-speak-linear', label: 'Personalised' },
 ] as const;
 
-const cardVariants = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const cardVariants: Record<string, any> = {
   hidden: { opacity: 0, y: 28, scale: 0.97 },
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
 };
 
-const itemVariants = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const itemVariants: Record<string, any> = {
   hidden: { opacity: 0, y: 10 },
   visible: (delay: number) => ({
     opacity: 1,

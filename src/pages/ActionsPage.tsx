@@ -7,7 +7,7 @@ import NumberFlow from '@number-flow/react';
 import { useProfileStore } from '@/store/profileStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { SEGMENT_LABELS, ACTION_LABELS } from '@/types/profile';
-import type { SegmentKey, VanProfile, NextBestActionType } from '@/types/profile';
+import type { SegmentKey, NextBestActionType } from '@/types/profile';
 import { geminiGenerate } from '@/lib/gemini';
 import { buildVolvoEmailHtml, ACTION_EMAIL_META, getTopModel, buildAIPrompt, buildCampaignSummaryPrompt } from '@/lib/emailTemplates';
 import type { EmailData } from '@/lib/emailTemplates';
@@ -182,7 +182,7 @@ export default function ActionsPage(): React.JSX.Element {
     setGeneratedEmails([]);
     try {
       const actions = selectedProfile.recommendations.nextBestActions;
-      const firstName = (selectedProfile.profileData.demographics.name ?? 'Valued Customer').split(' ')[0];
+      const firstName = (selectedProfile.profileData.demographics.name ?? 'Valued Customer').split(' ')[0] ?? 'Valued Customer';
       const topModel = getTopModel(selectedProfile);
 
       const emails = await Promise.all(
@@ -249,7 +249,7 @@ export default function ActionsPage(): React.JSX.Element {
       }
 
       try {
-        const firstName = (profile.profileData.demographics.name ?? 'Valued Customer').split(' ')[0];
+        const firstName = (profile.profileData.demographics.name ?? 'Valued Customer').split(' ')[0] ?? 'Valued Customer';
         const topModel = getTopModel(profile);
         const aiBody = await geminiGenerate(buildAIPrompt(profile, topAction));
         const meta = ACTION_EMAIL_META[topAction.action];

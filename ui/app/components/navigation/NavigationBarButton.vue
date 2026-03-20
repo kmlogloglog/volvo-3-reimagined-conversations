@@ -1,96 +1,71 @@
 <template>
     <button
-        class="button-reset"
+        class="nav-button"
         :class="{ active }"
         :style="{ fontSize }"
         :disabled="disabled"
         @click="$emit('click')">
-        <span
-            v-if="loading"
-            class="spinner">
-            <svg viewBox="0 0 100 100">
-                <circle
-                    cx="50" cy="50" r="40"
-                    fill="none"
-                    stroke="#ffffff"
-                    stroke-width="4"
-                    stroke-dasharray="209 251" />
-            </svg>
-        </span>
-        <span
-            v-else
-            :class="iconClass"></span>
+        <BaseSpinner v-if="loading" />
+        <slot v-else ></slot>
     </button>
 </template>
 
-<script setup>
-    import { EMITS } from '@/constants/emits';
-    const props = defineProps({
-        icon: {
-            type: String,
-            required: true,
-        },
-        active: {
-            type: Boolean,
-            default: false,
-        },
-        fontSize: {
-            type: String,
-            default: '1.15rem',
-        },
-        loading: {
-            type: Boolean,
-            default: false,
-        },
-        disabled : {
-            type: Boolean,
-            default: false,
-        },
+<script setup lang="ts">
+    import BaseSpinner from '@/components/baseComponents/uiElements/BaseSpinner.vue';
+    interface Props {
+        active?: boolean
+        fontSize?: string
+        loading?: boolean
+        disabled?: boolean
+    }
+
+    withDefaults(defineProps<Props>(), {
+        active: false,
+        fontSize: '1.75rem',
+        loading: false,
+        disabled: false,
     });
 
-    defineEmits([EMITS.CLICK]);
-
-    const iconClass = computed(() => props.active ? `${props.icon}-fill` : props.icon);
+    defineEmits<{ click: [] }>();
 </script>
 
 <style scoped lang="scss">
-button {
-    background-color: var(--navigation-button-color-background);
+.nav-button {
+    all: unset;
+    position: relative;
     border-radius: 9999px;
     box-sizing: border-box;
-    color: var(--navigation-button-color-font);
     cursor: pointer;
-    flex: 1;
-    height: 100%;
+    aspect-ratio: 1 / 1;
     line-height: 0;
     text-align: center;
-    width: 5.5rem;
+    width: 4.625rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 
-    &:active,
+    // Default: flat semi-transparent, no glass
+    background: var(--navigation-button-color-background);
+    color: var(--navigation-button-color-font);
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
+
+    &:active:not(:disabled),
     &.active {
-        background-color: var(--navigation-button-active-color-background);
+        background: var(--navigation-button-active-color-background);
         color: var(--navigation-button-active-color-font);
+    }
+
+    &.active:disabled {
+        background: var(--navigation-button-disabled-color-background);
+        color: var(--navigation-button-disabled-color-font);
     }
 
     &:disabled {
         cursor: default;
         color: var(--navigation-button-disabled-color-font);
-        background-color: var(--navigation-button-disabled-color-background);
-    }
-}
-
-.spinner {
-    display: inline-block;
-    animation: spin 1s linear infinite;
-    width: 20px;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
+        opacity: 0.5;
     }
 }
 </style>

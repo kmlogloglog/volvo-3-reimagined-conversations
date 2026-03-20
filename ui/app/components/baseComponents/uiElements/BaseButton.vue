@@ -1,18 +1,18 @@
 <template>
-    <button class="button-reset">{{ label }}</button>
+    <button class="base-button button-reset">{{ label }}</button>
 </template>
 
-<script setup>
-    defineProps({
-        label: {
-            type: String,
-            default: 'Button',
-        },
+<script setup lang="ts">
+    interface Props {
+        label?: string
+    }
 
+    withDefaults(defineProps<Props>(), {
+        label: 'Button',
     });
 </script>
 <style lang="scss" scoped>
-    button {
+    .base-button {
         background-color: var(--input-color-background);
         border-radius: var(--border-radius);
         color: var(--input-color-font);

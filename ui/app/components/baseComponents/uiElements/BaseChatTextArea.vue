@@ -1,54 +1,68 @@
 <template>
-    <div class="chat-text-input-wrapper">
+    <div class="chat-text-input-wrapper" :class="{ loading }">
         <textarea
             :id="id"
+            ref="textareaRef"
             v-model="vModel"
             type="text"
             class="chat-text-input"
-            :disabled="disabled"
-            :placeholder="placeholderTxt"
-            @keydown.enter.prevent="onSubmit"></textarea>
+            :disabled="loading"
+            placeholder="Ask Freja"
+            @keydown.enter.exact.prevent="onSubmit"></textarea>
         <button
             type="button"
             class="button-reset chat-text-button"
-            :disabled="disabled"
+            :disabled="loading"
             @click="onSubmit">
+            <BaseSpinner v-if="loading" class="chat-text-spinner" />
             <span
+                v-else
                 class="chat-text-button-icon"
                 :class="[vModel === '' ? 'icon-paper-plane dimmed' : 'icon-paper-plane-fill']"></span>
         </button>
     </div>
 </template>
-<script setup>
-    import { EMITS } from '@/constants/emits.js';
+<script setup lang="ts">
+    import { EMITS } from '@/constants/emits';
+    import BaseSpinner from '@/components/baseComponents/uiElements/BaseSpinner.vue';
 
-    defineProps({
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
+    interface Props {
+        disabled?: boolean
+        loading?: boolean
+    }
+
+    withDefaults(defineProps<Props>(), {
+        disabled: false,
+        loading: false,
     });
-    const vModel = defineModel({
-        type: String,
-        default: '',
-    });
+    const vModel = defineModel<string>({ default: '' });
+
+    const textareaRef = useTemplateRef<HTMLTextAreaElement>('textareaRef');
 
     const id = useId();
 
-    const emit = defineEmits([EMITS.SUBMIT]);
-
-    const isListening = ref(false);
-    const placeholderTxt = computed(() => isListening.value ? 'Recording' : 'Ask Volvo Vän');
+    const emit = defineEmits<{ submit: [value: string] }>();
 
     function onSubmit() {
-        if(vModel.value === '') {
-            isListening.value = !isListening.value;
+        if (vModel.value === '') {
             return;
         }
 
         emit(EMITS.SUBMIT, vModel.value);
         vModel.value = '';
     }
+
+    function focus() {
+        const textarea = textareaRef.value;
+
+        if (textarea) {
+            textarea.focus();
+        }
+    }
+
+    defineExpose<{ focus: () => void }>({
+        focus,
+    });
 
 </script>
 
@@ -74,7 +88,7 @@
             min-height: 2.5rem;
             outline: none;
             padding-right: 40px;
-            padding: 0.3rem .75rem;
+            padding: .3rem 2.25rem .3rem 0.75rem;
             resize: none;
             transition: border-color 0.3s;
             width: 100%;
@@ -83,7 +97,8 @@
                 color: var(--input-color-font-placeholder);
             }
 
-            &:disabled {
+            &:disabled,
+            &.loading {
                 &::placeholder {
                     color: var(--input-color-font-placeholder-disabled);
                 }
@@ -91,7 +106,10 @@
         }
 
         &-button {
+            align-items: center;
             bottom: .55rem;
+            display: flex;
+            min-height: 1.5rem;
             position: absolute;
             right: .75rem;
             z-index: 1;
@@ -100,11 +118,21 @@
                 color: var(--input-color-font-placeholder);
             }
 
-            &:disabled {
+            &:disabled,
+            &.loading {
                 & .chat-text-button-icon {
                     color: var(--input-color-font-placeholder-disabled);
                 }
             }
         }
+    }
+
+    .chat-text-spinner {
+        color: var(--input-color-font-placeholder);
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
     }
 </style>

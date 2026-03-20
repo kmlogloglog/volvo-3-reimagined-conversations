@@ -2,6 +2,7 @@
     <BaseSpeechBubble
         ref="speechBubbleRef"
         :align-bubble="alignBubble"
+        :disabled="disabled"
         padding="small">
         <ChatTypeIndicator v-if="!finished" />
         <template v-else>
@@ -22,48 +23,56 @@
         </template>
     </BaseSpeechBubble>
 </template>
-<script setup>
+<script setup lang="ts">
+    import type { Ref, ComponentPublicInstance } from 'vue';
+
     import BaseSpeechBubble from '@/components/baseComponents/uiElements/BaseSpeechBubble.vue';
     import { EMITS } from '@/constants/emits';
-    import { AGENT } from '@/constants/agent';
     import DOMPurify from 'isomorphic-dompurify';
-    import ChatTypeIndicator from './ChatTypeIndicator.vue';
+    import ChatTypeIndicator from '@/components/chat/ChatTypeIndicator.vue';
+    import { useResizeObserver } from '@vueuse/core';
 
-    const props = defineProps({
-        text: {
-            type: String,
-            required: true,
-        },
-        alignBubble: {
-            type: String,
-            default: 'none',
-            validator: (value) => [AGENT.USER, AGENT.AGENT, 'none'].includes(value),
-        },
-        finished: {
-            type: Boolean,
-            default: true,
-        },
+    interface Props {
+        text: string
+        alignBubble?: 'user' | 'agent' | 'none'
+        finished?: boolean
+        disabled?: boolean
+        padding?: 'small' | 'large' | ''
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        alignBubble: 'none',
+        finished: true,
+        disabled: false,
+        padding: '',
     });
 
-    const emit = defineEmits([EMITS.SPEECH_BUBBLE_EXPAND, EMITS.IMAGE_LOADED]);
+    const emit = defineEmits<{
+        speechBubbleExpand: [payload: { heightDelta: number; scrollBefore: number }]
+        imageLoaded: [img: HTMLImageElement]
+    }>();
 
-    // sanitized text to prevent XSS when using v-html
     const sanitizedText = computed(() => {
-        return DOMPurify.sanitize(props.text);
+        const sanitized = DOMPurify.sanitize(props.text);
+        // Agent responses are already HTML — only convert newlines to <br> for plain-text user messages
+        if (/<[a-z][\s\S]*>/i.test(sanitized)) {
+            return sanitized;
+        }
+        return sanitized.replace(/\n/g, '<br>');
     });
 
     const buttonLabel = computed(() => showAllText.value ? 'Collapse message' : 'Show full message');
 
-    // toggle read more
-    const textRef = useTemplateRef('textRef');
-    const speechBubbleRef = useTemplateRef('speechBubbleRef');
+    const textRef = useTemplateRef<HTMLElement>('textRef');
+    const speechBubbleRef = useTemplateRef<ComponentPublicInstance>('speechBubbleRef');
     const showReadMoreButton = ref(false);
     const showAllText = ref(false);
 
-    const scrollContainer = inject('scrollContainer', ref(null));
+    const scrollContainer = inject<Ref<HTMLElement | null>>('scrollContainer', ref(null));
 
+    // Toggles expanded state, then adjusts the parent scroll container to compensate for the height change.
     async function onReadMoreClick() {
-        const el = speechBubbleRef.value.$el;
+        const el = speechBubbleRef.value?.$el as HTMLElement;
         const heightBefore = el.offsetHeight;
         const scrollBefore = scrollContainer.value?.scrollTop ?? 0;
 
@@ -79,9 +88,8 @@
         });
     }
 
-    // Image load handling
-    function onImageLoad(event) {
-        emit(EMITS.IMAGE_LOADED, event.target);
+    function onImageLoad(event: Event) {
+        emit(EMITS.IMAGE_LOADED, (event.target as HTMLImageElement));
     }
 
     function attachImageListeners() {
@@ -116,6 +124,11 @@
         }
     }, { immediate: true });
 
+    useResizeObserver(textRef, ([entry]) => {
+        const el = entry!.target as HTMLElement;
+        showReadMoreButton.value = !showAllText.value && el.scrollHeight > el.clientHeight;
+    });
+
     onBeforeUnmount(() => {
         detachImageListeners();
     });
@@ -125,7 +138,7 @@
         margin: 0;
         text-box-trim: trim-both;
         display: -webkit-box;
-        -webkit-line-clamp: 5;
+        -webkit-line-clamp: 8;
         -webkit-box-orient: vertical;
         overflow: hidden;
 

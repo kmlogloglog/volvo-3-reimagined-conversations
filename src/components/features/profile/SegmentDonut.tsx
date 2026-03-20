@@ -67,7 +67,7 @@ function CustomTooltip(props: any): React.JSX.Element | null {
 
 export default function SegmentDonut({
   segmentRanking,
-}: SegmentDonutProps): React.JSX.Element {
+}: SegmentDonutProps): React.JSX.Element | null {
   const chartData: readonly SegmentDatum[] = useMemo(() => {
     return SEGMENT_KEYS.map((key) => ({
       key,
@@ -85,6 +85,10 @@ export default function SegmentDonut({
     (sum, key) => sum + segmentRanking[key],
     0,
   );
+
+  // No data — don't render an empty donut
+  if (total === 0) return null;
+
   const showWarning = total !== 100;
 
   return (

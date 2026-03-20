@@ -1,25 +1,34 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
-    modules: ['@nuxt/eslint', '@nuxtjs/color-mode'],
+    modules: ['@nuxt/eslint', '@nuxtjs/color-mode', '@nuxtjs/device'],
     colorMode: {
         preference: 'system',
         fallback: 'light',
         classSuffix: '',
     },
     plugins: [
-        '@/plugins/pinia.js',
+        '@/plugins/pinia.ts',
     ],
+    typescript: {
+        strict: true,
+    },
     css: [
-        '@/scss/global.scss'
+        '@/scss/global.scss',
     ],
     devServer: {
-        port: 8080
+        port: 8080,
+    },
+    nitro: {
+        prerender: {
+            failOnError: false,
+        },
     },
     runtimeConfig: {
         public: {
-            port: 8080
-        }
+            port: 8080,
+            googleMapsApiKey: 'AIzaSyD3d1_tLpcZZYu7IqKbXAQo2sxPEk3INT4',
+        },
     },
     app: {
         baseURL: '/',
@@ -27,18 +36,18 @@ export default defineNuxtConfig({
             meta: [
                 {
                     name: 'viewport',
-                    content: 'width=device-width, initial-scale=1, viewport-fit=cover'
+                    content: 'width=device-width, initial-scale=1, viewport-fit=cover',
                 },
                 {
                     name: 'theme-color',
                     content: '#AA957F',
-                    media: '(prefers-color-scheme: light)'
+                    media: '(prefers-color-scheme: light)',
                 },
                 {
                     name: 'theme-color',
                     content: '#151618',
-                    media: '(prefers-color-scheme: dark)'
-                }
+                    media: '(prefers-color-scheme: dark)',
+                },
             ],
             script: [
                 {
@@ -55,9 +64,9 @@ export default defineNuxtConfig({
                         })();
                     `,
                     type: 'text/javascript',
-                    tagPosition: 'head'
-                }
-            ]
-        }
-    }
+                    tagPosition: 'head',
+                },
+            ],
+        },
+    },
 });

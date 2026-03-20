@@ -16,6 +16,7 @@ const CHANNELS: readonly {
   { key: 'conversational', label: 'Conversational', icon: 'solar:chat-round-dots-linear' },
   { key: 'email', label: 'Email', icon: 'solar:letter-linear' },
   { key: 'sms', label: 'SMS', icon: 'solar:smartphone-linear' },
+  { key: 'cookies', label: 'Cookies', icon: 'solar:shield-check-linear' },
 ] as const;
 
 export default function ChannelConsentCard({

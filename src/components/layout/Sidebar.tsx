@@ -41,6 +41,11 @@ const NAV_SECTIONS: readonly NavSection[] = [
         path: '/actions',
         icon: 'solar:bolt-circle-linear',
       },
+      {
+        label: 'Map',
+        path: '/map',
+        icon: 'solar:map-point-linear',
+      },
     ],
   },
 ];

@@ -28,47 +28,55 @@ const AFFORDABILITY_BADGE: Record<string, BadgeVariant> = {
  */
 export default function DemographicsCard({
   profile,
-}: DemographicsCardProps): React.JSX.Element {
+}: DemographicsCardProps): React.JSX.Element | null {
   const { demographics } = profile.profileData;
+
+  // Only render rows that have actual data
+  const hasAny =
+    demographics.name ??
+    demographics.email ??
+    demographics.city ??
+    demographics.maritalStatus ??
+    demographics.childrenCount !== null;
+
+  if (!hasAny) return null;
 
   return (
     <GlassCard>
       <SectionHeader title="Demographics" className="mb-4" />
       <div>
-        <DataRow label="Name" value={demographics.name ?? 'Unknown'} />
-        <DataRow label="Email" value={demographics.email ?? 'Unknown'} />
-        <DataRow label="City" value={demographics.city ?? 'Unknown'} />
-        <DataRow
-          label="Marital Status"
-          value={
-            demographics.maritalStatus
-              ? (MARITAL_LABELS[demographics.maritalStatus] ??
-                demographics.maritalStatus)
-              : 'Unknown'
-          }
-        />
-        <DataRow
-          label="Children"
-          value={
-            demographics.childrenCount !== null
-              ? String(demographics.childrenCount)
-              : 'Unknown'
-          }
-        />
-        <DataRow
-          label="Affordability"
-          value={
-            <StatusBadge
-              label={
-                demographics.affordability.charAt(0).toUpperCase() +
-                demographics.affordability.slice(1)
-              }
-              variant={
-                AFFORDABILITY_BADGE[demographics.affordability] ?? 'neutral'
-              }
-            />
-          }
-        />
+        {demographics.name && (
+          <DataRow label="Name" value={demographics.name} />
+        )}
+        {demographics.email && (
+          <DataRow label="Email" value={demographics.email} />
+        )}
+        {demographics.city && (
+          <DataRow label="City" value={demographics.city} />
+        )}
+        {demographics.maritalStatus && (
+          <DataRow
+            label="Marital Status"
+            value={MARITAL_LABELS[demographics.maritalStatus] ?? demographics.maritalStatus}
+          />
+        )}
+        {demographics.childrenCount !== null && (
+          <DataRow label="Children" value={String(demographics.childrenCount)} />
+        )}
+        {demographics.affordability && demographics.affordability !== 'medium' && (
+          <DataRow
+            label="Affordability"
+            value={
+              <StatusBadge
+                label={
+                  demographics.affordability.charAt(0).toUpperCase() +
+                  demographics.affordability.slice(1)
+                }
+                variant={AFFORDABILITY_BADGE[demographics.affordability] ?? 'neutral'}
+              />
+            }
+          />
+        )}
       </div>
     </GlassCard>
   );

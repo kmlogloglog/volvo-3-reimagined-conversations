@@ -77,8 +77,11 @@ const QUADRANTS: readonly QuadrantConfig[] = [
  */
 export default function AffinitiesWheel({
   profile,
-}: AffinitiesWheelProps): React.JSX.Element {
+}: AffinitiesWheelProps): React.JSX.Element | null {
   const { affinities } = profile.analyticalScores;
+
+  const totalItems = QUADRANTS.reduce((sum, q) => sum + affinities[q.key].length, 0);
+  if (totalItems === 0) return null;
 
   return (
     <GlassCard>

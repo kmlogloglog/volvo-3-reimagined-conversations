@@ -20,8 +20,11 @@ const STAGE_BADGE: Record<string, BadgeVariant> = {
 
 export default function PropensityGauge({
   profile,
-}: PropensityGaugeProps): React.JSX.Element {
+}: PropensityGaugeProps): React.JSX.Element | null {
   const { score, stage } = profile.analyticalScores.propensityToBuy;
+
+  // No score data yet
+  if (score === 0 && stage === 'awareness') return null;
   const stageLabel = STAGE_LABELS[stage] ?? stage;
   const badgeVariant = STAGE_BADGE[stage] ?? 'neutral';
 

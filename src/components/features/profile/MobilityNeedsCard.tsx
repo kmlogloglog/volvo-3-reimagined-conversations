@@ -37,72 +37,62 @@ const RENEWAL_LABELS: Record<string, string> = {
  */
 export default function MobilityNeedsCard({
   profile,
-}: MobilityNeedsCardProps): React.JSX.Element {
+}: MobilityNeedsCardProps): React.JSX.Element | null {
   const { mobilityNeeds } = profile.profileData;
 
-  const weekendDisplay =
+  const weekendItems =
     mobilityNeeds.weekendUsage && mobilityNeeds.weekendUsage.length > 0
-      ? mobilityNeeds.weekendUsage
-          .map((activity) => WEEKEND_LABELS[activity] ?? activity)
-          .join(', ')
-      : 'Unknown';
+      ? mobilityNeeds.weekendUsage.map((a) => WEEKEND_LABELS[a] ?? a).join(', ')
+      : null;
+
+  // Only render if there is at least one populated field
+  const hasData =
+    mobilityNeeds.dailyUsage ||
+    weekendItems ||
+    mobilityNeeds.passengerCount !== null ||
+    mobilityNeeds.cargoNeeds ||
+    mobilityNeeds.currentCar ||
+    mobilityNeeds.numberOfCars !== null ||
+    mobilityNeeds.carRenewal ||
+    mobilityNeeds.reasonForBuying;
+
+  if (!hasData) return null;
 
   return (
     <GlassCard>
       <SectionHeader title="Mobility Needs" className="mb-4" />
       <div>
-        <DataRow
-          label="Daily Usage"
-          value={
-            mobilityNeeds.dailyUsage
-              ? (DAILY_USAGE_LABELS[mobilityNeeds.dailyUsage] ??
-                mobilityNeeds.dailyUsage)
-              : 'Unknown'
-          }
-        />
-        <DataRow label="Weekend Usage" value={weekendDisplay} />
-        <DataRow
-          label="Passengers"
-          value={
-            mobilityNeeds.passengerCount !== null
-              ? String(mobilityNeeds.passengerCount)
-              : 'Unknown'
-          }
-        />
-        <DataRow
-          label="Cargo Needs"
-          value={
-            mobilityNeeds.cargoNeeds
-              ? (CARGO_LABELS[mobilityNeeds.cargoNeeds] ??
-                mobilityNeeds.cargoNeeds)
-              : 'Unknown'
-          }
-        />
-        <DataRow
-          label="Current Car"
-          value={mobilityNeeds.currentCar ?? 'Unknown'}
-        />
-        <DataRow
-          label="Number of Cars"
-          value={
-            mobilityNeeds.numberOfCars !== null
-              ? String(mobilityNeeds.numberOfCars)
-              : 'Unknown'
-          }
-        />
-        <DataRow
-          label="Car Renewal"
-          value={
-            mobilityNeeds.carRenewal
-              ? (RENEWAL_LABELS[mobilityNeeds.carRenewal] ??
-                mobilityNeeds.carRenewal)
-              : 'Unknown'
-          }
-        />
-        <DataRow
-          label="Reason for Buying"
-          value={mobilityNeeds.reasonForBuying ?? 'Unknown'}
-        />
+        {mobilityNeeds.dailyUsage && (
+          <DataRow
+            label="Daily Usage"
+            value={DAILY_USAGE_LABELS[mobilityNeeds.dailyUsage] ?? mobilityNeeds.dailyUsage}
+          />
+        )}
+        {weekendItems && <DataRow label="Weekend Usage" value={weekendItems} />}
+        {mobilityNeeds.passengerCount !== null && (
+          <DataRow label="Passengers" value={String(mobilityNeeds.passengerCount)} />
+        )}
+        {mobilityNeeds.cargoNeeds && (
+          <DataRow
+            label="Cargo Needs"
+            value={CARGO_LABELS[mobilityNeeds.cargoNeeds] ?? mobilityNeeds.cargoNeeds}
+          />
+        )}
+        {mobilityNeeds.currentCar && (
+          <DataRow label="Current Car" value={mobilityNeeds.currentCar} />
+        )}
+        {mobilityNeeds.numberOfCars !== null && (
+          <DataRow label="Number of Cars" value={String(mobilityNeeds.numberOfCars)} />
+        )}
+        {mobilityNeeds.carRenewal && (
+          <DataRow
+            label="Car Renewal"
+            value={RENEWAL_LABELS[mobilityNeeds.carRenewal] ?? mobilityNeeds.carRenewal}
+          />
+        )}
+        {mobilityNeeds.reasonForBuying && (
+          <DataRow label="Reason for Buying" value={mobilityNeeds.reasonForBuying} />
+        )}
       </div>
     </GlassCard>
   );

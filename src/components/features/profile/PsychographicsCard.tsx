@@ -20,8 +20,15 @@ const PERSONA_FLAGS = [
  */
 export default function PsychographicsCard({
   profile,
-}: PsychographicsCardProps): React.JSX.Element {
+}: PsychographicsCardProps): React.JSX.Element | null {
   const { psychographics } = profile.profileData;
+
+  const hasData =
+    PERSONA_FLAGS.some((f) => psychographics[f.key]) ||
+    (psychographics.interests && psychographics.interests.length > 0) ||
+    (psychographics.values && psychographics.values.length > 0);
+
+  if (!hasData) return null;
 
   return (
     <GlassCard>
