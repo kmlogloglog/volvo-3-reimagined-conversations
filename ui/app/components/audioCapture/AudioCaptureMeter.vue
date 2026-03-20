@@ -1,9 +1,7 @@
 <template>
     <div class="meter-wrap">
         <div class="meter">
-            <!-- Horizontal segmented meter -->
             <div class="meter-bar">
-                <!-- Segmented background track -->
                 <div class="meter-bg-segments">
                     <div
                         v-for="i in NUM_SEGMENTS"
@@ -14,8 +12,6 @@
                             height: `${SEGMENT_WIDTH * 0.9}%`,
                         }"></div>
                 </div>
-
-                <!-- Active segments -->
                 <div class="meter-segments" :style="glowStyle">
                     <div
                         v-for="seg in visibleSegments"
@@ -28,7 +24,6 @@
                         }"></div>
                 </div>
 
-                <!-- Segment dividers and labels -->
                 <div class="meter-ticks">
                     <div
                         v-for="tick in ticks"
@@ -67,24 +62,20 @@
         { throttle: props.throttleMs, leading: true, trailing: true },
     );
 
-    // Interpolate green → yellow → red based on t (0–1)
-    // Red appears earlier: green 0-25%, yellow 25-50%, red 50-100%
+    // Interpolates across three color regions: green→orange (0–0.25), orange→yellow (0.25–0.5), yellow→red (0.5–1).
     function gradientColor(t: number): { r: number; g: number; b: number; css: string } {
         let r: number, g: number, b: number;
         if (t < 0.25) {
-            // Green to yellow-green
             const tt = t / 0.25;
             r = Math.round(50 + (180 - 50) * tt);
             g = Math.round(200 + (210 - 200) * tt);
             b = Math.round(60 + (40 - 60) * tt);
         } else if (t < 0.5) {
-            // Yellow-green to yellow-orange
             const tt = (t - 0.25) / 0.25;
             r = Math.round(180 + (230 - 180) * tt);
             g = Math.round(210 + (180 - 210) * tt);
             b = Math.round(40 + (40 - 40) * tt);
         } else {
-            // Yellow-orange to red
             const tt = (t - 0.5) / 0.5;
             r = Math.round(230 + (210 - 230) * tt);
             g = Math.round(180 + (50 - 180) * tt);
@@ -94,7 +85,6 @@
     }
 
     const NUM_SEGMENTS = ref(30);
-    // Percentage width per segment
     const SEGMENT_WIDTH = computed(() => 100 / NUM_SEGMENTS.value);
 
     const visibleSegments= computed(() => {
@@ -129,7 +119,7 @@
         for (let i = 0; i <= numTicks; i++) {
             result.push({
                 i,
-                // 0, 10, 20, ..., 100
+                // Display as dB scale (0, 20, 40, … 100)
                 label: (i * 10) * 2,
                 width: '12px',
                 color: 'rgba(191,154,103,0.45)',

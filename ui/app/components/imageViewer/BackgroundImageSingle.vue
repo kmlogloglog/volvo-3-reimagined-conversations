@@ -41,9 +41,8 @@
     // Tracks which instance IDs have finished loading.
     const loadedIds = reactive(new Set<number>());
 
-    // ID of the most recently requested image. The old layer is only retired
-    // once this image has loaded, so the leave transition starts at the same
-    // moment as the new image's load-driven fade-in — a true crossfade.
+    // Old layer is only retired once the new image has loaded,
+    // so the leave transition and load-driven fade-in start together.
     let pendingId: number | null = null;
 
     function onLoad(id: number) {
@@ -51,8 +50,6 @@
 
         if (id === pendingId) {
             pendingId = null;
-            // Retiring old instances here triggers their TransitionGroup leave
-            // transition at the exact same time the new image becomes visible.
             instances.value = instances.value.filter(i => i.id === id);
         }
 
@@ -65,7 +62,6 @@
             if (!newSrc) return;
             const newId = idCounter++;
             pendingId = newId;
-            // Old instances stay in the DOM until the new image has loaded.
             instances.value.push({ id: newId, src: newSrc });
         },
     );
@@ -110,7 +106,6 @@ $duration: 2000ms;
     }
 }
 
-// Only the leave transition is needed — the image's own load-driven fade handles entry.
 .image-swap-leave-active {
     transition: opacity $duration ease, filter $duration ease;
     z-index: 2;

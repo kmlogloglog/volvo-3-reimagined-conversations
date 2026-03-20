@@ -33,19 +33,13 @@
     watch(
         () => props.src,
         (newSrc) => {
-            // Push the new carousel — it enters (fades in) beneath the current one
             instances.value.push({ id: idCounter++, src: newSrc });
-
-            // Immediately mark the old one for removal so Vue starts its leave transition
             instances.value.shift();
         },
     );
 
-    // Called by TransitionGroup once the leave transition has fully completed.
-    // Nothing left to clean up manually — Vue already removed the element.
+    // Required by TransitionGroup; intentionally empty (Vue handles DOM cleanup).
     function onAfterLeave() {
-        // No-op: DOM cleanup is handled by TransitionGroup.
-        // Hook kept here in case you need side-effects (e.g. emitting an event).
     }
 </script>
 

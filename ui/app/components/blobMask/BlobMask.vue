@@ -85,6 +85,7 @@
         '--mask-scale': `${config.maskScale}`,
     };
 
+    // Simplified Perlin noise: deterministic permutation table (no random seed needed).
     const permutation = new Uint8Array(512);
     for (let i = 0; i < 256; i++) {
         permutation[i] = permutation[i + 256] = (i * 167 + 53) & 255;
@@ -135,6 +136,7 @@
                          lerp(u, grad(permutation[AB + 1]!, x, y - 1, z - 1), grad(permutation[BB + 1]!, x - 1, y - 1, z - 1))));
     }
 
+    // Pre-computed trig tables for the blob perimeter polygon.
     const cosTable = new Float32Array(config.angularSegments + 1);
     const sinTable = new Float32Array(config.angularSegments + 1);
 
@@ -190,9 +192,8 @@
         const timeX = Math.cos(morphPhase) * loopRadius;
         const timeY = Math.sin(morphPhase) * loopRadius;
 
-        // Cut the blob shape out of the black overlay with a hard edge.
-        // CSS filter: blur() on the canvas element handles the soft feathering,
-        // which works consistently on all browsers including Safari / iOS.
+        // Cut the blob shape out of the overlay with destination-out compositing.
+        // CSS filter: blur() handles soft feathering consistently across all browsers.
         ctx.globalCompositeOperation = 'destination-out';
         ctx.fillStyle = '#fff';
         traceBlobPath(ctx, centerX, centerY, pulsedRadius, timeX, timeY);
@@ -444,13 +445,11 @@ $duration: 1200ms;
     height: 100%;
     inset: 0;
     position: absolute;
-    // Scale up so blurred outer edges are pushed beyond the container
     transform: scale(var(--mask-scale, 1));
     width: 100%;
     z-index: 3;
 }
 
-// Leave transition for old images during crossfade.
 .blob-image-swap-leave-active {
     transition: opacity $duration ease;
     z-index: 3;

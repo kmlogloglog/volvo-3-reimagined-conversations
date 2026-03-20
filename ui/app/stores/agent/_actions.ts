@@ -13,12 +13,12 @@ declare global {
     }
 }
 
-// Types `this` as the full store context so actions can reference state/other actions.
 function makeActions<T extends object>(obj: T & ThisType<AgentState & T>): T {
     return obj;
 }
 
 export default makeActions({
+    // Converts Float32 audio samples (–1…1) to Int16 PCM for WebSocket transmission.
     float32ToInt16(float32: Float32Array): Int16Array {
         const int16 = new Int16Array(float32.length);
         for (let i = 0; i < float32.length; i++) {
@@ -29,7 +29,7 @@ export default makeActions({
         return int16;
     },
 
-    // URL-safe base64 (agent format) → ArrayBuffer for audio playback.
+    // Converts URL-safe base64 (ADK format) to ArrayBuffer for audio playback.
     base64ToArray(base64: string): ArrayBuffer {
         const base64Clean = base64.replace(/-/g, '+').replace(/_/g, '/');
         const binaryString = atob(base64Clean);
@@ -97,6 +97,7 @@ export default makeActions({
             msg.content.text = `${currentText}${text}`;
         }
 
+        // Remove stale in-progress agent messages so only the latest accumulates.
         this.conversation = this.conversation.filter(msg => msg.id === this.currentMessageId || msg.sender !== AGENT.AGENT || msg.finished);
 
         if (finished) {

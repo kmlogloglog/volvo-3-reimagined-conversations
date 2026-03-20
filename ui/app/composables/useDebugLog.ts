@@ -1,7 +1,3 @@
-/**
- * Conversation debug logger.
- * Stores raw events for inspection/export and provides styled console helpers.
- */
 import { reactive } from 'vue';
 
 const entries: Record<string, unknown>[] = reactive([]);
@@ -38,6 +34,7 @@ export function useDebugLog() {
         log.conversation(label, entry);
     }
 
+    // Deep-clone via JSON round-trip to strip Vue reactive proxies.
     function getPayload() {
         return JSON.parse(JSON.stringify({ userId: session.userId, sessionId: session.sessionId, entries }));
     }

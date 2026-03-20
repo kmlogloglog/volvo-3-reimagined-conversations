@@ -57,6 +57,7 @@
     const safeImageArray = computed(() => Array.isArray(props.src) ? props.src : []);
     const safeImageCount = computed(() => safeImageArray.value.length);
 
+    // Append clone of first image to enable seamless wrap-around.
     const extendedImageArray = computed(() => safeImageCount.value > 1
         ? [...safeImageArray.value, safeImageArray.value[0]!]
         : safeImageArray.value,
@@ -78,7 +79,8 @@
         }
     }
 
-    // Silently reposition to the given index without any visible transition
+    // Reposition without a visible transition.
+    // Double rAF ensures the browser has committed the index change before re-enabling transitions.
     async function silentJump(index: number) {
         isJumping.value = true;
         currentIndex.value = index;
@@ -86,6 +88,7 @@
         isJumping.value = false;
     }
 
+    // Infinite loop: slide to clone, then silently jump back to real first slide.
     function nextImage() {
         if (currentIndex.value === lastRealIndex.value) {
             currentIndex.value = cloneIndex.value;
@@ -97,7 +100,6 @@
 
     function previousImage() {
         if (currentIndex.value === 0) {
-            // Silently jump to the clone, then slide back to the last real slide
             silentJump(cloneIndex.value).then(() => {
                 currentIndex.value = lastRealIndex.value;
             });

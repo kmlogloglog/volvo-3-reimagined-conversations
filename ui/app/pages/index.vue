@@ -88,14 +88,14 @@
 
     const { listening: isListening } = storeToRefs(agentStore);
 
-    // Layout & background
-
+    // Components that use the multi-image carousel background.
     const CAROUSEL_COMPONENTS = [
         AGENT.COMPONENT_NAME.FINAL_CONFIGURATION,
         AGENT.COMPONENT_NAME.MAPS_VIEW,
         AGENT.COMPONENT_NAME.TEST_DRIVE_CONFIRMATION,
     ];
 
+    // Components that use the blob mask spotlight reveal.
     const BLOB_MASK_COMPONENTS = [
         AGENT.COMPONENT_NAME.WHEELS,
         AGENT.COMPONENT_NAME.INTERIOR,
@@ -118,8 +118,6 @@
         },
         { immediate: true },
     );
-
-    // Blob shape & appearance
 
     // Reset only when the component step changes so that image src updates within
     // the same step don't collapse and re-expand the blob scale.
@@ -147,9 +145,7 @@
             : undefined,
     );
 
-    // Connection & intro
-
-    // Tracks which mode triggered the intro message: 'audio', 'chat', or null.
+    // Tracks which mode ('audio' | 'chat') triggered the intro, to prevent duplicates.
     const introSentBy = ref<'audio' | 'chat' | null>(null);
 
     function sendIntro(mode: 'audio' | 'chat') {
@@ -181,8 +177,6 @@
         }
     });
 
-    // User interactions
-
     function handleMicrophoneClick(enabled: boolean) {
         if (enabled) {
             agent.startAudio();
@@ -197,7 +191,6 @@
 
     const isChatActive = ref(false);
 
-    // Toggles the chat panel and sends the intro message on open, guarding against duplicate intros.
     function handleChatClick(enabled: boolean) {
         isChatActive.value = enabled;
 
@@ -281,7 +274,6 @@
     opacity: 0;
 }
 
-// Leave-only — entry is handled by BackgroundImageSilhouette's internal load-driven fade.
 .bg-single-leave-active {
     transition: opacity 1s ease, filter 1s ease;
 }

@@ -38,24 +38,32 @@
         { position: 1, r: 89, g: 41, b: 12, a: 0.15 },
     ];
 
-    // Animation, shape, and flare tuning constants.
     const config = {
+        // Canvas refresh rate (fps)
         targetFps: 30,
 
+        // Base translation speed when idle
         idleAnimationSpeed: 0.015,
+        // Additional speed added at full audio intensity
         maxAnimationSpeedBoost: 0.016,
 
+        // Base shape-change rate when idle
         idleMorphSpeed: 0.5,
+        // Additional morph speed at full intensity
         maxMorphSpeedBoost: 0.25,
 
+        // Blob size as fraction of shorter canvas dimension
         baseSize: 0.15,
+        // Concentric rings for gradient fill (higher = smoother color bands)
         radialRings: 16,
+        // Perimeter polygon segments (higher = smoother silhouette)
         angularSegments: 40,
 
         // Idle pulse (fades out as intensity increases)
         pulseSpeed: 0.7,
         idlePulseAmount: 0.125,
 
+        // Perlin noise frequency for shape distortion
         idleNoiseScale: 0.6,
         // Negative = smoother shape at peak intensity
         maxNoiseScaleBoost: -0.3,
@@ -70,19 +78,25 @@
         maxSizeMultiplierBoost: 4,
         maxFlareIntensityBoost: 2.0,
 
-        // Lens flare
+        // Lens flare effect on blob surface
         flare: {
             enabled: true,
+            // Flare diameter relative to blob radius
             size: 0.4,
+            // Center offset (negative = top-left bias)
             offset: { x: -0.25, y: -0.25 },
             color: { r: 255, g: 240, b: 220 },
+            // Concentric flare rings
             rings: 10,
+            // Angular segments per ring
             segments: 28,
+            // Concentric layers with opacity gradient (outer → inner)
             layers: [
                 { sizeMultiplier: 1.0, opacity: 0.4 },
                 { sizeMultiplier: 0.6, opacity: 0.7 },
                 { sizeMultiplier: 0.2, opacity: 1.0 },
             ],
+            // Secondary flare for additional light scatter
             secondary: {
                 enabled: true,
                 offsetMultiplier: -0.6,
@@ -95,13 +109,13 @@
             },
         },
 
-        // Bottom alignment
+        // Bottom-aligned mode (blob repositions to bottom of screen)
         bottomAlignOffsetRem: 5,
         bottomAlignIdleSizeMultiplier: 0.6,
         bottomAlignMaxSizeMultiplierBoost: 1.8,
 
+        // Cross-fade duration between center and bottom positions (seconds)
         fadeDurationSecs: 0.4,
-
         // Delay before the fade-IN starts (fade-out always starts immediately)
         fadeInDelaySecs: 0.3,
     };
@@ -109,17 +123,20 @@
     let smoothedIntensity = 0;
     let smoothedScale = 1;
 
+    // Exponential smoothing for audio level transitions
     const smoothing = {
-        // Higher = faster rise
+        // Rise speed toward peak (0–1, higher = snappier)
         attack: 0.1,
-        // Higher = faster decay
+        // Decay speed toward idle (0–1, higher = quicker falloff)
         release: 0.1,
     };
 
+    // Cross-fade alphas for center ↔ bottom position transition
     let centerAlpha = 1;
     let bottomAlpha = 0;
     let fadeInDelayRemaining = 0;
 
+    // Duration of gradient color interpolation between stop sets
     const COLOR_FADE_DURATION_SECS = 1.2;
 
     let currentStops: GradientStop[] = [...DEFAULT_GRADIENT_STOPS];
@@ -132,6 +149,7 @@
         colorFadeProgress = 0;
     });
 
+    // Lerps between currentStops and nextStops based on colorFadeProgress.
     function resolvedStops() {
         if (!nextStops || colorFadeProgress >= 1) return currentStops;
 
@@ -186,6 +204,7 @@
         return true;
     });
 
+    // Simplified Perlin noise: deterministic permutation table (no random seed needed).
     const permutation = new Uint8Array(512);
     for (let i = 0; i < 256; i++) {
         permutation[i] = permutation[i + 256] = (i * 167 + 53) & 255;
@@ -236,6 +255,7 @@
                          lerp(u, grad(permutation[AB + 1]!, x, y - 1, z - 1), grad(permutation[BB + 1]!, x - 1, y - 1, z - 1))));
     }
 
+    // Pre-computed trig tables for the blob perimeter polygon.
     const maxSegments = Math.max(config.angularSegments, config.flare.segments);
     const cosTable = new Float32Array(maxSegments + 1);
     const sinTable = new Float32Array(maxSegments + 1);
@@ -506,7 +526,6 @@
             }
         }
 
-        // Resolve stops once per frame.
         const stops = resolvedStops();
 
         const fadeStep = elapsedSecs / config.fadeDurationSecs;
