@@ -458,6 +458,14 @@ export default function ActionsPage(): React.JSX.Element {
                     <p className="text-[10px] text-neutral-600 mt-1">
                       <NumberFlow value={Math.round(pct)} suffix="%" /> of total
                     </p>
+
+                    {/* Campaign CTA */}
+                    <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-white/5">
+                      <Icon icon="solar:magic-stick-3-linear" width={11} style={{ color }} className="shrink-0" />
+                      <span className="text-[9px] font-medium" style={{ color, opacity: 0.8 }}>
+                        {activeSegment === seg ? 'Campaign open below' : 'Click to generate campaign'}
+                      </span>
+                    </div>
                   </div>
                 </motion.div>
               );

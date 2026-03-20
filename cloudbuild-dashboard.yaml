@@ -1,0 +1,5 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'Dockerfile.dashboard', '-t', 'gcr.io/$PROJECT_ID/freja-dashboard', '.']
+images:
+  - 'gcr.io/$PROJECT_ID/freja-dashboard'

@@ -26,7 +26,7 @@ function App(): React.JSX.Element {
   }, [theme]);
 
   return (
-    <BrowserRouter basename="/dashboard">
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/+$/, '')}>
       <Toaster
         position="bottom-right"
         theme={theme}

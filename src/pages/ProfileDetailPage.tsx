@@ -1,8 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { motion } from 'motion/react';
+import { toast } from 'sonner';
 import GlassCard from '@/components/ui/GlassCard';
+import GlassPanel from '@/components/ui/GlassPanel';
+import { createTestDriveCall } from '@/services/retellService';
 import DemographicsCard from '@/components/features/profile/DemographicsCard';
 import PsychographicsCard from '@/components/features/profile/PsychographicsCard';
 import MobilityNeedsCard from '@/components/features/profile/MobilityNeedsCard';
@@ -57,8 +60,36 @@ export default function ProfileDetailPage(): React.JSX.Element {
   const liveState = useLiveStateStore((s) => s.state);
   const isLive = useLiveStateStore((s) => s.isListening);
 
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [callName, setCallName] = useState('');
+  const [isCallingRetell, setIsCallingRetell] = useState(false);
+  const [showCallTriggered, setShowCallTriggered] = useState(false);
+
   function toggleView() {
     setSearchParams(isAdvanced ? {} : { view: 'advanced' }, { replace: true });
+  }
+
+  async function handleTestDriveCall(): Promise<void> {
+    const trimmedPhone = phoneNumber.trim();
+    const trimmedName = callName.trim();
+    if (!trimmedPhone || !trimmedName) return;
+    setIsCallingRetell(true);
+    try {
+      await createTestDriveCall(trimmedPhone, trimmedName);
+      setShowCallTriggered(true);
+      setTimeout(() => {
+        setShowCallTriggered(false);
+        setIsCallModalOpen(false);
+        setPhoneNumber('');
+        setCallName('');
+      }, 1000);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to initiate call';
+      toast.error(message);
+    } finally {
+      setIsCallingRetell(false);
+    }
   }
 
   useEffect(() => {
@@ -147,6 +178,16 @@ export default function ProfileDetailPage(): React.JSX.Element {
             AI Enriching
           </span>
         )}
+
+        {/* Test Drive Call */}
+        <button
+          type="button"
+          onClick={() => setIsCallModalOpen(true)}
+          className="flex items-center gap-1.5 h-7 px-3 rounded-lg border border-sky-500/20 bg-sky-500/10 text-xs font-medium text-sky-400 hover:bg-sky-500/20 transition-colors"
+        >
+          <Icon icon="solar:phone-calling-linear" width={14} />
+          Test Drive Call
+        </button>
 
         {/* View toggle */}
         <div className="ml-auto flex items-center gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-0.5">
@@ -260,6 +301,88 @@ export default function ProfileDetailPage(): React.JSX.Element {
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* Test Drive Call Modal */}
+      {isCallModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => { setIsCallModalOpen(false); setPhoneNumber(''); setCallName(''); }}
+            role="presentation"
+          />
+          <div className="relative z-10 w-full max-w-sm mx-4">
+            <GlassPanel padding="spacious">
+              {showCallTriggered ? (
+                <div className="flex flex-col items-center justify-center py-6 gap-3">
+                  <Icon icon="solar:check-circle-bold" width={40} className="text-sky-400" />
+                  <p className="text-sm font-medium text-white">Mock call has been triggered</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-heading font-medium text-white">Mock test drive call to salesperson assigned</h2>
+                    <button
+                      type="button"
+                      onClick={() => { setIsCallModalOpen(false); setPhoneNumber(''); setCallName(''); }}
+                      className="w-7 h-7 rounded-full border border-white/10 bg-white/[0.02] flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
+                    >
+                      <Icon icon="solar:close-circle-linear" width={16} />
+                    </button>
+                  </div>
+
+                  <label className="block text-xs text-neutral-400 mb-2">Receiver name</label>
+                  <input
+                    type="text"
+                    value={callName}
+                    onChange={(e) => setCallName(e.target.value)}
+                    placeholder="e.g. Astrid Lindqvist"
+                    className="w-full h-9 px-3 rounded-lg border border-white/10 bg-white/[0.03] text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-sky-500/30 mb-4"
+                    autoFocus
+                  />
+
+                  <label className="block text-xs text-neutral-400 mb-2">Phone number</label>
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="+1 234 567 8900"
+                    className="w-full h-9 px-3 rounded-lg border border-white/10 bg-white/[0.03] text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-sky-500/30 mb-5"
+                    onKeyDown={(e) => { if (e.key === 'Enter') void handleTestDriveCall(); }}
+                  />
+
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { setIsCallModalOpen(false); setPhoneNumber(''); setCallName(''); }}
+                      className="flex-1 h-9 rounded-lg border border-white/10 bg-white/5 text-sm text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleTestDriveCall()}
+                      disabled={isCallingRetell || phoneNumber.trim().length === 0 || callName.trim().length === 0}
+                      className="flex-1 h-9 rounded-lg bg-sky-500 text-sm text-white font-medium hover:bg-sky-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isCallingRetell ? (
+                        <>
+                          <Icon icon="solar:refresh-circle-linear" width={14} className="animate-spin" />
+                          Calling…
+                        </>
+                      ) : (
+                        <>
+                          <Icon icon="solar:phone-calling-linear" width={14} />
+                          Call
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
+            </GlassPanel>
+          </div>
         </div>
       )}
     </div>

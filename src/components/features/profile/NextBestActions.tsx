@@ -184,8 +184,8 @@ export default function NextBestActions({ profile }: NextBestActionsProps): Reac
                     </>
                   ) : (
                     <>
-                      <Icon icon="solar:bolt-circle-linear" width={13} />
-                      Trigger Action
+                      <Icon icon="solar:magic-stick-3-linear" width={13} />
+                      Generate Campaign
                     </>
                   )}
                 </button>

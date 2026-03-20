@@ -1,0 +1,25 @@
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --legacy-peer-deps
+COPY . .
+
+# VITE_ env vars must be present at build time (baked into the JS bundle)
+ENV VITE_FIREBASE_API_KEY=AIzaSyBmw05T1YKPzmKrS2Ea7ic0nqZOgvMQb6I
+ENV VITE_FIREBASE_AUTH_DOMAIN=vml-map-xd-volvo.firebaseapp.com
+ENV VITE_FIREBASE_PROJECT_ID=vml-map-xd-volvo
+ENV VITE_FIREBASE_STORAGE_BUCKET=vml-map-xd-volvo.firebasestorage.app
+ENV VITE_FIREBASE_MESSAGING_SENDER_ID=719852784419
+ENV VITE_FIREBASE_APP_ID=1:719852784419:web:032fd561ab3878b29b9a96
+ENV VITE_GEMINI_API_KEY=AIzaSyBT_9A96G6oUUqjkCRZbYTJCJdAwU2CkAg
+ENV VITE_FIRESTORE_DB=volvo-vaen-v2-db
+ENV VITE_UNICORN_PROJECT_ID=X0ErZR3QhPzMHfKgBbJJ
+ENV VITE_RETELL_API_KEY=key_094fcc2e6bba78a35d3e55a54b86
+
+RUN npx tsc -b && npx vite build --base=/
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]

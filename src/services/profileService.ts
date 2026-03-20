@@ -101,7 +101,7 @@ function mapAgentStateToProfile(
         weekendUsage: null,
         passengerCount: null,
         cargoNeeds: null,
-        currentCar: state.car_config?.model ?? null,
+        currentCar: null, // agent doesn't collect current car; car_config.model is the Volvo model of interest (mapped to affinities.models)
         numberOfCars: null,
         carRenewal: null,
         reasonForBuying: null,

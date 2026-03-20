@@ -71,7 +71,8 @@ export default function ProfileCard({
 
   const name = demographics.name ?? profile.userId;
   const avatarColor = getAvatarColor(demographics.name ?? profile.userId);
-  const carModel = profileData.mobilityNeeds.currentCar;
+  const carOfInterest = analyticalScores.affinities.models[0]?.value ?? null;
+  const currentCar = profileData.mobilityNeeds.currentCar;
   const traits = meta.profileCharacteristics
     ? meta.profileCharacteristics.split(' · ').slice(0, 4)
     : [];
@@ -110,13 +111,22 @@ export default function ProfileCard({
             <Icon icon="solar:bolt-circle-linear" width={16} className="text-neutral-600 group-hover/card:text-amber-400 transition-colors shrink-0" />
           </div>
 
-          {/* Car model */}
-          {carModel && (
-            <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/15">
+          {/* Car of interest (Volvo model) */}
+          {carOfInterest && (
+            <div className="flex items-center gap-2 mb-2 px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/15">
               <Icon icon="solar:car-bold" width={15} className="text-amber-400 shrink-0" />
-              <span className="text-sm font-medium text-amber-400">Volvo {carModel}</span>
+              <span className="text-sm font-medium text-amber-400">Volvo {carOfInterest}</span>
             </div>
           )}
+          {/* Current car (non-Volvo) */}
+          {currentCar && (
+            <div className="flex items-center gap-2 mb-4 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/10">
+              <Icon icon="solar:steering-wheel-linear" width={14} className="text-neutral-400 shrink-0" />
+              <span className="text-xs text-neutral-400">Current: {currentCar}</span>
+            </div>
+          )}
+          {/* spacing when only car of interest shown */}
+          {carOfInterest && !currentCar && <div className="mb-2" />}
 
           {/* Propensity donut — always shown */}
           <div className="flex items-center justify-center mb-4">

@@ -87,16 +87,16 @@ const QUADRANT_META: Record<QuadrantKey, {
 
 // ── Layout ─────────────────────────────────────────────────────────────────────
 
-const CANVAS_W = 440;
-const CANVAS_H = 400;
+const CANVAS_W = 380;
+const CANVAS_H = 290;
 const CANVAS_CENTER = { x: CANVAS_W / 2, y: CANVAS_H / 2 };
-const NODE_ORBIT_RADIUS = 44;
+const NODE_ORBIT_RADIUS = 32;
 
 const CLUSTER_CENTER: Record<QuadrantKey, { x: number; y: number }> = {
-  models:           { x: 110, y: 95 },
-  powertrain:       { x: 330, y: 95 },
-  personalDrivers:  { x: 110, y: 305 },
-  productAttributes:{ x: 330, y: 305 },
+  models:           { x: 95,  y: 72 },
+  powertrain:       { x: 285, y: 72 },
+  personalDrivers:  { x: 95,  y: 218 },
+  productAttributes:{ x: 285, y: 218 },
 };
 
 const QUADRANT_KEYS: readonly QuadrantKey[] = [
@@ -109,38 +109,36 @@ const QUADRANT_KEYS: readonly QuadrantKey[] = [
 // ── Static background star field ───────────────────────────────────────────────
 
 const BG_STARS: readonly { cx: number; cy: number; r: number; o: number }[] = [
-  // Perimeter stars
-  { cx: 22,  cy: 15,  r: 0.9, o: 0.40 },
-  { cx: 55,  cy: 8,   r: 1.1, o: 0.30 },
-  { cx: 140, cy: 12,  r: 1.3, o: 0.25 },
-  { cx: 218, cy: 8,   r: 1.0, o: 0.40 },
-  { cx: 298, cy: 7,   r: 0.9, o: 0.45 },
-  { cx: 385, cy: 12,  r: 0.8, o: 0.40 },
-  { cx: 418, cy: 35,  r: 1.3, o: 0.25 },
-  { cx: 432, cy: 90,  r: 0.9, o: 0.35 },
-  { cx: 428, cy: 155, r: 1.0, o: 0.40 },
-  { cx: 435, cy: 220, r: 1.2, o: 0.30 },
-  { cx: 428, cy: 285, r: 0.9, o: 0.35 },
-  { cx: 418, cy: 345, r: 0.8, o: 0.45 },
-  { cx: 396, cy: 390, r: 1.3, o: 0.25 },
-  { cx: 305, cy: 392, r: 1.0, o: 0.30 },
-  { cx: 218, cy: 395, r: 0.9, o: 0.40 },
-  { cx: 132, cy: 390, r: 0.8, o: 0.45 },
-  { cx: 45,  cy: 385, r: 1.0, o: 0.35 },
-  { cx: 10,  cy: 345, r: 0.9, o: 0.40 },
-  { cx: 6,   cy: 280, r: 1.2, o: 0.30 },
-  { cx: 14,  cy: 220, r: 0.8, o: 0.45 },
-  { cx: 8,   cy: 155, r: 1.1, o: 0.35 },
-  { cx: 16,  cy: 90,  r: 0.9, o: 0.40 },
-  { cx: 6,   cy: 45,  r: 1.3, o: 0.25 },
-  // Interior scattered stars (in the gap between clusters)
-  { cx: 200, cy: 175, r: 0.8, o: 0.18 },
-  { cx: 242, cy: 190, r: 0.9, o: 0.20 },
-  { cx: 220, cy: 215, r: 1.0, o: 0.16 },
-  { cx: 185, cy: 200, r: 1.1, o: 0.18 },
-  { cx: 260, cy: 205, r: 0.8, o: 0.22 },
-  { cx: 220, cy: 160, r: 0.9, o: 0.14 },
-  { cx: 220, cy: 240, r: 0.8, o: 0.14 },
+  // Perimeter stars (scaled to 380×290)
+  { cx: 19,  cy: 11,  r: 0.8, o: 0.35 },
+  { cx: 48,  cy: 6,   r: 1.0, o: 0.28 },
+  { cx: 121, cy: 9,   r: 1.1, o: 0.22 },
+  { cx: 190, cy: 6,   r: 0.9, o: 0.35 },
+  { cx: 258, cy: 5,   r: 0.8, o: 0.40 },
+  { cx: 333, cy: 9,   r: 0.7, o: 0.35 },
+  { cx: 362, cy: 26,  r: 1.1, o: 0.22 },
+  { cx: 373, cy: 68,  r: 0.8, o: 0.30 },
+  { cx: 370, cy: 116, r: 0.9, o: 0.35 },
+  { cx: 375, cy: 165, r: 1.0, o: 0.25 },
+  { cx: 370, cy: 214, r: 0.8, o: 0.30 },
+  { cx: 362, cy: 258, r: 0.7, o: 0.40 },
+  { cx: 342, cy: 282, r: 1.1, o: 0.22 },
+  { cx: 264, cy: 284, r: 0.9, o: 0.25 },
+  { cx: 190, cy: 286, r: 0.8, o: 0.35 },
+  { cx: 114, cy: 282, r: 0.7, o: 0.40 },
+  { cx: 39,  cy: 278, r: 0.9, o: 0.30 },
+  { cx: 9,   cy: 258, r: 0.8, o: 0.35 },
+  { cx: 5,   cy: 210, r: 1.0, o: 0.25 },
+  { cx: 12,  cy: 165, r: 0.7, o: 0.40 },
+  { cx: 7,   cy: 116, r: 0.9, o: 0.30 },
+  { cx: 14,  cy: 68,  r: 0.8, o: 0.35 },
+  { cx: 5,   cy: 34,  r: 1.1, o: 0.22 },
+  // Interior scattered stars
+  { cx: 175, cy: 130, r: 0.7, o: 0.15 },
+  { cx: 205, cy: 142, r: 0.8, o: 0.17 },
+  { cx: 190, cy: 158, r: 0.9, o: 0.13 },
+  { cx: 160, cy: 148, r: 0.8, o: 0.15 },
+  { cx: 220, cy: 150, r: 0.7, o: 0.18 },
 ];
 
 // ── Glow filter definitions ────────────────────────────────────────────────────
@@ -160,7 +158,9 @@ function nodePos(
   total: number,
   radius = NODE_ORBIT_RADIUS,
 ) {
-  const angle = (index / total) * Math.PI * 2 - Math.PI / 2;
+  // Offset start angle so no node lands directly at the top (avoids category-label collision)
+  const startAngle = -Math.PI / 2 + Math.PI / total;
+  const angle = (index / total) * Math.PI * 2 + startAngle;
   return {
     x: center.x + Math.cos(angle) * radius,
     y: center.y + Math.sin(angle) * radius,
@@ -170,7 +170,7 @@ function nodePos(
 function labelProps(
   pos: { x: number; y: number },
   center: { x: number; y: number },
-  offset = 12,
+  offset = 10,
 ): { x: number; y: number; anchor: 'start' | 'middle' | 'end' } {
   const dx = pos.x - center.x;
   const dy = pos.y - center.y;
@@ -178,7 +178,7 @@ function labelProps(
   return {
     x: pos.x + (dx / len) * offset,
     y: pos.y + (dy / len) * offset,
-    anchor: Math.abs(dx) < 10 ? 'middle' : dx > 0 ? 'start' : 'end',
+    anchor: Math.abs(dx) < 8 ? 'middle' : dx > 0 ? 'start' : 'end',
   };
 }
 
@@ -404,23 +404,23 @@ export default function AffinityMapCard({
                 {/* Centre dot */}
                 <circle
                   cx={center.x} cy={center.y}
-                  r={5}
+                  r={4}
                   fill={meta.accentHex}
                   fillOpacity={0.22}
                   stroke={meta.accentHex}
-                  strokeWidth={1.5}
+                  strokeWidth={1.2}
                   strokeOpacity={0.65}
                 />
-                {/* Category label — floats above the orbit */}
+                {/* Category label — inside the orbit below centre */}
                 <text
                   x={center.x}
-                  y={center.y - NODE_ORBIT_RADIUS - 8}
+                  y={center.y + 12}
                   textAnchor="middle"
                   fill={meta.accentHex}
-                  fontSize="6.5"
+                  fontSize="5"
                   fontWeight="700"
-                  letterSpacing="1.2"
-                  opacity={0.88}
+                  letterSpacing="1"
+                  opacity={0.75}
                 >
                   {meta.label.toUpperCase()}
                 </text>
@@ -440,11 +440,11 @@ export default function AffinityMapCard({
                     {isActive && (
                       <motion.circle
                         cx={pos.x} cy={pos.y}
-                        r={6}
+                        r={4.5}
                         fill="none"
                         stroke={meta.accentHex}
-                        strokeWidth={1}
-                        animate={{ r: [6, 18], opacity: [0.55, 0] }}
+                        strokeWidth={0.8}
+                        animate={{ r: [4.5, 14], opacity: [0.45, 0] }}
                         transition={{
                           duration: 2.1,
                           repeat: Infinity,
@@ -463,7 +463,7 @@ export default function AffinityMapCard({
                     >
                       <circle
                         cx={pos.x} cy={pos.y}
-                        r={isActive ? 6 : 2}
+                        r={isActive ? 4.5 : 1.5}
                         fill={isActive ? meta.accentHex : 'white'}
                         fillOpacity={isActive ? 0.88 : 0.14}
                         filter={isActive ? `url(#${meta.filterId})` : undefined}
@@ -477,14 +477,14 @@ export default function AffinityMapCard({
                     {isActive && (
                       <motion.text
                         x={lbl.x}
-                        y={lbl.y + 3}
+                        y={lbl.y + 2}
                         textAnchor={lbl.anchor}
                         fill={meta.accentHex}
-                        fontSize="6.5"
+                        fontSize="5.5"
                         fontWeight="600"
-                        letterSpacing="0.3"
+                        letterSpacing="0.2"
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.88 }}
+                        animate={{ opacity: 0.85 }}
                         transition={{ duration: 0.3, delay: nodeDelay + 0.12 }}
                         style={{ pointerEvents: 'none' }}
                       >

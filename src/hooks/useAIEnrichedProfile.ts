@@ -62,7 +62,7 @@ Customer data:
 - Name: ${name}
 - Location: ${city}
 - Email: ${email}
-- Selected car: ${carModel} ${carExterior ? `(exterior: ${carExterior})` : ''} ${carInterior ? `(interior: ${carInterior})` : ''} ${carWheels ? `(wheels: ${carWheels}")` : ''}
+- Volvo model of interest: ${carModel || 'unknown'} ${carExterior ? `(exterior: ${carExterior})` : ''} ${carInterior ? `(interior: ${carInterior})` : ''} ${carWheels ? `(wheels: ${carWheels}")` : ''}
 - Conversation insights: ${profilingLines || profilingText || 'none'}
 - Preferences: ${preferences || 'none'}
 
@@ -106,7 +106,7 @@ Return a JSON object with exactly this structure:
     "weekendUsage": ["<cabin|sports|errands|family_activities>"],
     "passengerCount": <number>,
     "cargoNeeds": "<high|medium|low>",
-    "currentCar": "${carModel || 'null'}",
+    "currentCar": "<infer the customer's CURRENT car if possible, otherwise null — NOT the Volvo model of interest>",
     "numberOfCars": <number>,
     "carRenewal": "<renew|first_buy>",
     "reasonForBuying": "<string>"
