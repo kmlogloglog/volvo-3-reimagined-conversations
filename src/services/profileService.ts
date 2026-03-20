@@ -58,6 +58,26 @@ function mapAgentStateToProfile(
           .join(' · ')
       : null;
 
+  // Heuristic propensity score based on engagement signals
+  let propensityScore = 10; // baseline for having a conversation
+  if (state.full_name) propensityScore += 10;
+  if (state.email) propensityScore += 15;
+  if (state.location) propensityScore += 10;
+  if (state.car_config?.model) propensityScore += 20;
+  if (state.car_config?.exterior) propensityScore += 5;
+  if (state.car_config?.interior) propensityScore += 5;
+  if (state.car_config?.wheels) propensityScore += 5;
+  if (state.profiling) propensityScore += 10;
+  if (state.test_drive_appointment) propensityScore += 25;
+  if (state.preferences) propensityScore += 5;
+  propensityScore = Math.min(propensityScore, 100);
+
+  const propensityStage: 'awareness' | 'consideration' | 'decision' =
+    propensityScore >= 65 ? 'decision' : propensityScore >= 35 ? 'consideration' : 'awareness';
+
+  // Profile completeness mirrors propensity (how much data we collected)
+  const completeness = Math.min(propensityScore, 100);
+
   return {
     userId,
     profileData: {
@@ -95,7 +115,7 @@ function mapAgentStateToProfile(
         technocentricTrendsetter: 0,
         dominantSegment: 'affluentProgressive',
       },
-      propensityToBuy: { score: 0, stage: 'awareness' },
+      propensityToBuy: { score: propensityScore, stage: propensityStage },
       affinities: {
         powertrain: [],
         models,
@@ -115,7 +135,7 @@ function mapAgentStateToProfile(
       cookies: false,
     },
     meta: {
-      profileCompleteness: 0,
+      profileCompleteness: completeness,
       confidenceScore: 0,
       lastUpdated: new Date().toISOString(),
       sessionsAnalyzed: 0,

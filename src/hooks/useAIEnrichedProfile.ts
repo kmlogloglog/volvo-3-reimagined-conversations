@@ -16,7 +16,7 @@ interface AIEnrichment {
 }
 
 function profileNeedsEnrichment(profile: VanProfileWithId): boolean {
-  const { segmentRanking, propensityToBuy, affinities } = profile.analyticalScores;
+  const { segmentRanking, affinities } = profile.analyticalScores;
   const segmentSum =
     segmentRanking.affluentProgressive +
     segmentRanking.affluentSocialClimber +
@@ -29,8 +29,7 @@ function profileNeedsEnrichment(profile: VanProfileWithId): boolean {
     affinities.productAttributes.length;
   return (
     segmentSum === 0 &&
-    propensityToBuy.score === 0 &&
-    totalAffinities === 0 &&
+    totalAffinities <= 1 &&
     profile.recommendations.nextBestActions.length === 0
   );
 }
