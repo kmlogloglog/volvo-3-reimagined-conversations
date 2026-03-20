@@ -298,7 +298,7 @@ export default function AffinityMapCard({
           transition={{ duration: 0.8 }}
         >
           {BG_STARS.map((s, i) => (
-            <circle key={i} cx={s.cx} cy={s.cy} r={s.r} fill="white" opacity={s.o} />
+            <circle key={i} cx={s.cx} cy={s.cy} r={s.r} style={{ fill: 'var(--van-text-primary)' }} opacity={s.o} />
           ))}
         </motion.g>
 
@@ -311,16 +311,16 @@ export default function AffinityMapCard({
           <line
             x1={CANVAS_CENTER.x - 8} y1={CANVAS_CENTER.y}
             x2={CANVAS_CENTER.x + 8} y2={CANVAS_CENTER.y}
-            stroke="white" strokeWidth={0.7}
+            style={{ stroke: 'var(--van-text-primary)' }} strokeWidth={0.7}
           />
           <line
             x1={CANVAS_CENTER.x} y1={CANVAS_CENTER.y - 8}
             x2={CANVAS_CENTER.x} y2={CANVAS_CENTER.y + 8}
-            stroke="white" strokeWidth={0.7}
+            style={{ stroke: 'var(--van-text-primary)' }} strokeWidth={0.7}
           />
           <circle
             cx={CANVAS_CENTER.x} cy={CANVAS_CENTER.y}
-            r={3} fill="none" stroke="white" strokeWidth={0.7}
+            r={3} fill="none" style={{ stroke: 'var(--van-text-primary)' }} strokeWidth={0.7}
           />
         </motion.g>
 
@@ -464,12 +464,12 @@ export default function AffinityMapCard({
                       <circle
                         cx={pos.x} cy={pos.y}
                         r={isActive ? 4.5 : 1.5}
-                        fill={isActive ? meta.accentHex : 'white'}
-                        fillOpacity={isActive ? 0.88 : 0.14}
+                        fill={isActive ? meta.accentHex : undefined}
+                        fillOpacity={isActive ? 0.88 : 0.18}
                         filter={isActive ? `url(#${meta.filterId})` : undefined}
                         onMouseEnter={(e) => handleNodeHover(e, opt.label, key, strength)}
                         onMouseLeave={() => setTooltip(null)}
-                        style={{ cursor: 'default' }}
+                        style={{ cursor: 'default', ...(!isActive && { fill: 'var(--van-text-primary)' }) }}
                       />
                     </motion.g>
 
