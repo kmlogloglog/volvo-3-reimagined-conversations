@@ -220,9 +220,8 @@ export async function fetchAllProfiles(): Promise<VanProfileWithId[]> {
   }
 
   return profiles.filter((p) => {
-    const id = p.userId.toLowerCase();
     const name = p.profileData.demographics.name?.toLowerCase() ?? '';
-    return !id.includes('demo') && !name.includes('demo');
+    return !name.includes('demo');
   });
 }
 
