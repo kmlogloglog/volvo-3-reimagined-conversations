@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from '@iconify/react';
 import GlassCard from '@/components/ui/GlassCard';
@@ -87,14 +87,16 @@ const QUADRANT_META: Record<QuadrantKey, {
 
 // ── Layout ─────────────────────────────────────────────────────────────────────
 
-const CANVAS_CENTER = { x: 220, y: 160 };
-const NODE_ORBIT_RADIUS = 52;
+const CANVAS_W = 440;
+const CANVAS_H = 400;
+const CANVAS_CENTER = { x: CANVAS_W / 2, y: CANVAS_H / 2 };
+const NODE_ORBIT_RADIUS = 44;
 
 const CLUSTER_CENTER: Record<QuadrantKey, { x: number; y: number }> = {
-  models:           { x: 105, y: 100 },
-  powertrain:       { x: 335, y: 100 },
-  personalDrivers:  { x: 105, y: 220 },
-  productAttributes:{ x: 335, y: 220 },
+  models:           { x: 110, y: 95 },
+  powertrain:       { x: 330, y: 95 },
+  personalDrivers:  { x: 110, y: 305 },
+  productAttributes:{ x: 330, y: 305 },
 };
 
 const QUADRANT_KEYS: readonly QuadrantKey[] = [
@@ -107,51 +109,38 @@ const QUADRANT_KEYS: readonly QuadrantKey[] = [
 // ── Static background star field ───────────────────────────────────────────────
 
 const BG_STARS: readonly { cx: number; cy: number; r: number; o: number }[] = [
+  // Perimeter stars
   { cx: 22,  cy: 15,  r: 0.9, o: 0.40 },
   { cx: 55,  cy: 8,   r: 1.1, o: 0.30 },
-  { cx: 90,  cy: 30,  r: 0.8, o: 0.50 },
   { cx: 140, cy: 12,  r: 1.3, o: 0.25 },
-  { cx: 178, cy: 25,  r: 0.8, o: 0.35 },
   { cx: 218, cy: 8,   r: 1.0, o: 0.40 },
-  { cx: 258, cy: 18,  r: 1.2, o: 0.30 },
   { cx: 298, cy: 7,   r: 0.9, o: 0.45 },
-  { cx: 338, cy: 22,  r: 1.1, o: 0.30 },
   { cx: 385, cy: 12,  r: 0.8, o: 0.40 },
   { cx: 418, cy: 35,  r: 1.3, o: 0.25 },
-  { cx: 428, cy: 75,  r: 0.9, o: 0.35 },
-  { cx: 422, cy: 122, r: 1.0, o: 0.40 },
-  { cx: 432, cy: 162, r: 1.2, o: 0.30 },
-  { cx: 424, cy: 202, r: 0.8, o: 0.45 },
-  { cx: 416, cy: 248, r: 1.1, o: 0.30 },
+  { cx: 432, cy: 90,  r: 0.9, o: 0.35 },
+  { cx: 428, cy: 155, r: 1.0, o: 0.40 },
+  { cx: 435, cy: 220, r: 1.2, o: 0.30 },
   { cx: 428, cy: 285, r: 0.9, o: 0.35 },
-  { cx: 396, cy: 310, r: 1.3, o: 0.25 },
-  { cx: 350, cy: 315, r: 0.8, o: 0.40 },
-  { cx: 305, cy: 310, r: 1.0, o: 0.30 },
-  { cx: 258, cy: 315, r: 1.2, o: 0.35 },
-  { cx: 218, cy: 310, r: 0.9, o: 0.40 },
-  { cx: 178, cy: 315, r: 1.1, o: 0.30 },
-  { cx: 132, cy: 310, r: 0.8, o: 0.45 },
-  { cx: 88,  cy: 314, r: 1.3, o: 0.25 },
-  { cx: 45,  cy: 308, r: 1.0, o: 0.35 },
-  { cx: 10,  cy: 285, r: 0.9, o: 0.40 },
-  { cx: 6,   cy: 242, r: 1.2, o: 0.30 },
-  { cx: 14,  cy: 198, r: 0.8, o: 0.45 },
+  { cx: 418, cy: 345, r: 0.8, o: 0.45 },
+  { cx: 396, cy: 390, r: 1.3, o: 0.25 },
+  { cx: 305, cy: 392, r: 1.0, o: 0.30 },
+  { cx: 218, cy: 395, r: 0.9, o: 0.40 },
+  { cx: 132, cy: 390, r: 0.8, o: 0.45 },
+  { cx: 45,  cy: 385, r: 1.0, o: 0.35 },
+  { cx: 10,  cy: 345, r: 0.9, o: 0.40 },
+  { cx: 6,   cy: 280, r: 1.2, o: 0.30 },
+  { cx: 14,  cy: 220, r: 0.8, o: 0.45 },
   { cx: 8,   cy: 155, r: 1.1, o: 0.35 },
-  { cx: 16,  cy: 108, r: 0.9, o: 0.40 },
-  { cx: 6,   cy: 68,  r: 1.3, o: 0.25 },
-  // Interior scattered stars
-  { cx: 168, cy: 52,  r: 0.8, o: 0.22 },
-  { cx: 200, cy: 76,  r: 1.0, o: 0.18 },
-  { cx: 242, cy: 55,  r: 0.9, o: 0.28 },
-  { cx: 275, cy: 78,  r: 1.1, o: 0.22 },
-  { cx: 188, cy: 148, r: 0.8, o: 0.18 },
-  { cx: 252, cy: 145, r: 0.9, o: 0.20 },
-  { cx: 196, cy: 238, r: 1.0, o: 0.22 },
-  { cx: 248, cy: 262, r: 0.8, o: 0.18 },
-  { cx: 158, cy: 258, r: 1.1, o: 0.20 },
-  { cx: 295, cy: 208, r: 0.9, o: 0.22 },
-  { cx: 148, cy: 180, r: 1.3, o: 0.16 },
-  { cx: 62,  cy: 155, r: 0.8, o: 0.22 },
+  { cx: 16,  cy: 90,  r: 0.9, o: 0.40 },
+  { cx: 6,   cy: 45,  r: 1.3, o: 0.25 },
+  // Interior scattered stars (in the gap between clusters)
+  { cx: 200, cy: 175, r: 0.8, o: 0.18 },
+  { cx: 242, cy: 190, r: 0.9, o: 0.20 },
+  { cx: 220, cy: 215, r: 1.0, o: 0.16 },
+  { cx: 185, cy: 200, r: 1.1, o: 0.18 },
+  { cx: 260, cy: 205, r: 0.8, o: 0.22 },
+  { cx: 220, cy: 160, r: 0.9, o: 0.14 },
+  { cx: 220, cy: 240, r: 0.8, o: 0.14 },
 ];
 
 // ── Glow filter definitions ────────────────────────────────────────────────────
@@ -181,7 +170,7 @@ function nodePos(
 function labelProps(
   pos: { x: number; y: number },
   center: { x: number; y: number },
-  offset = 15,
+  offset = 12,
 ): { x: number; y: number; anchor: 'start' | 'middle' | 'end' } {
   const dx = pos.x - center.x;
   const dy = pos.y - center.y;
@@ -217,7 +206,25 @@ function strengthDots(s: AffinityStrength): string {
 export default function AffinityMapCard({
   affinities,
 }: AffinityMapCardProps): React.JSX.Element {
+  const svgRef = useRef<SVGSVGElement>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+
+  const handleNodeHover = useCallback(
+    (e: React.MouseEvent, label: string, quadrant: QuadrantKey, strength: AffinityStrength | null) => {
+      const svg = svgRef.current;
+      if (!svg) return;
+      const rect = svg.getBoundingClientRect();
+      // Position relative to the card container, not the viewport
+      setTooltip({
+        label,
+        quadrant,
+        strength,
+        x: e.clientX - rect.left + 14,
+        y: e.clientY - rect.top - 10,
+      });
+    },
+    [],
+  );
 
   const totalActive = QUADRANT_KEYS.reduce((sum, k) => sum + affinities[k].length, 0);
 
@@ -244,8 +251,10 @@ export default function AffinityMapCard({
       </div>
 
       {/* SVG constellation canvas */}
+      <div className="relative">
       <svg
-        viewBox="0 0 440 320"
+        ref={svgRef}
+        viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
         className="w-full h-auto select-none"
         aria-label="Affinity constellation map"
       >
@@ -405,12 +414,12 @@ export default function AffinityMapCard({
                 {/* Category label — floats above the orbit */}
                 <text
                   x={center.x}
-                  y={center.y - NODE_ORBIT_RADIUS - 9}
+                  y={center.y - NODE_ORBIT_RADIUS - 8}
                   textAnchor="middle"
                   fill={meta.accentHex}
-                  fontSize="7.5"
+                  fontSize="6.5"
                   fontWeight="700"
-                  letterSpacing="1.3"
+                  letterSpacing="1.2"
                   opacity={0.88}
                 >
                   {meta.label.toUpperCase()}
@@ -431,11 +440,11 @@ export default function AffinityMapCard({
                     {isActive && (
                       <motion.circle
                         cx={pos.x} cy={pos.y}
-                        r={8}
+                        r={6}
                         fill="none"
                         stroke={meta.accentHex}
-                        strokeWidth={1.2}
-                        animate={{ r: [8, 28], opacity: [0.65, 0] }}
+                        strokeWidth={1}
+                        animate={{ r: [6, 18], opacity: [0.55, 0] }}
                         transition={{
                           duration: 2.1,
                           repeat: Infinity,
@@ -454,19 +463,11 @@ export default function AffinityMapCard({
                     >
                       <circle
                         cx={pos.x} cy={pos.y}
-                        r={isActive ? 7 : 2}
+                        r={isActive ? 6 : 2}
                         fill={isActive ? meta.accentHex : 'white'}
                         fillOpacity={isActive ? 0.88 : 0.14}
                         filter={isActive ? `url(#${meta.filterId})` : undefined}
-                        onMouseEnter={(e) =>
-                          setTooltip({
-                            label: opt.label,
-                            quadrant: key,
-                            strength,
-                            x: e.clientX + 14,
-                            y: e.clientY - 10,
-                          })
-                        }
+                        onMouseEnter={(e) => handleNodeHover(e, opt.label, key, strength)}
                         onMouseLeave={() => setTooltip(null)}
                         style={{ cursor: 'default' }}
                       />
@@ -476,12 +477,12 @@ export default function AffinityMapCard({
                     {isActive && (
                       <motion.text
                         x={lbl.x}
-                        y={lbl.y + 4}
+                        y={lbl.y + 3}
                         textAnchor={lbl.anchor}
                         fill={meta.accentHex}
-                        fontSize="7.5"
+                        fontSize="6.5"
                         fontWeight="600"
-                        letterSpacing="0.4"
+                        letterSpacing="0.3"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.88 }}
                         transition={{ duration: 0.3, delay: nodeDelay + 0.12 }}
@@ -498,7 +499,7 @@ export default function AffinityMapCard({
         })}
       </svg>
 
-      {/* Floating tooltip */}
+      {/* Tooltip positioned relative to the SVG container */}
       <AnimatePresence>
         {tooltip && (
           <motion.div
@@ -507,11 +508,11 @@ export default function AffinityMapCard({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92 }}
             transition={{ duration: 0.12 }}
-            className="fixed z-50 pointer-events-none"
+            className="absolute z-50 pointer-events-none"
             style={{ left: tooltip.x, top: tooltip.y }}
           >
             <div
-              className="rounded-lg border px-3 py-2 text-xs backdrop-blur-md"
+              className="rounded-lg border px-3 py-2 text-xs backdrop-blur-md whitespace-nowrap"
               style={{
                 background: 'var(--van-surface)',
                 borderColor: 'var(--van-border)',
@@ -546,6 +547,7 @@ export default function AffinityMapCard({
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </GlassCard>
   );
 }
