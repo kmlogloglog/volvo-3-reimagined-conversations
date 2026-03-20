@@ -30,8 +30,18 @@ export function useDebugLog() {
 
     function record(entry: Record<string, unknown>) {
         entries.push({ ...entry });
-        const label = entry.author === 'user' ? '▶ USER' : '◀ AGENT';
-        log.conversation(label, entry);
+
+        const type = entry.type as string | undefined;
+        if (type === 'images') {
+            log.info('▶ IMAGES', entry);
+        } else if (type === 'gradient') {
+            log.info('▶ GRADIENT', entry);
+        } else if (type === 'booking') {
+            log.info('▶ BOOKING', entry);
+        } else {
+            const label = entry.author === 'user' ? '▶ USER' : '◀ AGENT';
+            log.conversation(label, entry);
+        }
     }
 
     // Deep-clone via JSON round-trip to strip Vue reactive proxies.

@@ -107,6 +107,11 @@ export default makeActions({
 
     handleImageResponse(imageUrls: string[], componentName: string, gradientStops?: GradientStop[]): void {
         log.info('IMAGES', imageUrls);
+        useDebugLog().record({ type: 'images', componentName, imageUrls } as Record<string, unknown>);
+        if (gradientStops) {
+            log.info('GRADIENT', gradientStops);
+            useDebugLog().record({ type: 'gradient', componentName, gradientStops } as Record<string, unknown>);
+        }
         this.backgroundImages = imageUrls;
         this.componentName = componentName;
         this.gradientStops = gradientStops ?? null;
@@ -134,6 +139,8 @@ export default makeActions({
                     useDebugLog().record(event as Record<string, unknown>);
                     const functionName = part.functionResponse?.name;
                     const componentName = uiAction.component_name;
+
+                    log.info('Function', `Name: ${functionName}`);
 
                     if (Object.values(AGENT.COMPONENT_NAME).includes(componentName as string)) {
                         const selectedColor = uiAction.data?.selected_color as Record<string, unknown> | undefined;
@@ -169,6 +176,7 @@ export default makeActions({
                                 lng: (uiAction.data?.retailer_lng as number) ?? 0,
                             },
                         };
+                        log.info('RETAILER', JSON.parse(JSON.stringify(this.retailerDetails)));
                     }
 
                     if (functionName === AGENT.RESPONSE_NAME.BOOK_TEST_DRIVE) {
@@ -188,9 +196,9 @@ export default makeActions({
                                 light: (prefs?.light as string) ?? null,
                             },
                         };
+                        log.info('BOOKING', JSON.parse(JSON.stringify(this.testDriveDetails)));
+                        useDebugLog().record({ type: 'booking', ...JSON.parse(JSON.stringify(this.testDriveDetails)) } as Record<string, unknown>);
                     }
-
-                    log.info('Function', `Name: ${functionName}`);
                 }
             }
         }
