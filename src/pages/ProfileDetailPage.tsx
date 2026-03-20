@@ -19,6 +19,7 @@ import ChannelConsentCard from '@/components/features/profile/ChannelConsentCard
 import { useProfileStore } from '@/store/profileStore';
 import { useLiveStateStore } from '@/store/liveStateStore';
 import AISummaryCard from '@/components/features/profile/AISummaryCard';
+import { useAIEnrichedProfile } from '@/hooks/useAIEnrichedProfile';
 
 function StaggerCard({ children, index }: { children: React.ReactNode; index: number }): React.JSX.Element {
   return (
@@ -86,9 +87,11 @@ export default function ProfileDetailPage(): React.JSX.Element {
     );
   }
 
-  const profile = useProfileStore.getState().selectedProfile
+  const rawProfile = useProfileStore.getState().selectedProfile
     ?? profiles.find((p) => p.userId === userId)
     ?? null;
+
+  const { enrichedProfile: profile, isEnriching } = useAIEnrichedProfile(rawProfile, liveState);
 
   // ── Not found ──
   if (error !== null || profile === null) {
@@ -136,6 +139,12 @@ export default function ProfileDetailPage(): React.JSX.Element {
           <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Live
+          </span>
+        )}
+        {isEnriching && (
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <Icon icon="solar:stars-minimalistic-bold" width={11} className="animate-pulse" />
+            AI Enriching
           </span>
         )}
 
