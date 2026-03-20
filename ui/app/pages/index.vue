@@ -59,6 +59,10 @@
             <AudioListeningMessage
                 v-if="isListening" />
         </Transition>
+
+        <ClientOnly>
+            <div v-if="isMobile" class="view-bottom-scrim"></div>
+        </ClientOnly>
     </div>
 </template>
 
@@ -85,6 +89,7 @@
     const agentStore = useAgentStore();
     const agent = useAgent();
     const route = useRoute();
+    const { isMobile } = useDevice();
 
     const { listening: isListening } = storeToRefs(agentStore);
 
@@ -296,6 +301,34 @@
 .bg-carousel-enter-from,
 .bg-carousel-leave-to {
     opacity: 0;
+}
+
+// Eased scrim gradient covering the gap behind the iOS Safari toolbar.
+// Cubic-bezier-inspired opacity stops for a smooth perceptual fade.
+.view-bottom-scrim {
+    bottom: 0;
+    height: 10vh;
+    left: 0;
+    pointer-events: none;
+    position: fixed;
+    width: 100%;
+    z-index: 10;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        color-mix(in srgb, var(--app-background-color) 0.2%, transparent) 1.8%,
+        color-mix(in srgb, var(--app-background-color) 0.8%, transparent) 4.8%,
+        color-mix(in srgb, var(--app-background-color) 2.1%, transparent) 9%,
+        color-mix(in srgb, var(--app-background-color) 4.2%, transparent) 13.9%,
+        color-mix(in srgb, var(--app-background-color) 7.5%, transparent) 19.8%,
+        color-mix(in srgb, var(--app-background-color) 12.6%, transparent) 27%,
+        color-mix(in srgb, var(--app-background-color) 19.4%, transparent) 35%,
+        color-mix(in srgb, var(--app-background-color) 27.8%, transparent) 43.5%,
+        color-mix(in srgb, var(--app-background-color) 38.2%, transparent) 52.6%,
+        color-mix(in srgb, var(--app-background-color) 54.1%, transparent) 65%,
+        color-mix(in srgb, var(--app-background-color) 73.8%, transparent) 80.2%,
+        color-mix(in srgb, var(--app-background-color) 100%, transparent) 100%
+    );
 }
 
 .blob-mask-component {

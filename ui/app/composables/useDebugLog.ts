@@ -1,6 +1,8 @@
 import { reactive } from 'vue';
+import { AGENT } from '@/constants/agent';
+import type { DebugEntry } from '@/types/debug';
 
-const entries: Record<string, unknown>[] = reactive([]);
+const entries: unknown[] = reactive([]);
 
 const session = reactive({ userId: null as string | null, sessionId: null as string | null });
 
@@ -28,19 +30,25 @@ export function useDebugLog() {
         log.info('SESSION', `userId: ${userId}`, `sessionId: ${sessionId}`);
     }
 
-    function record(entry: Record<string, unknown>) {
-        entries.push({ ...entry });
+    function record(entry: DebugEntry) {
+        // Strip the internal discriminator; store/log only the raw data.
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { type: _type, ...raw } = entry;
+        entries.push(raw);
 
-        const type = entry.type as string | undefined;
-        if (type === 'images') {
-            log.info('▶ IMAGES', entry);
-        } else if (type === 'gradient') {
-            log.info('▶ GRADIENT', entry);
-        } else if (type === 'booking') {
-            log.info('▶ BOOKING', entry);
-        } else {
-            const label = entry.author === 'user' ? '▶ USER' : '◀ AGENT';
-            log.conversation(label, entry);
+        if (entry.type === AGENT.DEBUG_TYPE.IMAGES) {
+            log.conversation('◀ IMAGES', raw);
+        } else if (entry.type === AGENT.DEBUG_TYPE.GRADIENT) {
+            log.conversation('◀ GRADIENT', raw);
+        } else if (entry.type === AGENT.DEBUG_TYPE.BOOKING) {
+            log.conversation('◀ BOOKING', raw);
+        } else if (entry.type === AGENT.DEBUG_TYPE.EVENT) {
+            const isUser = !!entry.inputTranscription;
+            const data = { ...raw, author: isUser ? AGENT.USER : (raw as Record<string, unknown>).author };
+            log.conversation(isUser ? '▶ USER' : '◀ AGENT', data);
+            entries[entries.length - 1] = data;
+        } else if (entry.type === AGENT.DEBUG_TYPE.USER_TEXT) {
+            log.conversation('▶ USER', raw);
         }
     }
 

@@ -13,6 +13,13 @@ export const AGENT = Object.freeze({
     RESPONSE_ACTION: {
         DISPLAY_COMPONENT: 'display_component',
     },
+    DEBUG_TYPE: {
+        IMAGES: 'images' as const,
+        GRADIENT: 'gradient' as const,
+        BOOKING: 'booking' as const,
+        EVENT: 'event' as const,
+        USER_TEXT: 'user-text' as const,
+    },
     GOOGLE_MAPS: {
         RATIO: 1.35,
         ZOOM: 15,

@@ -4,6 +4,7 @@ import { useEventBus } from '@vueuse/core';
 import { useDebugLog, log } from '@/composables/useDebugLog';
 import type { ChatMessage } from '@/types/chat';
 import type { AgentEvent, ConnectParams, Coordinates } from '@/types/agent';
+import type { DebugBookingEntry } from '@/types/debug';
 import type { GradientStop } from '@/types/ui';
 import type { AgentState } from './_state';
 
@@ -99,18 +100,12 @@ export default makeActions({
 
         // Remove stale in-progress agent messages so only the latest accumulates.
         this.conversation = this.conversation.filter(msg => msg.id === this.currentMessageId || msg.sender !== AGENT.AGENT || msg.finished);
-
-        if (finished) {
-            this.currentMessageId = null;
-        }
     },
 
     handleImageResponse(imageUrls: string[], componentName: string, gradientStops?: GradientStop[]): void {
-        log.info('IMAGES', imageUrls);
-        useDebugLog().record({ type: 'images', componentName, imageUrls } as Record<string, unknown>);
+        useDebugLog().record({ type: AGENT.DEBUG_TYPE.IMAGES, componentName, imageUrls });
         if (gradientStops) {
-            log.info('GRADIENT', gradientStops);
-            useDebugLog().record({ type: 'gradient', componentName, gradientStops } as Record<string, unknown>);
+            useDebugLog().record({ type: AGENT.DEBUG_TYPE.GRADIENT, componentName, gradientStops });
         }
         this.backgroundImages = imageUrls;
         this.componentName = componentName;
@@ -131,12 +126,14 @@ export default makeActions({
                 if (part.text) {
                     this.handleTextResponse(part.text, part.finished);
                     textHandled = true;
+                    if (part.finished) {
+                        useDebugLog().record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
+                    }
                 }
 
                 const uiAction = part.functionResponse?.response?.ui_action;
 
                 if (uiAction?.action === AGENT.RESPONSE_ACTION.DISPLAY_COMPONENT) {
-                    useDebugLog().record(event as Record<string, unknown>);
                     const functionName = part.functionResponse?.name;
                     const componentName = uiAction.component_name;
 
@@ -196,8 +193,10 @@ export default makeActions({
                                 light: (prefs?.light as string) ?? null,
                             },
                         };
-                        log.info('BOOKING', JSON.parse(JSON.stringify(this.testDriveDetails)));
-                        useDebugLog().record({ type: 'booking', ...JSON.parse(JSON.stringify(this.testDriveDetails)) } as Record<string, unknown>);
+                        useDebugLog().record({
+                            type: AGENT.DEBUG_TYPE.BOOKING,
+                            ...JSON.parse(JSON.stringify(this.testDriveDetails)),
+                        } as DebugBookingEntry);
                     }
                 }
             }
@@ -205,23 +204,19 @@ export default makeActions({
 
         if (!textHandled && event.outputTranscription?.text) {
             this.handleTextResponse(event.outputTranscription.text, event.outputTranscription?.finished);
+            if (event.outputTranscription?.finished) {
+                useDebugLog().record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
+            }
         }
 
         if (event.inputTranscription?.text) {
             this.handleUserTranscription(event.inputTranscription.text, event.inputTranscription?.finished);
+            if (event.inputTranscription?.finished) {
+                useDebugLog().record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
+            }
         }
 
         if (event.turnComplete) {
-            const debugLog = useDebugLog();
-            const userMsg = this.currentUserMessageId
-                ? this.conversation.find(m => m.id === this.currentUserMessageId)
-                : null;
-            const agentMsg = this.currentMessageId
-                ? this.conversation.find(m => m.id === this.currentMessageId)
-                : null;
-            if (userMsg?.content?.text) debugLog.record({ ...event, author: 'user', text: userMsg.content.text } as Record<string, unknown>);
-            if (agentMsg?.content?.text) debugLog.record({ ...event, author: (event as Record<string, unknown>).author ?? 'agent', text: agentMsg.content.text } as Record<string, unknown>);
-
             this.speaking = false;
             this.currentMessageId = null;
             this.currentUserMessageId = null;
@@ -504,14 +499,16 @@ export default makeActions({
     },
 
     sendMessage(text: string): void {
-        this.addMessage({
-            id: `${Date.now().toString()}_${AGENT.USER}`,
+        this.currentUserMessageId = `${Date.now().toString()}_${AGENT.USER}`;
+        const userMsg = {
+            id: this.currentUserMessageId,
             sender: AGENT.USER,
             content: { text },
             timestamp: new Date(),
             finished: true,
-        });
-        useDebugLog().record({ author: AGENT.USER, text });
+        };
+        this.addMessage(userMsg);
+        useDebugLog().record({ type: AGENT.DEBUG_TYPE.USER_TEXT, ...userMsg });
 
         this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
 
