@@ -50,17 +50,6 @@ const NAV_SECTIONS: readonly NavSection[] = [
   },
 ];
 
-// ── Helpers ──
-
-function getInitials(name: string | null): string {
-  if (!name) return '?';
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join('');
-}
-
 // ── Component ──
 
 interface SidebarProps {
@@ -95,7 +84,7 @@ export default function Sidebar({ className }: SidebarProps): React.JSX.Element 
           className="text-sm font-medium tracking-tight"
           style={{ color: 'var(--van-text-primary)' }}
         >
-          Van
+          Freja — Admin Dashboard
         </span>
       </div>
 
@@ -188,15 +177,14 @@ export default function Sidebar({ className }: SidebarProps): React.JSX.Element 
 
       {/* Bottom section */}
       <div className="p-3 border-t" style={{ borderColor: 'var(--van-border)' }}>
-        {/* Settings */}
-        <Link
-          to="/settings"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-[var(--van-surface-hover)]"
+        {/* Settings (non-interactive) */}
+        <div
+          className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-default opacity-50"
           style={{ color: 'var(--van-text-muted)' }}
         >
           <Icon icon="solar:settings-linear" width={18} />
           <span>Settings</span>
-        </Link>
+        </div>
 
         {/* User card — click to sign out */}
         <button
@@ -206,15 +194,15 @@ export default function Sidebar({ className }: SidebarProps): React.JSX.Element 
           className="mt-4 w-full flex items-center gap-3 px-3 py-3 rounded-xl border transition-colors text-left"
           style={{ background: 'var(--van-surface-hover)', borderColor: 'var(--van-border)' }}
         >
-          {/* Avatar initials */}
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-neutral-700 to-neutral-600 flex items-center justify-center text-xs text-white font-medium border border-white/10 shrink-0">
-            {getInitials(user?.displayName ?? null)}
+          {/* Avatar */}
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
+            <Icon icon="solar:user-bold" width={16} className="text-white" />
           </div>
 
           {/* Name / email */}
           <div className="flex-1 min-w-0">
             <div className="text-xs font-medium truncate" style={{ color: 'var(--van-text-primary)' }}>
-              {user?.displayName ?? 'Unknown'}
+              {user?.displayName ?? 'Admin'}
             </div>
             <div className="text-[10px] text-neutral-500 truncate">
               {user?.email ?? ''}
