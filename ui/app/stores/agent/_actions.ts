@@ -4,7 +4,6 @@ import { useEventBus } from '@vueuse/core';
 import { useDebugLog } from '@/composables/useDebugLog';
 import type { ChatMessage } from '@/types/chat';
 import type { AgentEvent, ConnectParams, Coordinates } from '@/types/agent';
-import type { DebugBookingEntry } from '@/types/debug';
 import type { GradientStop } from '@/types/ui';
 import type { AgentState } from './_state';
 
@@ -197,8 +196,8 @@ export default makeActions({
                         };
                         record({
                             type: AGENT.DEBUG_TYPE.BOOKING,
-                            ...JSON.parse(JSON.stringify(this.testDriveDetails)),
-                        } as DebugBookingEntry);
+                            ...this.testDriveDetails,
+                        });
                     }
                 }
             }
