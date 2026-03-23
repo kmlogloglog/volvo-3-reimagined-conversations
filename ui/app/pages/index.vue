@@ -34,12 +34,6 @@
             @[EMITS.RECORD_CLICK]="handleMicrophoneClick"
             @[EMITS.CHAT_CLICK]="handleChatClick" />
 
-        <ClientOnly>
-            <AudioCaptureMeter
-                v-if="$router.currentRoute.value.query.meter === 'true'"
-                :level="agentStore.audioLevel" />
-        </ClientOnly>
-
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel"
             :scale="blobScale"
@@ -77,7 +71,7 @@
     import { useEventBus } from '@vueuse/core';
     import AudioCaptureBlob from '@/components/audioCapture/AudioCaptureBlob.vue';
     import BlobMask from '@/components/blobMask/BlobMask.vue';
-    import AudioCaptureMeter from '@/components/audioCapture/AudioCaptureMeter.vue';
+
     import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
     import BackgroundImageSilhouette from '@/components/imageViewer/BackgroundImageSilhouette.vue';
     import AudioListeningMessage from '@/components/audioCapture/AudioListeningMessage.vue';
