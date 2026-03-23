@@ -31,14 +31,15 @@
         disabled: false,
     });
 
-    // Filters out the intro message, sorts by timestamp, then trims to messages since the last user turn.
     const chatFiltered = computed(() => {
         const arr = Array.isArray(props.chat) ? props.chat : [];
+        // Exclude the intro prompt so it doesn't appear as a speech bubble.
         const chatArr = arr.filter(e => e?.content?.text !== AGENT.INTRODUCTION);
 
         chatArr.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
         if (props.filterFromLast === AGENT.USER) {
+            // Find the last user message, then slice from there forward.
             const index = [...chatArr].reverse().findIndex(e => e?.sender === AGENT.USER);
 
             if (index < 0) {

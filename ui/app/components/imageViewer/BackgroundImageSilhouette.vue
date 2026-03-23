@@ -34,16 +34,13 @@
         { id: idCounter++, src: props.src },
     ]);
 
-    // ID of the most recently requested image. The old layer is only retired
-    // once this image has loaded, so the leave transition starts at the same
-    // moment as the new image's load-driven fade-in — a true crossfade.
+    // Old layer is only retired once the new image has loaded,
+    // so the leave transition and load-driven fade-in start together.
     let pendingId: number | null = null;
 
     function onLoad(id: number) {
         if (id === pendingId) {
             pendingId = null;
-            // Retiring old instances triggers their TransitionGroup leave at the
-            // exact moment the new child's image becomes visible — true crossfade.
             instances.value = instances.value.filter(i => i.id === id);
         }
 
@@ -80,8 +77,6 @@ $duration: 2000ms;
     width: 100%;
 }
 
-// Leave transition applied to the entire SilhouetteImageLayer root (image + shadow as a unit).
-// Entry is handled by the child's own load-driven fade-in.
 .image-swap-leave-active {
     transition: opacity $duration ease, filter $duration ease;
     z-index: 2;

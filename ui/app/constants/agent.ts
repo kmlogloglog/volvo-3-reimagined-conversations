@@ -3,7 +3,7 @@ export const AGENT = Object.freeze({
     USER: 'user',
 
     DEFAULT_USER_NAME: 'demo_user',
-    INTRODUCTION: 'Introduce yourself! If you have introduced yourself already, do not introduce yourself again, but say something new to keep the conversation going.',
+    INTRODUCTION: 'Introduce yourself! If you have introduced yourself already, do not introduce yourself again, but say something new to keep the conversation going. If you already know my name, do not ask for it again.',
 
     RESPONSE_NAME: {
         CAR_CONFIGURATION: 'display_car_configuration',
@@ -12,6 +12,13 @@ export const AGENT = Object.freeze({
     },
     RESPONSE_ACTION: {
         DISPLAY_COMPONENT: 'display_component',
+    },
+    DEBUG_TYPE: {
+        IMAGES: 'images' as const,
+        GRADIENT: 'gradient' as const,
+        BOOKING: 'booking' as const,
+        EVENT: 'event' as const,
+        USER_TEXT: 'user-text' as const,
     },
     GOOGLE_MAPS: {
         RATIO: 1.35,

@@ -44,7 +44,6 @@
     justify-content: center;
     align-items: center;
 
-    // Default: flat semi-transparent, no glass
     background: var(--navigation-button-color-background);
     color: var(--navigation-button-color-font);
     transition:

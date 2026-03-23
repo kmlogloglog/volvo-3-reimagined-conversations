@@ -54,7 +54,7 @@
 
     const sanitizedText = computed(() => {
         const sanitized = DOMPurify.sanitize(props.text);
-        // Agent responses are already HTML — only convert newlines to <br> for plain-text user messages
+        // Only convert newlines to <br> for plain-text; agent responses are already HTML.
         if (/<[a-z][\s\S]*>/i.test(sanitized)) {
             return sanitized;
         }
@@ -70,7 +70,7 @@
 
     const scrollContainer = inject<Ref<HTMLElement | null>>('scrollContainer', ref(null));
 
-    // Toggles expanded state, then adjusts the parent scroll container to compensate for the height change.
+    // Toggles expanded state and adjusts parent scroll to compensate for height change.
     async function onReadMoreClick() {
         const el = speechBubbleRef.value?.$el as HTMLElement;
         const heightBefore = el.offsetHeight;
@@ -98,7 +98,6 @@
         const images = textRef.value.querySelectorAll('img');
         images.forEach((img) => {
             img.addEventListener('load', onImageLoad);
-            // Handle already-cached images
             if (img.complete) {
                 emit(EMITS.IMAGE_LOADED, img);
             }
