@@ -1,7 +1,7 @@
 import { AGENT } from '@/constants/agent';
 import { BUS } from '@/constants/bus';
 import { useEventBus } from '@vueuse/core';
-import { useDebugLog, log } from '@/composables/useDebugLog';
+import { useDebugLog } from '@/composables/useDebugLog';
 import type { ChatMessage } from '@/types/chat';
 import type { AgentEvent, ConnectParams, Coordinates } from '@/types/agent';
 import type { DebugBookingEntry } from '@/types/debug';
@@ -17,6 +17,8 @@ declare global {
 function makeActions<T extends object>(obj: T & ThisType<AgentState & T>): T {
     return obj;
 }
+
+const { record, setSession, log } = useDebugLog();
 
 export default makeActions({
     // Converts Float32 audio samples (–1…1) to Int16 PCM for WebSocket transmission.
@@ -103,9 +105,9 @@ export default makeActions({
     },
 
     handleImageResponse(imageUrls: string[], componentName: string, gradientStops?: GradientStop[]): void {
-        useDebugLog().record({ type: AGENT.DEBUG_TYPE.IMAGES, componentName, imageUrls });
+        record({ type: AGENT.DEBUG_TYPE.IMAGES, componentName, imageUrls });
         if (gradientStops) {
-            useDebugLog().record({ type: AGENT.DEBUG_TYPE.GRADIENT, componentName, gradientStops });
+            record({ type: AGENT.DEBUG_TYPE.GRADIENT, componentName, gradientStops });
         }
         this.backgroundImages = imageUrls;
         this.componentName = componentName;
@@ -127,7 +129,7 @@ export default makeActions({
                     this.handleTextResponse(part.text, part.finished);
                     textHandled = true;
                     if (part.finished) {
-                        useDebugLog().record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
+                        record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
                     }
                 }
 
@@ -193,7 +195,7 @@ export default makeActions({
                                 light: (prefs?.light as string) ?? null,
                             },
                         };
-                        useDebugLog().record({
+                        record({
                             type: AGENT.DEBUG_TYPE.BOOKING,
                             ...JSON.parse(JSON.stringify(this.testDriveDetails)),
                         } as DebugBookingEntry);
@@ -205,14 +207,14 @@ export default makeActions({
         if (!textHandled && event.outputTranscription?.text) {
             this.handleTextResponse(event.outputTranscription.text, event.outputTranscription?.finished);
             if (event.outputTranscription?.finished) {
-                useDebugLog().record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
+                record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
             }
         }
 
         if (event.inputTranscription?.text) {
             this.handleUserTranscription(event.inputTranscription.text, event.inputTranscription?.finished);
             if (event.inputTranscription?.finished) {
-                useDebugLog().record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
+                record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
             }
         }
 
@@ -292,7 +294,7 @@ export default makeActions({
         this.connectionPromise = new Promise((resolve, reject) => {
             const userIdFromQuery = userId || this.userName;
             const sessionIdFromQuery = sessionId || crypto.randomUUID();
-            useDebugLog().setSession(userIdFromQuery ?? null, sessionIdFromQuery);
+            setSession(userIdFromQuery ?? null, sessionIdFromQuery);
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const url = `${protocol}//${window.location.host}/ws/${userIdFromQuery}/${sessionIdFromQuery}`;
 
@@ -508,7 +510,7 @@ export default makeActions({
             finished: true,
         };
         this.addMessage(userMsg);
-        useDebugLog().record({ type: AGENT.DEBUG_TYPE.USER_TEXT, ...userMsg });
+        record({ type: AGENT.DEBUG_TYPE.USER_TEXT, ...userMsg });
 
         this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
 

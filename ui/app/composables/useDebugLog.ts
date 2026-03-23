@@ -15,7 +15,7 @@ function styled(method: 'log' | 'warn' | 'error', bg: string): LogFn {
     return (label, ...args) => console[method](`%c${label}`, css, ...args);
 }
 
-export const log = {
+const log = {
     info: styled('log', '#4a9eff,#357abd'),
     success: styled('log', '#7de37d,#27ae60'),
     warn: styled('warn', '#ffa502,#e67e22'),
@@ -70,5 +70,12 @@ export function useDebugLog() {
         log.info('LOG', getPayload());
     }
 
-    return { session, setSession, record, copyToClipboard, logToConsole };
+    return {
+        copyToClipboard,
+        log,
+        logToConsole,
+        record,
+        session,
+        setSession,
+    };
 }
