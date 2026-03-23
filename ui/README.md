@@ -57,6 +57,12 @@ ui/
 └── package.json               # Dependencies and scripts
 ```
 
+## Prerequisites
+
+Running the full app requires **Make**, **uv** (Python package manager), and **Node.js/npm**. The `make run-agent` command uses **uvicorn** (installed automatically via `uv sync`) to serve the FastAPI backend.
+
+> See the [root README](../README.md) for detailed installation instructions for Make, uv, and Google Cloud CLI.
+
 ## Running the App
 
 The recommended way to run the full app (frontend + backend):

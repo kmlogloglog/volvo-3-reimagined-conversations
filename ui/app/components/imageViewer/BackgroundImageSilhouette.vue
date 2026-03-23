@@ -8,6 +8,7 @@
                 v-for="instance in instances"
                 :key="instance.id"
                 :src="instance.src"
+                :show-shadow="props.showShadow"
                 @loaded="onLoad(instance.id)" />
         </TransitionGroup>
     </div>
@@ -18,6 +19,7 @@
 
     interface Props {
         src?: string
+        showShadow?: boolean
     }
 
     const emit = defineEmits<{
@@ -26,6 +28,7 @@
 
     const props = withDefaults(defineProps<Props>(), {
         src: '',
+        showShadow: false,
     });
 
     let idCounter = 0;

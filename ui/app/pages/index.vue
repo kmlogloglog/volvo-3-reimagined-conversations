@@ -7,6 +7,7 @@
             <BackgroundImageSilhouette
                 v-if="isModelComponent"
                 :src="agentStore.backgroundImages?.[0]"
+                show-shadow
                 @image-loaded="onImageLoaded" />
         </Transition>
 
