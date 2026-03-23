@@ -1,10 +1,9 @@
-import { reactive } from 'vue';
 import { AGENT } from '@/constants/agent';
 import type { DebugEntry } from '@/types/debug';
 
-const entries: unknown[] = reactive([]);
+const entries: Record<string, unknown>[] = [];
 
-const session = reactive({ userId: null as string | null, sessionId: null as string | null });
+const session = { userId: null as string | null, sessionId: null as string | null };
 
 const BADGE = 'padding:2px 8px;border-radius:3px;font-weight:500;text-shadow:0 1px 1px rgba(0,0,0,.2);';
 
@@ -44,7 +43,7 @@ export function useDebugLog() {
             log.conversation('◀ BOOKING', raw);
         } else if (entry.type === AGENT.DEBUG_TYPE.EVENT) {
             const isUser = !!entry.inputTranscription;
-            const data = { ...raw, author: isUser ? AGENT.USER : (raw as Record<string, unknown>).author };
+            const data = { ...raw, author: isUser ? AGENT.USER : raw.author };
             log.conversation(isUser ? '▶ USER' : '◀ AGENT', data);
             entries[entries.length - 1] = data;
         } else if (entry.type === AGENT.DEBUG_TYPE.USER_TEXT) {
@@ -52,9 +51,8 @@ export function useDebugLog() {
         }
     }
 
-    // Deep-clone via JSON round-trip to strip Vue reactive proxies.
     function getPayload() {
-        return JSON.parse(JSON.stringify({ userId: session.userId, sessionId: session.sessionId, entries }));
+        return { userId: session.userId, sessionId: session.sessionId, entries };
     }
 
     async function copyToClipboard(): Promise<boolean> {
