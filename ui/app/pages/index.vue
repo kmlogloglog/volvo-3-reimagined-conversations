@@ -5,9 +5,11 @@
         </ClientOnly>
         <Transition name="bg-single">
             <BackgroundImageSilhouette
-                v-if="isModelComponent"
+                v-if="isSilhouetteComponent"
+                :key="agentStore.componentName ?? undefined"
                 :src="agentStore.backgroundImages?.[0]"
-                show-shadow
+                :show-shadow="agentStore.componentName === AGENT.COMPONENT_NAME.MODEL"
+                :padded="agentStore.componentName === AGENT.COMPONENT_NAME.WHEELS"
                 @image-loaded="onImageLoaded" />
         </Transition>
 
@@ -48,7 +50,7 @@
             :class="{ 'blob-mask-component-visible': isBlobMaskComponent }"
             :visible="isBlobMaskComponent"
             :image-src="agentStore.backgroundImages?.[0]"
-            :image-scale="agentStore.componentName === AGENT.COMPONENT_NAME.INTERIOR ? 1.1 : 1" />
+            :image-scale="1.1" />
 
         <Transition name="fade">
             <AudioListeningMessage
@@ -56,7 +58,9 @@
         </Transition>
 
         <ClientOnly>
-            <div v-if="isMobile" class="view-bottom-scrim"></div>
+            <div
+                v-if="isMobile"
+                class="view-bottom-scrim"></div>
         </ClientOnly>
     </div>
 </template>
@@ -95,15 +99,14 @@
         AGENT.COMPONENT_NAME.TEST_DRIVE_CONFIRMATION,
     ];
 
-    // Components that use the blob mask spotlight reveal.
-    const BLOB_MASK_COMPONENTS = [
+    const SILHOUETTE_COMPONENTS = [
+        AGENT.COMPONENT_NAME.MODEL,
         AGENT.COMPONENT_NAME.WHEELS,
-        AGENT.COMPONENT_NAME.INTERIOR,
     ];
 
-    const isModelComponent = computed(() => agentStore.componentName === AGENT.COMPONENT_NAME.MODEL);
+    const isSilhouetteComponent = computed(() => SILHOUETTE_COMPONENTS.includes(agentStore.componentName as string));
     const isCarouselVisible = computed(() => CAROUSEL_COMPONENTS.includes(agentStore.componentName as string));
-    const isBlobMaskComponent = computed(() => BLOB_MASK_COMPONENTS.includes(agentStore.componentName as string));
+    const isBlobMaskComponent = computed(() => agentStore.componentName === AGENT.COMPONENT_NAME.INTERIOR);
 
     // Frozen carousel images — only updated while the carousel is actually visible.
     // Prevents a mid-leave src change from triggering an internal crossfade inside
@@ -131,12 +134,15 @@
         imageReady.value = true;
     }
 
-    const blobScale = computed(() =>
-        isModelComponent.value && imageReady.value ? 3 : 1,
-    );
+    const blobScale = computed(() => {
+        if (!isSilhouetteComponent.value || !imageReady.value) {
+            return 1;
+        }
+        return agentStore.componentName === AGENT.COMPONENT_NAME.WHEELS ? 2.5 : 3;
+    });
 
     const blobCalmness = computed(() =>
-        isModelComponent.value && imageReady.value ? 0.5 : 0,
+        isSilhouetteComponent.value && imageReady.value ? 0.5 : 0,
     );
 
     const blobGradientStops = computed(() =>
@@ -271,6 +277,14 @@
 
 .fade-enter-from,
 .fade-leave-to {
+    opacity: 0;
+}
+
+.bg-single-enter-active {
+    transition: opacity 1s ease;
+}
+
+.bg-single-enter-from {
     opacity: 0;
 }
 

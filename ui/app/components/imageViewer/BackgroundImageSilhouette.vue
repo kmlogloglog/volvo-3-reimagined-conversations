@@ -1,5 +1,7 @@
 <template>
-    <div class="image-container">
+    <div
+        class="image-container"
+        :class="{ 'image-container-padded': props.padded }">
         <TransitionGroup
             name="image-swap"
             tag="div"
@@ -20,6 +22,7 @@
     interface Props {
         src?: string
         showShadow?: boolean
+        padded?: boolean
     }
 
     const emit = defineEmits<{
@@ -29,6 +32,7 @@
     const props = withDefaults(defineProps<Props>(), {
         src: '',
         showShadow: false,
+        padded: false,
     });
 
     let idCounter = 0;
@@ -72,6 +76,10 @@ $duration: 2000ms;
     top: 0;
     width: 100%;
     z-index: 2;
+
+    &-padded {
+        padding: 1.25rem;
+    }
 }
 
 .image-stage {
