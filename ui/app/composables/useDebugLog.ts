@@ -43,7 +43,7 @@ export function useDebugLog() {
             log.conversation('◀ BOOKING', raw);
         } else if (entry.type === AGENT.DEBUG_TYPE.EVENT) {
             const isUser = !!entry.inputTranscription;
-            const data = { ...raw, author: isUser ? AGENT.USER : raw.author };
+            const data = { ...raw, author: isUser ? AGENT.USER : AGENT.AGENT };
             log.conversation(isUser ? '▶ USER' : '◀ AGENT', data);
             entries[entries.length - 1] = data;
         } else if (entry.type === AGENT.DEBUG_TYPE.USER_TEXT) {
