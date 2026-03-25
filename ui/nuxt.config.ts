@@ -19,11 +19,6 @@ export default defineNuxtConfig({
     devServer: {
         port: 8080,
     },
-    nitro: {
-        prerender: {
-            failOnError: false,
-        },
-    },
     runtimeConfig: {
         public: {
             port: 8080,

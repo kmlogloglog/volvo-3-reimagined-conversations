@@ -1,5 +1,7 @@
 <template>
-    <div class="image-container">
+    <div
+        class="image-container"
+        :class="{ 'image-container-padded': props.padded }">
         <TransitionGroup
             name="image-swap"
             tag="div"
@@ -8,6 +10,7 @@
                 v-for="instance in instances"
                 :key="instance.id"
                 :src="instance.src"
+                :show-shadow="props.showShadow"
                 @loaded="onLoad(instance.id)" />
         </TransitionGroup>
     </div>
@@ -18,6 +21,8 @@
 
     interface Props {
         src?: string
+        showShadow?: boolean
+        padded?: boolean
     }
 
     const emit = defineEmits<{
@@ -26,6 +31,8 @@
 
     const props = withDefaults(defineProps<Props>(), {
         src: '',
+        showShadow: false,
+        padded: false,
     });
 
     let idCounter = 0;
@@ -34,16 +41,13 @@
         { id: idCounter++, src: props.src },
     ]);
 
-    // ID of the most recently requested image. The old layer is only retired
-    // once this image has loaded, so the leave transition starts at the same
-    // moment as the new image's load-driven fade-in — a true crossfade.
+    // Old layer is only retired once the new image has loaded,
+    // so the leave transition and load-driven fade-in start together.
     let pendingId: number | null = null;
 
     function onLoad(id: number) {
         if (id === pendingId) {
             pendingId = null;
-            // Retiring old instances triggers their TransitionGroup leave at the
-            // exact moment the new child's image becomes visible — true crossfade.
             instances.value = instances.value.filter(i => i.id === id);
         }
 
@@ -72,6 +76,10 @@ $duration: 2000ms;
     top: 0;
     width: 100%;
     z-index: 2;
+
+    &-padded {
+        padding: 1.25rem;
+    }
 }
 
 .image-stage {
@@ -80,8 +88,6 @@ $duration: 2000ms;
     width: 100%;
 }
 
-// Leave transition applied to the entire SilhouetteImageLayer root (image + shadow as a unit).
-// Entry is handled by the child's own load-driven fade-in.
 .image-swap-leave-active {
     transition: opacity $duration ease, filter $duration ease;
     z-index: 2;

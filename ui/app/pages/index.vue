@@ -1,9 +1,15 @@
 <template>
     <div class="view">
+        <ClientOnly>
+            <DebugCopyButton />
+        </ClientOnly>
         <Transition name="bg-single">
             <BackgroundImageSilhouette
-                v-if="isModelComponent"
+                v-if="isSilhouetteComponent"
+                :key="agentStore.componentName ?? undefined"
                 :src="agentStore.backgroundImages?.[0]"
+                :show-shadow="agentStore.componentName === AGENT.COMPONENT_NAME.MODEL"
+                :padded="agentStore.componentName === AGENT.COMPONENT_NAME.WHEELS"
                 @image-loaded="onImageLoaded" />
         </Transition>
 
@@ -12,6 +18,11 @@
                 v-if="isCarouselVisible"
                 :src="carouselSrc" />
         </Transition>
+
+        <VolvoLogo
+            color="var(--color-white)"
+            drop-shadow="var(--color-black)"
+            class="view-logo" />
 
         <div class="base-view">
             <div class="base-view-inner">
@@ -26,15 +37,10 @@
             @[EMITS.RECORD_CLICK]="handleMicrophoneClick"
             @[EMITS.CHAT_CLICK]="handleChatClick" />
 
-        <ClientOnly>
-            <AudioCaptureMeter
-                v-if="$router.currentRoute.value.query.meter === 'true'"
-                :level="agentStore.audioLevel" />
-        </ClientOnly>
-
         <AudioCaptureBlob
             :intensity="agentStore.audioLevel"
             :scale="blobScale"
+            :calmness="blobCalmness"
             :bottom-align="isCarouselVisible"
             :gradient-stops="blobGradientStops"
             :hide="isBlobMaskComponent" />
@@ -44,12 +50,18 @@
             :class="{ 'blob-mask-component-visible': isBlobMaskComponent }"
             :visible="isBlobMaskComponent"
             :image-src="agentStore.backgroundImages?.[0]"
-            :image-scale="agentStore.componentName === AGENT.COMPONENT_NAME.INTERIOR ? 1.1 : 1" />
+            :image-scale="1.1" />
 
         <Transition name="fade">
             <AudioListeningMessage
                 v-if="isListening" />
         </Transition>
+
+        <ClientOnly>
+            <div
+                v-if="isMobile"
+                class="view-bottom-scrim"></div>
+        </ClientOnly>
     </div>
 </template>
 
@@ -64,35 +76,37 @@
     import { useEventBus } from '@vueuse/core';
     import AudioCaptureBlob from '@/components/audioCapture/AudioCaptureBlob.vue';
     import BlobMask from '@/components/blobMask/BlobMask.vue';
-    import AudioCaptureMeter from '@/components/audioCapture/AudioCaptureMeter.vue';
+
     import BackgroundImages from '@/components/imageViewer/BackgroundImages.vue';
     import BackgroundImageSilhouette from '@/components/imageViewer/BackgroundImageSilhouette.vue';
     import AudioListeningMessage from '@/components/audioCapture/AudioListeningMessage.vue';
     import ChatPanel from '@/components/chat/ChatPanel.vue';
     import DealerDetailsCard from '@/components/dealerDetailsCard/DealerDetailsCard.vue';
+    import DebugCopyButton from '@/components/debug/DebugCopyButton.vue';
+    import VolvoLogo from '@/components/logo/VolvoLogo.vue';
 
     const agentStore = useAgentStore();
     const agent = useAgent();
     const route = useRoute();
+    const { isMobile } = useDevice();
 
     const { listening: isListening } = storeToRefs(agentStore);
 
-    // Layout & background
-
+    // Components that use the multi-image carousel background.
     const CAROUSEL_COMPONENTS = [
         AGENT.COMPONENT_NAME.FINAL_CONFIGURATION,
         AGENT.COMPONENT_NAME.MAPS_VIEW,
         AGENT.COMPONENT_NAME.TEST_DRIVE_CONFIRMATION,
     ];
 
-    const BLOB_MASK_COMPONENTS = [
+    const SILHOUETTE_COMPONENTS = [
+        AGENT.COMPONENT_NAME.MODEL,
         AGENT.COMPONENT_NAME.WHEELS,
-        AGENT.COMPONENT_NAME.INTERIOR,
     ];
 
-    const isModelComponent = computed(() => agentStore.componentName === AGENT.COMPONENT_NAME.MODEL);
+    const isSilhouetteComponent = computed(() => SILHOUETTE_COMPONENTS.includes(agentStore.componentName as string));
     const isCarouselVisible = computed(() => CAROUSEL_COMPONENTS.includes(agentStore.componentName as string));
-    const isBlobMaskComponent = computed(() => BLOB_MASK_COMPONENTS.includes(agentStore.componentName as string));
+    const isBlobMaskComponent = computed(() => agentStore.componentName === AGENT.COMPONENT_NAME.INTERIOR);
 
     // Frozen carousel images — only updated while the carousel is actually visible.
     // Prevents a mid-leave src change from triggering an internal crossfade inside
@@ -108,8 +122,6 @@
         { immediate: true },
     );
 
-    // Blob shape & appearance
-
     // Reset only when the component step changes so that image src updates within
     // the same step don't collapse and re-expand the blob scale.
     const imageReady = ref(false);
@@ -122,8 +134,15 @@
         imageReady.value = true;
     }
 
-    const blobScale = computed(() =>
-        isModelComponent.value && imageReady.value ? 3 : 1,
+    const blobScale = computed(() => {
+        if (!isSilhouetteComponent.value || !imageReady.value) {
+            return 1;
+        }
+        return agentStore.componentName === AGENT.COMPONENT_NAME.WHEELS ? 2.5 : 3;
+    });
+
+    const blobCalmness = computed(() =>
+        isSilhouetteComponent.value && imageReady.value ? 0.5 : 0,
     );
 
     const blobGradientStops = computed(() =>
@@ -132,9 +151,7 @@
             : undefined,
     );
 
-    // Connection & intro
-
-    // Tracks which mode triggered the intro message: 'audio', 'chat', or null.
+    // Tracks which mode ('audio' | 'chat') triggered the intro, to prevent duplicates.
     const introSentBy = ref<'audio' | 'chat' | null>(null);
 
     function sendIntro(mode: 'audio' | 'chat') {
@@ -166,8 +183,6 @@
         }
     });
 
-    // User interactions
-
     function handleMicrophoneClick(enabled: boolean) {
         if (enabled) {
             agent.startAudio();
@@ -182,7 +197,6 @@
 
     const isChatActive = ref(false);
 
-    // Toggles the chat panel and sends the intro message on open, guarding against duplicate intros.
     function handleChatClick(enabled: boolean) {
         isChatActive.value = enabled;
 
@@ -210,10 +224,25 @@
     flex-direction: column;
     height: 100dvh;
     justify-content: flex-end;
+    left: 0;
+    margin-inline: auto;
+    max-width: var(--max-width);
     padding-top: env(safe-area-inset-top, 0px);
     position: fixed;
+    right: 0;
     row-gap: 1.25rem;
+    top: 0;
     width: 100%;
+
+    .view-logo {
+        height: auto;
+        left: 50%;
+        position: fixed;
+        top: calc(20px + env(safe-area-inset-top, 0px));
+        transform: translateX(-50%);
+        width: 110px;
+        z-index: 15;
+    }
 
     .base-view {
         -webkit-overflow-scrolling: touch;
@@ -234,8 +263,6 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            margin: 0 auto;
-            max-width: var(--max-width);
             position: relative;
             width: 100%;
             z-index: 10;
@@ -253,7 +280,14 @@
     opacity: 0;
 }
 
-// Leave-only — entry is handled by BackgroundImageSilhouette's internal load-driven fade.
+.bg-single-enter-active {
+    transition: opacity 1s ease;
+}
+
+.bg-single-enter-from {
+    opacity: 0;
+}
+
 .bg-single-leave-active {
     transition: opacity 1s ease, filter 1s ease;
 }
@@ -276,6 +310,34 @@
 .bg-carousel-enter-from,
 .bg-carousel-leave-to {
     opacity: 0;
+}
+
+// Eased scrim gradient covering the gap behind the iOS Safari toolbar.
+// Cubic-bezier-inspired opacity stops for a smooth perceptual fade.
+.view-bottom-scrim {
+    bottom: 0;
+    height: 10vh;
+    left: 0;
+    pointer-events: none;
+    position: fixed;
+    width: 100%;
+    z-index: 10;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        color-mix(in srgb, var(--app-background-color) 0.2%, transparent) 1.8%,
+        color-mix(in srgb, var(--app-background-color) 0.8%, transparent) 4.8%,
+        color-mix(in srgb, var(--app-background-color) 2.1%, transparent) 9%,
+        color-mix(in srgb, var(--app-background-color) 4.2%, transparent) 13.9%,
+        color-mix(in srgb, var(--app-background-color) 7.5%, transparent) 19.8%,
+        color-mix(in srgb, var(--app-background-color) 12.6%, transparent) 27%,
+        color-mix(in srgb, var(--app-background-color) 19.4%, transparent) 35%,
+        color-mix(in srgb, var(--app-background-color) 27.8%, transparent) 43.5%,
+        color-mix(in srgb, var(--app-background-color) 38.2%, transparent) 52.6%,
+        color-mix(in srgb, var(--app-background-color) 54.1%, transparent) 65%,
+        color-mix(in srgb, var(--app-background-color) 73.8%, transparent) 80.2%,
+        color-mix(in srgb, var(--app-background-color) 100%, transparent) 100%
+    );
 }
 
 .blob-mask-component {

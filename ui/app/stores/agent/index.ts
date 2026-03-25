@@ -16,19 +16,16 @@ export const useAgentStore = defineStore('agentStore', {
         retailerDetails: null,
         testDriveDetails: null,
 
-        // Connection state
         connected: false,
         connecting: false,
         listening: false,
         speaking: false,
 
-        // Audio contexts and analyzers
         audioContext: null,
         analyser: null,
         inputAnalyser: null,
         recorderContext: null,
 
-        // Internal connection state
         websocket: null,
         mediaStream: null,
         audioPlayerNode: null,

@@ -1,6 +1,7 @@
 import { AGENT } from '@/constants/agent';
 import { BUS } from '@/constants/bus';
 import { useEventBus } from '@vueuse/core';
+import { useDebugLog } from '@/composables/useDebugLog';
 import type { ChatMessage } from '@/types/chat';
 import type { AgentEvent, ConnectParams, Coordinates } from '@/types/agent';
 import type { GradientStop } from '@/types/ui';
@@ -12,19 +13,14 @@ declare global {
     }
 }
 
-const log = {
-    info: (label: string, ...args: unknown[]) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #4a9eff, #357abd); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
-    success: (label: string, ...args: unknown[]) => console.log(`%c${label}`, 'background: linear-gradient(135deg, #7de37d, #27ae60); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
-    warn: (label: string, ...args: unknown[]) => console.warn(`%c${label}`, 'background: linear-gradient(135deg, #ffa502, #e67e22); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.2);', ...args),
-    error: (label: string, ...args: unknown[]) => console.error(`%c${label}`, 'background: linear-gradient(135deg, #ff4757, #c0392b); color: white; padding: 2px 8px; border-radius: 3px; font-weight: 500; text-shadow: 0 1px 1px rgba(0,0,0,0.3);', ...args),
-};
-
-// Types `this` as the full store context so actions can reference state/other actions.
 function makeActions<T extends object>(obj: T & ThisType<AgentState & T>): T {
     return obj;
 }
 
+const { record, setSession, log } = useDebugLog();
+
 export default makeActions({
+    // Converts Float32 audio samples (–1…1) to Int16 PCM for WebSocket transmission.
     float32ToInt16(float32: Float32Array): Int16Array {
         const int16 = new Int16Array(float32.length);
         for (let i = 0; i < float32.length; i++) {
@@ -35,7 +31,7 @@ export default makeActions({
         return int16;
     },
 
-    // URL-safe base64 (agent format) → ArrayBuffer for audio playback.
+    // Converts URL-safe base64 (ADK format) to ArrayBuffer for audio playback.
     base64ToArray(base64: string): ArrayBuffer {
         const base64Clean = base64.replace(/-/g, '+').replace(/_/g, '/');
         const binaryString = atob(base64Clean);
@@ -103,15 +99,15 @@ export default makeActions({
             msg.content.text = `${currentText}${text}`;
         }
 
+        // Remove stale in-progress agent messages so only the latest accumulates.
         this.conversation = this.conversation.filter(msg => msg.id === this.currentMessageId || msg.sender !== AGENT.AGENT || msg.finished);
-
-        if (finished) {
-            this.currentMessageId = null;
-        }
     },
 
     handleImageResponse(imageUrls: string[], componentName: string, gradientStops?: GradientStop[]): void {
-        console.log('imageUrls', imageUrls);
+        record({ type: AGENT.DEBUG_TYPE.IMAGES, componentName, imageUrls });
+        if (gradientStops) {
+            record({ type: AGENT.DEBUG_TYPE.GRADIENT, componentName, gradientStops });
+        }
         this.backgroundImages = imageUrls;
         this.componentName = componentName;
         this.gradientStops = gradientStops ?? null;
@@ -131,6 +127,9 @@ export default makeActions({
                 if (part.text) {
                     this.handleTextResponse(part.text, part.finished);
                     textHandled = true;
+                    if (part.finished) {
+                        record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
+                    }
                 }
 
                 const uiAction = part.functionResponse?.response?.ui_action;
@@ -138,6 +137,8 @@ export default makeActions({
                 if (uiAction?.action === AGENT.RESPONSE_ACTION.DISPLAY_COMPONENT) {
                     const functionName = part.functionResponse?.name;
                     const componentName = uiAction.component_name;
+
+                    log.info('Function', `Name: ${functionName}`);
 
                     if (Object.values(AGENT.COMPONENT_NAME).includes(componentName as string)) {
                         const selectedColor = uiAction.data?.selected_color as Record<string, unknown> | undefined;
@@ -173,6 +174,7 @@ export default makeActions({
                                 lng: (uiAction.data?.retailer_lng as number) ?? 0,
                             },
                         };
+                        log.info('RETAILER', JSON.parse(JSON.stringify(this.retailerDetails)));
                     }
 
                     if (functionName === AGENT.RESPONSE_NAME.BOOK_TEST_DRIVE) {
@@ -192,19 +194,27 @@ export default makeActions({
                                 light: (prefs?.light as string) ?? null,
                             },
                         };
+                        record({
+                            type: AGENT.DEBUG_TYPE.BOOKING,
+                            ...this.testDriveDetails,
+                        });
                     }
-
-                    log.info('Function', `Name: ${functionName}`);
                 }
             }
         }
 
         if (!textHandled && event.outputTranscription?.text) {
             this.handleTextResponse(event.outputTranscription.text, event.outputTranscription?.finished);
+            if (event.outputTranscription?.finished) {
+                record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
+            }
         }
 
         if (event.inputTranscription?.text) {
             this.handleUserTranscription(event.inputTranscription.text, event.inputTranscription?.finished);
+            if (event.inputTranscription?.finished) {
+                record({ type: AGENT.DEBUG_TYPE.EVENT, ...event });
+            }
         }
 
         if (event.turnComplete) {
@@ -283,6 +293,7 @@ export default makeActions({
         this.connectionPromise = new Promise((resolve, reject) => {
             const userIdFromQuery = userId || this.userName;
             const sessionIdFromQuery = sessionId || crypto.randomUUID();
+            setSession(userIdFromQuery ?? null, sessionIdFromQuery);
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const url = `${protocol}//${window.location.host}/ws/${userIdFromQuery}/${sessionIdFromQuery}`;
 
@@ -489,13 +500,16 @@ export default makeActions({
     },
 
     sendMessage(text: string): void {
-        this.addMessage({
-            id: `${Date.now().toString()}_${AGENT.USER}`,
+        this.currentUserMessageId = `${Date.now().toString()}_${AGENT.USER}`;
+        const userMsg = {
+            id: this.currentUserMessageId,
             sender: AGENT.USER,
             content: { text },
             timestamp: new Date(),
             finished: true,
-        });
+        };
+        this.addMessage(userMsg);
+        record({ type: AGENT.DEBUG_TYPE.USER_TEXT, ...userMsg });
 
         this.currentMessageId = `${Date.now().toString()}_${AGENT.AGENT}`;
 

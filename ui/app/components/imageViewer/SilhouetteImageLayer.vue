@@ -8,7 +8,7 @@
                 alt=""
                 class="silhouette-layer-img"
                 @load="onLoad" />
-            <div class="silhouette-layer-shadow"></div>
+            <div v-if="props.showShadow" class="silhouette-layer-shadow"></div>
         </div>
     </div>
 </template>
@@ -16,6 +16,7 @@
 <script setup lang="ts">
     interface Props {
         src?: string
+        showShadow?: boolean
     }
 
     const emit = defineEmits<{
@@ -24,6 +25,7 @@
 
     const props = withDefaults(defineProps<Props>(), {
         src: '',
+        showShadow: false,
     });
 
     const isLoaded = ref(false);

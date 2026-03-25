@@ -217,3 +217,9 @@ node_modules/
 dist/
 .env
 .env.local
+
+# Claude settings
+.claude/settings.local.json
+
+# GitHub Copilot / local agent config
+.DS_Store
