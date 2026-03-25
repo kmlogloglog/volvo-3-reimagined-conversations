@@ -13,6 +13,7 @@
 import {
   collection,
   collectionGroup,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -21,6 +22,7 @@ import {
 import type { DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ensureAuth } from '@/services/authService';
+import { geminiGenerateJSON } from '@/lib/gemini';
 import type { VanProfile, VanProfileWithId } from '@/types/profile';
 import type { AgentUserState } from '@/services/liveStateService';
 
@@ -254,4 +256,217 @@ export async function uploadProfile(
 ): Promise<void> {
   const docRef = doc(db, USERS_COLLECTION, userId);
   await setDoc(docRef, profile);
+}
+
+/**
+ * Delete a profile from Firestore.
+ * Removes both the full Van Profile doc (users/{userId}) and the agent
+ * user_state subcollection doc (users/{userId}/user_state/volvo_vaen).
+ */
+export async function deleteProfile(userId: string): Promise<void> {
+  await ensureAuth();
+
+  const userDocRef = doc(db, USERS_COLLECTION, userId);
+  const stateDocRef = doc(db, USERS_COLLECTION, userId, 'user_state', 'volvo_vaen');
+
+  // Delete both in parallel; ignore if they don't exist
+  await Promise.allSettled([deleteDoc(userDocRef), deleteDoc(stateDocRef)]);
+}
+
+// ─── AI Enrichment + Persistence ────────────────────────────────
+
+interface EnrichmentResult {
+  segmentRanking: VanProfile['analyticalScores']['segmentRanking'];
+  propensityToBuy: VanProfile['analyticalScores']['propensityToBuy'];
+  affinities: VanProfile['analyticalScores']['affinities'];
+  recommendations: VanProfile['recommendations'];
+  psychographics: VanProfile['profileData']['psychographics'];
+  mobilityNeeds: VanProfile['profileData']['mobilityNeeds'];
+}
+
+/**
+ * Returns true if a profile is sparse (agent-generated) and needs AI enrichment.
+ */
+export function profileNeedsEnrichment(profile: VanProfileWithId): boolean {
+  const { segmentRanking, affinities } = profile.analyticalScores;
+  const segmentSum =
+    segmentRanking.affluentProgressive +
+    segmentRanking.affluentSocialClimber +
+    segmentRanking.establishedElite +
+    segmentRanking.technocentricTrendsetter;
+  const totalAffinities =
+    affinities.powertrain.length +
+    affinities.models.length +
+    affinities.personalDrivers.length +
+    affinities.productAttributes.length;
+  return (
+    segmentSum === 0 &&
+    totalAffinities <= 1 &&
+    profile.recommendations.nextBestActions.length === 0
+  );
+}
+
+async function readConversationSummary(userId: string): Promise<string> {
+  try {
+    const memRef = doc(db, USERS_COLLECTION, userId, 'memories', 'interactions_summary');
+    const memSnap = await getDoc(memRef);
+    if (!memSnap.exists()) return '';
+    const data = memSnap.data();
+    return typeof data?.value === 'string' ? data.value : '';
+  } catch {
+    return '';
+  }
+}
+
+function buildEnrichmentPrompt(
+  profile: VanProfileWithId,
+  agentState: AgentUserState | null,
+  conversationSummary: string,
+): string {
+  const name = profile.profileData.demographics.name ?? profile.userId;
+  const city = profile.profileData.demographics.city ?? '';
+  const email = profile.profileData.demographics.email ?? '';
+  const carModel = agentState?.car_config?.model ?? '';
+  const carExterior = agentState?.car_config?.exterior ?? '';
+  const carInterior = agentState?.car_config?.interior ?? '';
+  const carWheels = agentState?.car_config?.wheels ?? '';
+  const profilingText = profile.meta.profileCharacteristics ?? '';
+  const preferences = agentState?.preferences ?? '';
+
+  const profiling = agentState?.profiling;
+  const profilingLines =
+    profiling && typeof profiling === 'object' && !Array.isArray(profiling)
+      ? Object.entries(profiling).map(([k, v]) => `${k}: ${v}`).join(', ')
+      : Array.isArray(profiling)
+        ? profiling.join(', ')
+        : '';
+
+  return `You are a Volvo automotive CRM analyst. Based on the customer data below, generate a complete analytical profile. Infer plausible values from the available data — be realistic and consistent with a premium Volvo buyer persona.
+
+Customer data:
+- Name: ${name}
+- Location: ${city}
+- Email: ${email}
+- Volvo model of interest: ${carModel || 'unknown'} ${carExterior ? `(exterior: ${carExterior})` : ''} ${carInterior ? `(interior: ${carInterior})` : ''} ${carWheels ? `(wheels: ${carWheels})` : ''}
+- Conversation insights: ${profilingLines || profilingText || 'none'}
+- Preferences: ${preferences || 'none'}${conversationSummary ? `\n- Conversation summary: ${conversationSummary}` : ''}
+
+Return a JSON object with exactly this structure:
+{
+  "segmentRanking": {
+    "affluentProgressive": <number 0-100>,
+    "affluentSocialClimber": <number 0-100>,
+    "establishedElite": <number 0-100>,
+    "technocentricTrendsetter": <number 0-100>,
+    "dominantSegment": "<key of the highest>"
+  },
+  "propensityToBuy": {
+    "score": <number 0-100>,
+    "stage": "<awareness|consideration|decision>"
+  },
+  "affinities": {
+    "powertrain": [{"value": "<electric|plugInHybrid|mildHybrid>", "strength": "<high|medium|low>"}],
+    "models": [{"value": "<EX90|EX60|EX30|CX90|CX60|CX40>", "strength": "<high|medium|low>"}],
+    "personalDrivers": [{"value": "<socialValidation|responsibility|fun|security|qualityOfLife>", "strength": "<high|medium|low>"}],
+    "productAttributes": [{"value": "<performance|luxury|technology|safety>", "strength": "<high|medium|low>"}]
+  },
+  "recommendations": {
+    "engagementStrategy": "<2-3 sentence strategy>",
+    "nextBestActions": [
+      {"action": "<bookTestDrive|completeConfiguration|completeOrder|contactDealer|viewContent>", "likelihood": <number 0-100>, "reasoning": "<1 sentence>"}
+    ],
+    "contentRecommendations": [
+      {"topic": "<string>", "relevanceScore": <number 0-100>}
+    ]
+  },
+  "psychographics": {
+    "familyLogistician": <boolean>,
+    "styleConsciousCommuter": <boolean>,
+    "highMileCruiser": <boolean>,
+    "interests": ["<string>", ...],
+    "values": ["<string>", ...]
+  },
+  "mobilityNeeds": {
+    "dailyUsage": "<city|highway|mixed>",
+    "weekendUsage": ["<cabin|sports|errands|family_activities>"],
+    "passengerCount": <number>,
+    "cargoNeeds": "<high|medium|low>",
+    "currentCar": "<infer the customer's CURRENT car if possible, otherwise null — NOT the Volvo model of interest>",
+    "numberOfCars": <number>,
+    "carRenewal": "<renew|first_buy>",
+    "reasonForBuying": "<string>"
+  }
+}
+
+Rules:
+- segmentRanking values MUST total exactly 100
+- Include 1-3 items per affinity category
+- Include 2-3 nextBestActions
+- Include 2-4 contentRecommendations
+- Include 2-4 interests and 2-3 values
+- Return ONLY valid JSON, no markdown`;
+}
+
+function mergeEnrichmentIntoProfile(
+  profile: VanProfileWithId,
+  enrichment: Partial<EnrichmentResult>,
+): VanProfileWithId {
+  return {
+    ...profile,
+    profileData: {
+      ...profile.profileData,
+      psychographics: enrichment.psychographics ?? profile.profileData.psychographics,
+      mobilityNeeds: {
+        ...profile.profileData.mobilityNeeds,
+        ...(enrichment.mobilityNeeds ?? {}),
+        currentCar: profile.profileData.mobilityNeeds.currentCar ?? enrichment.mobilityNeeds?.currentCar ?? null,
+      },
+    },
+    analyticalScores: {
+      segmentRanking: enrichment.segmentRanking ?? profile.analyticalScores.segmentRanking,
+      propensityToBuy: enrichment.propensityToBuy ?? profile.analyticalScores.propensityToBuy,
+      affinities: enrichment.affinities ?? profile.analyticalScores.affinities,
+    },
+    recommendations: enrichment.recommendations ?? profile.recommendations,
+    meta: {
+      ...profile.meta,
+      lastUpdated: new Date().toISOString(),
+    },
+  };
+}
+
+/**
+ * Enrich a sparse agent profile via Gemini and persist the full
+ * Van Profile document to Firestore at users/{userId}.
+ *
+ * Reads the agent's user_state and conversation summary (memories)
+ * to provide context for the enrichment prompt.
+ */
+export async function enrichAndPersistProfile(
+  profile: VanProfileWithId,
+): Promise<VanProfileWithId> {
+  await ensureAuth();
+
+  // Read agent state
+  const stateRef = doc(db, USERS_COLLECTION, profile.userId, 'user_state', 'volvo_vaen');
+  const stateSnap = await getDoc(stateRef);
+  const agentState = stateSnap.exists()
+    ? (stateSnap.data() as { state?: AgentUserState })?.state ?? null
+    : null;
+
+  // Read conversation summary from memories
+  const conversationSummary = await readConversationSummary(profile.userId);
+
+  // Call Gemini for enrichment
+  const prompt = buildEnrichmentPrompt(profile, agentState, conversationSummary);
+  const enrichment = await geminiGenerateJSON<Partial<EnrichmentResult>>(prompt);
+
+  // Merge enrichment into profile
+  const enrichedProfile = mergeEnrichmentIntoProfile(profile, enrichment);
+
+  // Persist to Firestore as a full Van Profile doc
+  const { userId, ...vanProfile } = enrichedProfile;
+  await setDoc(doc(db, USERS_COLLECTION, userId), vanProfile);
+
+  return enrichedProfile;
 }

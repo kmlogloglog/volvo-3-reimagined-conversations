@@ -2,6 +2,39 @@
 
 ---
 
+## 25/03/2026 — Auto-enrich sparse agent profiles + persist to Firestore
+
+### What changed
+
+**Problem:** AI conversations create sparse `user_state` entries (only name, email, car_config, etc.). The dashboard wrapped them in a VanProfile with lots of null fields. The existing `useAIEnrichedProfile` hook enriched them via Gemini on the detail page, but enrichment was **in-memory only** — lost on every refresh.
+
+**Solution:** Added `enrichAndPersistProfile()` to `profileService.ts`. When `loadProfiles()` runs, any sparse agent profiles are automatically enriched via Gemini in the background and **persisted back to Firestore** as full Van Profile documents (`users/{userId}`). Future page loads pull the enriched profile directly — no more re-enriching.
+
+The enrichment prompt also reads the AI conversation summary from `users/{userId}/memories/interactions_summary` for richer context.
+
+### Files modified
+| File | Change |
+|------|--------|
+| `src/services/profileService.ts` | Added `profileNeedsEnrichment()`, `enrichAndPersistProfile()`, and helpers for reading conversation summary + building enrichment prompt |
+| `src/store/profileStore.ts` | `loadProfiles()` now triggers background enrichment for sparse profiles and updates the store when done |
+
+---
+
+## 25/03/2026 — Delete Jonathan Saruk from Firestore
+
+### What changed
+
+Manually deleted all Firestore data for Jonathan Saruk from the `volvo-vaen-v2-db` database.
+
+**Deleted user:** `freja_user_2975e6b4-fc13-4dbc-ac60-288cf19e85c8` (`jonathan.saruk@vml.com`)
+- `user_state/volvo_vaen` — agent profile/state
+- `sessions/` — conversation session and events
+- `memories/` — LLM-generated summary
+
+No code changes. Data-only operation via Firestore Admin SDK.
+
+---
+
 ## 18/03/2026 — Consolidate to `/preview` as Single View + Auto-Sync Script
 
 ### What changed

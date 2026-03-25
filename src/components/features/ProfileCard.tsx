@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Icon } from '@iconify/react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import NumberFlow from '@number-flow/react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import GlassCard from '@/components/ui/GlassCard';
@@ -12,6 +13,7 @@ interface ProfileCardProps {
   readonly profile: VanProfileWithId;
   readonly onQuickView: () => void;
   readonly onAdvancedView: () => void;
+  readonly onDelete: () => Promise<void>;
 }
 
 const stageBadgeVariant: Record<string, BadgeVariant> = {
@@ -64,7 +66,10 @@ export default function ProfileCard({
   profile,
   onQuickView,
   onAdvancedView,
+  onDelete,
 }: ProfileCardProps): React.JSX.Element {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { profileData, analyticalScores, meta } = profile;
   const { demographics } = profileData;
   const { segmentRanking, propensityToBuy } = analyticalScores;
@@ -213,7 +218,75 @@ export default function ProfileCard({
         <button type="button" onClick={onAdvancedView} className="van-ripple flex-1 flex items-center justify-center gap-1.5 h-8 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-neutral-400 font-medium hover:bg-white/[0.07] hover:text-white transition-colors">
           <Icon icon="solar:chart-2-linear" width={13} />Advanced View
         </button>
+        <button
+          type="button"
+          onClick={() => setConfirmOpen(true)}
+          className="van-ripple flex items-center justify-center w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-colors shrink-0"
+          title="Delete profile"
+        >
+          <Icon icon="solar:trash-bin-minimalistic-linear" width={14} />
+        </button>
       </div>
+
+      {/* Confirmation dialog */}
+      <AnimatePresence>
+        {confirmOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={(e) => { if (e.target === e.currentTarget) setConfirmOpen(false); }}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#111] p-6 shadow-2xl"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-9 h-9 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
+                  <Icon icon="solar:trash-bin-minimalistic-bold" width={18} className="text-rose-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">Delete profile?</p>
+                  <p className="text-xs text-neutral-500 mt-0.5">This will permanently remove <span className="text-neutral-300">{name}</span> from the database.</p>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmOpen(false)}
+                  disabled={isDeleting}
+                  className="flex-1 h-9 rounded-lg border border-white/10 bg-white/5 text-xs text-neutral-300 font-medium hover:bg-white/10 transition-colors disabled:opacity-40"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={async () => {
+                    setIsDeleting(true);
+                    try {
+                      await onDelete();
+                    } finally {
+                      setIsDeleting(false);
+                      setConfirmOpen(false);
+                    }
+                  }}
+                  className="flex-1 h-9 rounded-lg bg-rose-500 text-xs text-white font-medium hover:bg-rose-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  {isDeleting
+                    ? <><Icon icon="solar:refresh-linear" width={13} className="animate-spin" />Deleting…</>
+                    : <><Icon icon="solar:trash-bin-minimalistic-linear" width={13} />Delete</>
+                  }
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

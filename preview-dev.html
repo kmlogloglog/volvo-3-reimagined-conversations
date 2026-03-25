@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vän — How It Works</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0a0a0b;
+    --surface: #111112;
+    --surface-2: #181819;
+    --border: rgba(255,255,255,0.07);
+    --text: #f5f5f5;
+    --text-muted: #888;
+    --amber: #FBBF24;
+    --amber-dim: rgba(251,191,36,0.12);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.12);
+    --green: #34d399;
+    --green-dim: rgba(52,211,153,0.12);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 32px;
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .topbar-logo { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); }
+  .topbar-sep { color: rgba(255,255,255,0.15); font-weight: 300; }
+  .topbar-label { font-size: 12px; color: var(--text-muted); letter-spacing: 0.06em; }
+  .topbar a {
+    font-size: 12px; color: var(--text-muted); text-decoration: none;
+    padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .topbar a:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+  /* ── Content ── */
+  .content { max-width: 960px; margin: 0 auto; padding: 48px 32px 80px; }
+  h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+  .subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex; gap: 4px; margin-bottom: 40px;
+    background: var(--surface); border-radius: 8px;
+    padding: 4px; width: fit-content;
+    border: 1px solid var(--border);
+  }
+  .tab {
+    padding: 8px 20px; border-radius: 6px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-muted); cursor: pointer;
+    transition: all 0.2s; border: none; background: none;
+    font-family: inherit;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { background: rgba(255,255,255,0.06); color: var(--text); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── Sections ── */
+  h2 {
+    font-size: 16px; font-weight: 600; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px;
+  }
+  .section { margin-bottom: 56px; }
+
+  /* ── Diagram ── */
+  .diagram {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 32px; overflow-x: auto;
+  }
+  svg { display: block; margin: 0 auto; }
+  svg text { font-family: 'Inter', sans-serif; }
+
+  /* ── Legend ── */
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; padding: 12px 0; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* ── Note callout ── */
+  .note {
+    margin-top: 16px; padding: 14px 18px;
+    background: var(--surface-2); border-left: 3px solid var(--amber);
+    border-radius: 0 8px 8px 0; font-size: 13px; color: var(--text-muted); line-height: 1.7;
+  }
+  .note strong { color: var(--text); font-weight: 500; }
+
+  /* ── Simple view cards ── */
+  .simple-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 40px; }
+  .simple-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px;
+  }
+  .simple-card-icon { font-size: 28px; margin-bottom: 12px; }
+  .simple-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .simple-card p { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+  .simple-flow {
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap; justify-content: center;
+    margin: 32px 0;
+  }
+  .flow-step {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; text-align: center;
+    min-width: 140px;
+  }
+  .flow-step-label { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  .flow-step-desc { font-size: 11px; color: var(--text-muted); }
+  .flow-arrow { color: rgba(255,255,255,0.15); font-size: 20px; }
+
+  .simple-section { margin-bottom: 48px; }
+  .simple-section h2 { text-transform: none; font-size: 18px; color: var(--text); margin-bottom: 12px; }
+  .simple-section p { font-size: 14px; color: var(--text-muted); line-height: 1.8; margin-bottom: 16px; }
+
+  @media (max-width: 640px) {
+    .simple-cards { grid-template-columns: 1fr; }
+    .content { padding: 32px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-logo">Vän</span>
+      <span class="topbar-sep">/</span>
+      <span class="topbar-label">How It Works</span>
+    </div>
+    <a href="/preview">← Back to Preview</a>
+  </div>
+
+  <div class="content">
+    <h1>How it works</h1>
+    <p class="subtitle">One container, two frontends, one shared database.</p>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('simple')">Overview</button>
+      <button class="tab" onclick="switchTab('tech')">Technical</button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SIMPLE TAB                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="tab-simple" class="tab-content active">
+
+      <div class="simple-section">
+        <h2>The big picture</h2>
+        <p>
+          Vän has two screens that work together. A <strong>dashboard</strong> where the dealer team
+          sees customer profiles, analytics, and campaign data — and a <strong>conversational AI</strong>
+          (Freja) that customers interact with through voice and text. Both live inside the same
+          application and share the same customer database.
+        </p>
+      </div>
+
+      <div class="simple-cards">
+        <div class="simple-card">
+          <div class="simple-card-icon" style="color: var(--green);">&#9632;</div>
+          <h3 style="color: var(--green);">Dashboard</h3>
+          <p>
+            The admin screen. Dealer staff see customer profiles, affinities,
+            propensity scores, and live conversations. It reads from the shared
+            database in real time.
+          </p>
+        </div>
+        <div class="simple-card">
+          <div class="simple-card-icon" style="color: var(--blue);">&#9632;</div>
+          <h3 style="color: var(--blue);">Conversational AI (Freja)</h3>
+          <p>
+            The customer-facing voice and chat assistant. Powered by Google Gemini,
+            it answers questions about Volvo cars, books test drives, and finds
+            nearby dealers. It writes back to the same shared database.
+          </p>
+        </div>
+        <div class="simple-card">
+          <div class="simple-card-icon" style="color: var(--red);">&#9632;</div>
+          <h3 style="color: var(--red);">Shared Database</h3>
+          <p>
+            One Google Cloud Firestore database holds everything — customer profiles,
+            conversation history, and agent memory. Both screens connect to the same
+            data, so the dashboard always reflects what Freja is doing.
+          </p>
+        </div>
+        <div class="simple-card">
+          <div class="simple-card-icon" style="color: var(--amber);">&#9632;</div>
+          <h3 style="color: var(--amber);">Preview Mode</h3>
+          <p>
+            The split-screen layout shows both the dashboard and conversational AI
+            side-by-side. This is the primary demo view — you're one click away
+            from it via the "Back to Preview" link above.
+          </p>
+        </div>
+      </div>
+
+      <div class="simple-section">
+        <h2>How a conversation flows</h2>
+      </div>
+
+      <div class="simple-flow">
+        <div class="flow-step">
+          <div class="flow-step-label" style="color: var(--blue);">Customer speaks</div>
+          <div class="flow-step-desc">Voice or text input<br>via Freja UI</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-label" style="color: var(--purple);">Agent processes</div>
+          <div class="flow-step-desc">Gemini understands<br>intent + context</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-label" style="color: var(--amber);">Tools execute</div>
+          <div class="flow-step-desc">Search cars, find dealers,<br>book test drives</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-label" style="color: var(--red);">Data saved</div>
+          <div class="flow-step-desc">Session + memory<br>written to database</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-label" style="color: var(--green);">Dashboard updates</div>
+          <div class="flow-step-desc">Dealer sees live<br>conversation data</div>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top: 40px;">
+        <strong>Why this matters:</strong> The dealer team can see exactly what Freja is discussing
+        with customers in real time. When a customer asks about the EX90, the dashboard can
+        immediately surface that interest — no manual data entry, no delays.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TECHNICAL TAB                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="tab-tech" class="tab-content">
+
+      <!-- DIAGRAM 1 — Deployment Architecture -->
+      <div class="section">
+        <h2>1 — Deployment Architecture</h2>
+        <div class="diagram">
+          <svg viewBox="0 0 880 520" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <rect x="40" y="40" width="800" height="430" rx="12" fill="none" stroke="rgba(255,255,255,0.1)" stroke-dasharray="6 4"/>
+            <text x="60" y="28" fill="#888" font-size="11" font-weight="500" letter-spacing="0.08em">CLOUD RUN CONTAINER</text>
+
+            <rect x="80" y="70" width="720" height="60" rx="8" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.3)"/>
+            <text x="110" y="105" fill="#FBBF24" font-size="14" font-weight="600">FastAPI</text>
+            <text x="200" y="105" fill="#888" font-size="12">app/main.py — routes, WebSocket, static mounts</text>
+
+            <rect x="80" y="160" width="220" height="130" rx="8" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.25)"/>
+            <text x="100" y="190" fill="#60a5fa" font-size="13" font-weight="600">Nuxt UI</text>
+            <text x="100" y="210" fill="#888" font-size="11">ui/app/</text>
+            <text x="100" y="232" fill="#666" font-size="10">Voice + chat interface</text>
+            <text x="100" y="248" fill="#666" font-size="10">Served at /</text>
+            <text x="100" y="264" fill="#666" font-size="10">Static (pre-rendered)</text>
+            <text x="100" y="280" fill="#555" font-size="9" font-style="italic">connects via WebSocket</text>
+
+            <rect x="330" y="160" width="220" height="130" rx="8" fill="rgba(52,211,153,0.06)" stroke="rgba(52,211,153,0.25)"/>
+            <text x="350" y="190" fill="#34d399" font-size="13" font-weight="600">React Dashboard</text>
+            <text x="350" y="210" fill="#888" font-size="11">src/</text>
+            <text x="350" y="232" fill="#666" font-size="10">Analytics + profiles</text>
+            <text x="350" y="248" fill="#666" font-size="10">Served at /dashboard/</text>
+            <text x="350" y="264" fill="#666" font-size="10">Static (Vite build)</text>
+            <text x="350" y="280" fill="#555" font-size="9" font-style="italic">connects via Firebase SDK</text>
+
+            <rect x="580" y="160" width="220" height="130" rx="8" fill="rgba(167,139,250,0.06)" stroke="rgba(167,139,250,0.25)"/>
+            <text x="600" y="190" fill="#a78bfa" font-size="13" font-weight="600">Agent Backend</text>
+            <text x="600" y="210" fill="#888" font-size="11">app/volvo_agent/</text>
+            <text x="600" y="232" fill="#666" font-size="10">Google ADK + Gemini</text>
+            <text x="600" y="248" fill="#666" font-size="10">Prompts, tools, schemas</text>
+            <text x="600" y="264" fill="#666" font-size="10">Bidi-streaming via /ws/</text>
+            <text x="600" y="280" fill="#555" font-size="9" font-style="italic">connects via Admin SDK</text>
+
+            <rect x="80" y="320" width="470" height="60" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+            <text x="100" y="355" fill="#888" font-size="12" font-weight="500">preview.html</text>
+            <text x="210" y="355" fill="#666" font-size="11">— Split-screen layout, iframes both UIs side-by-side</text>
+
+            <line x1="190" y1="320" x2="190" y2="290" stroke="rgba(255,255,255,0.12)" stroke-dasharray="3 3"/>
+            <line x1="440" y1="320" x2="440" y2="290" stroke="rgba(255,255,255,0.12)" stroke-dasharray="3 3"/>
+
+            <line x1="300" y1="230" x2="580" y2="230" stroke="rgba(167,139,250,0.3)" stroke-dasharray="4 3" marker-end="url(#arrowPurple)"/>
+            <text x="390" y="222" fill="#a78bfa" font-size="9" font-weight="500">WebSocket /ws/</text>
+
+            <rect x="580" y="320" width="220" height="120" rx="8" fill="rgba(248,113,113,0.04)" stroke="rgba(248,113,113,0.2)" stroke-dasharray="5 3"/>
+            <text x="600" y="312" fill="#f87171" font-size="10" font-weight="500" letter-spacing="0.06em">GOOGLE CLOUD</text>
+            <text x="600" y="355" fill="#f87171" font-size="12" font-weight="500">Firestore</text>
+            <text x="600" y="375" fill="#666" font-size="10">volvo-vaen-v2-db</text>
+            <text x="600" y="398" fill="#f87171" font-size="12" font-weight="500">Gemini API</text>
+            <text x="600" y="418" fill="#666" font-size="10">Live / multimodal</text>
+
+            <path d="M 440 290 L 440 375 L 580 375" fill="none" stroke="rgba(248,113,113,0.2)" stroke-dasharray="4 3" marker-end="url(#arrowRed)"/>
+            <path d="M 690 290 L 690 320" fill="none" stroke="rgba(248,113,113,0.2)" stroke-dasharray="4 3" marker-end="url(#arrowRed)"/>
+
+            <defs>
+              <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(167,139,250,0.5)"/></marker>
+              <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(248,113,113,0.4)"/></marker>
+            </defs>
+          </svg>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#FBBF24"></div>FastAPI (entry point)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>Nuxt — Conversational UI</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>React — Analytics Dashboard</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Agent — Google ADK + Gemini</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div>Google Cloud (Firestore, Gemini)</div>
+        </div>
+      </div>
+
+      <!-- DIAGRAM 2 — Shared Database -->
+      <div class="section">
+        <h2>2 — Shared Firestore Database</h2>
+        <div class="diagram">
+          <svg viewBox="0 0 880 400" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <rect x="40" y="60" width="240" height="150" rx="8" fill="rgba(52,211,153,0.06)" stroke="rgba(52,211,153,0.25)"/>
+            <text x="60" y="90" fill="#34d399" font-size="13" font-weight="600">React Dashboard</text>
+            <text x="60" y="112" fill="#888" font-size="11">src/lib/firebase.ts</text>
+            <text x="60" y="138" fill="#666" font-size="10">Reads customer profiles</text>
+            <text x="60" y="156" fill="#666" font-size="10">Reads live agent state</text>
+            <text x="60" y="174" fill="#666" font-size="10">Shows analytics + maps</text>
+            <text x="60" y="196" fill="#555" font-size="9">via Firebase JS SDK (client-side)</text>
+
+            <rect x="600" y="60" width="240" height="150" rx="8" fill="rgba(167,139,250,0.06)" stroke="rgba(167,139,250,0.25)"/>
+            <text x="620" y="90" fill="#a78bfa" font-size="13" font-weight="600">Agent Backend</text>
+            <text x="620" y="112" fill="#888" font-size="11">app/volvo_agent/services/</text>
+            <text x="620" y="138" fill="#666" font-size="10">Writes session history</text>
+            <text x="620" y="156" fill="#666" font-size="10">Writes agent memories</text>
+            <text x="620" y="174" fill="#666" font-size="10">Persists conversation state</text>
+            <text x="620" y="196" fill="#555" font-size="9">via Admin SDK (server-side)</text>
+
+            <rect x="320" y="240" width="240" height="130" rx="10" fill="rgba(248,113,113,0.06)" stroke="rgba(248,113,113,0.3)"/>
+            <text x="370" y="275" fill="#f87171" font-size="15" font-weight="600">Firestore</text>
+            <text x="340" y="300" fill="#888" font-size="11">project: vml-map-xd-volvo</text>
+            <text x="340" y="320" fill="#888" font-size="11">db: volvo-vaen-v2-db</text>
+            <text x="340" y="348" fill="#666" font-size="10">profiles / sessions / memories</text>
+
+            <text x="340" y="232" fill="#f87171" font-size="10" font-weight="500" letter-spacing="0.06em">GOOGLE CLOUD — SHARED DATABASE</text>
+
+            <path d="M 160 210 L 160 305 L 320 305" fill="none" stroke="rgba(52,211,153,0.3)" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+            <text x="120" y="260" fill="#34d399" font-size="9" font-weight="500">READ</text>
+
+            <path d="M 720 210 L 720 305 L 560 305" fill="none" stroke="rgba(167,139,250,0.3)" stroke-width="1.5" marker-end="url(#arrowPurple2)"/>
+            <text x="710" y="260" fill="#a78bfa" font-size="9" font-weight="500">WRITE</text>
+
+            <rect x="370" y="168" width="140" height="28" rx="4" fill="var(--surface-2)" stroke="var(--border)"/>
+            <text x="392" y="187" fill="#888" font-size="10" font-weight="500">Same GCP Project</text>
+
+            <defs>
+              <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(52,211,153,0.5)"/></marker>
+              <marker id="arrowPurple2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(167,139,250,0.5)"/></marker>
+            </defs>
+          </svg>
+        </div>
+        <div class="note">
+          <strong>Key insight:</strong> Both the React dashboard and the Python agent connect to the same
+          Firestore database (<strong>volvo-vaen-v2-db</strong>) in GCP project <strong>vml-map-xd-volvo</strong>.
+          The dashboard reads profiles and live state via the Firebase JS SDK (client-side).
+          The agent writes session history and memories via the Admin SDK (server-side).
+          This means the dashboard reflects real-time agent activity without any extra plumbing.
+        </div>
+      </div>
+
+      <!-- DIAGRAM 3 — Request Routing -->
+      <div class="section">
+        <h2>3 — Request Routing</h2>
+        <div class="diagram">
+          <svg viewBox="0 0 880 360" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <rect x="40" y="130" width="120" height="50" rx="8" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)"/>
+            <text x="70" y="160" fill="#ccc" font-size="13" font-weight="500">Browser</text>
+
+            <rect x="220" y="40" width="160" height="280" rx="8" fill="rgba(251,191,36,0.05)" stroke="rgba(251,191,36,0.2)"/>
+            <text x="248" y="30" fill="#FBBF24" font-size="11" font-weight="600" letter-spacing="0.06em">FASTAPI ROUTER</text>
+
+            <rect x="236" y="56" width="128" height="28" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+            <text x="260" y="75" fill="#FBBF24" font-size="11" font-weight="500">/</text>
+            <text x="275" y="75" fill="#888" font-size="10">or</text>
+            <text x="293" y="75" fill="#FBBF24" font-size="11" font-weight="500">/preview</text>
+
+            <rect x="236" y="96" width="128" height="28" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+            <text x="252" y="115" fill="#34d399" font-size="11" font-weight="500">/dashboard/*</text>
+
+            <rect x="236" y="136" width="128" height="28" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+            <text x="252" y="155" fill="#60a5fa" font-size="11" font-weight="500">/index.html</text>
+
+            <rect x="236" y="176" width="128" height="28" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+            <text x="252" y="195" fill="#a78bfa" font-size="11" font-weight="500">/ws/{uid}/{sid}</text>
+
+            <rect x="236" y="216" width="128" height="28" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+            <text x="252" y="235" fill="#f87171" font-size="11" font-weight="500">/preview/dev</text>
+
+            <rect x="236" y="256" width="128" height="28" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+            <text x="252" y="275" fill="#888" font-size="11" font-weight="500">/debug</text>
+
+            <rect x="460" y="50" width="200" height="36" rx="6" fill="rgba(251,191,36,0.06)" stroke="rgba(251,191,36,0.2)"/>
+            <text x="480" y="73" fill="#ccc" font-size="11">preview.html (split screen)</text>
+
+            <rect x="460" y="96" width="200" height="28" rx="6" fill="rgba(52,211,153,0.06)" stroke="rgba(52,211,153,0.2)"/>
+            <text x="480" y="115" fill="#ccc" font-size="11">dist/ (React build)</text>
+
+            <rect x="460" y="136" width="200" height="28" rx="6" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)"/>
+            <text x="480" y="155" fill="#ccc" font-size="11">ui/.output/public/ (Nuxt)</text>
+
+            <rect x="460" y="176" width="200" height="28" rx="6" fill="rgba(167,139,250,0.06)" stroke="rgba(167,139,250,0.2)"/>
+            <text x="480" y="195" fill="#ccc" font-size="11">ADK bidi-stream (Gemini)</text>
+
+            <rect x="460" y="216" width="200" height="28" rx="6" fill="rgba(248,113,113,0.06)" stroke="rgba(248,113,113,0.2)"/>
+            <text x="480" y="235" fill="#ccc" font-size="11">preview-dev.html (this page)</text>
+
+            <rect x="460" y="256" width="200" height="28" rx="6" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+            <text x="480" y="275" fill="#ccc" font-size="11">debug_frontend/ (dev tool)</text>
+
+            <line x1="160" y1="155" x2="220" y2="155" stroke="rgba(255,255,255,0.15)" marker-end="url(#arrowWhite)"/>
+            <line x1="380" y1="70" x2="460" y2="68" stroke="rgba(251,191,36,0.15)"/>
+            <line x1="380" y1="110" x2="460" y2="110" stroke="rgba(52,211,153,0.15)"/>
+            <line x1="380" y1="150" x2="460" y2="150" stroke="rgba(96,165,250,0.15)"/>
+            <line x1="380" y1="190" x2="460" y2="190" stroke="rgba(167,139,250,0.15)"/>
+            <line x1="380" y1="230" x2="460" y2="230" stroke="rgba(248,113,113,0.15)"/>
+            <line x1="380" y1="270" x2="460" y2="270" stroke="rgba(255,255,255,0.08)"/>
+
+            <defs>
+              <marker id="arrowWhite" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(255,255,255,0.3)"/></marker>
+            </defs>
+          </svg>
+        </div>
+        <div class="note">
+          <strong>How preview.html works:</strong> It's a simple HTML page with two iframes —
+          the left loads <strong>/dashboard/</strong> (React), the right loads
+          <strong>/index.html</strong> (Nuxt). Both run on the same origin inside Cloud Run.
+          The Nuxt UI opens a WebSocket to <strong>/ws/</strong> for real-time agent communication.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>

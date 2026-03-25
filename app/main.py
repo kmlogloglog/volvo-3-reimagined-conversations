@@ -332,6 +332,13 @@ else:
     async def preview_alias() -> FileResponse:
         return await _serve_preview()
 
+    @app.get("/preview/dev")
+    async def preview_dev() -> FileResponse:
+        """Architecture overview page — how the system works."""
+        return FileResponse(
+            Path(__file__).parent.parent / "preview-dev.html"
+        )
+
     # React dashboard — built output served at /dashboard
     dashboard_dir = Path(__file__).parent.parent / "dist"
     if dashboard_dir.exists():

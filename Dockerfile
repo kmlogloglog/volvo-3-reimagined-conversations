@@ -53,8 +53,9 @@ COPY --from=ui-builder /app/ui/.output/public ./ui/.output/public
 # Copy the built React dashboard
 COPY --from=dashboard-builder /app/dist ./dist
 
-# Copy preview.html (split-screen: conversational AI + dashboard)
+# Copy preview pages (split-screen + architecture overview)
 COPY preview.html ./preview.html
+COPY preview-dev.html ./preview-dev.html
 
 # Copy the debug frontend source code (Vanilla JS, no build needed)
 COPY debug_frontend ./debug_frontend

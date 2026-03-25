@@ -16,6 +16,7 @@ export default function ProfilesListPage(): React.JSX.Element {
   const error = useProfileStore((s) => s.error);
   const searchQuery = useProfileStore((s) => s.searchQuery);
   const loadProfiles = useProfileStore((s) => s.loadProfiles);
+  const deleteProfile = useProfileStore((s) => s.deleteProfile);
   const setSearchQuery = useProfileStore((s) => s.setSearchQuery);
   const navigate = useNavigate();
 
@@ -180,6 +181,7 @@ export default function ProfilesListPage(): React.JSX.Element {
                   profile={profile}
                   onQuickView={() => void navigate(`/profiles/${profile.userId}`)}
                   onAdvancedView={() => void navigate(`/profiles/${profile.userId}?view=advanced`)}
+                  onDelete={() => deleteProfile(profile.userId)}
                 />
               </motion.div>
             ))}
