@@ -36,7 +36,7 @@ function castToProfile(data: DocumentData): VanProfile {
  * Maps agent user_state fields to a minimal VanProfileWithId.
  * Fields not yet captured by the agent use safe empty defaults.
  */
-function mapAgentStateToProfile(
+export function mapAgentStateToProfile(
   userId: string,
   state: AgentUserState,
 ): VanProfileWithId {

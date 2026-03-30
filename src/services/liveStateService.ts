@@ -8,8 +8,11 @@
  * This service subscribes to that document in real-time using onSnapshot.
  */
 
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, collectionGroup, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+
+// Known agent user IDs used as fallback when collectionGroup query fails
+const KNOWN_USER_IDS = ['manolo', 'demo-user'];
 
 export interface AgentUserState {
   profiling?: Record<string, string> | string[];
@@ -60,4 +63,91 @@ export function subscribeToUserState(
   );
 
   return unsubscribe;
+}
+
+/**
+ * Callback shape for collection-level listener.
+ * Maps userId → latest AgentUserState.
+ */
+export type AllUserStatesCallback = (
+  states: Map<string, AgentUserState>,
+) => void;
+
+/**
+ * Subscribes to real-time updates across ALL user_state documents.
+ *
+ * Uses `collectionGroup('user_state')` so any new user who starts a
+ * conversation is detected immediately (no page refresh required).
+ *
+ * Falls back to polling known user IDs if the collectionGroup Firestore
+ * rule is missing.
+ *
+ * @param appName  - ADK app name filter (e.g. "volvo_vaen")
+ * @param callback - Called with a Map<userId, state> on every change
+ * @returns Unsubscribe function
+ */
+export function subscribeToAllUserStates(
+  appName: string,
+  callback: AllUserStatesCallback,
+): () => void {
+  let cancelled = false;
+
+  // Try collectionGroup listener first
+  const cgRef = collectionGroup(db, 'user_state');
+
+  const unsubscribe = onSnapshot(
+    cgRef,
+    (snapshot) => {
+      if (cancelled) return;
+      const states = new Map<string, AgentUserState>();
+      for (const docSnap of snapshot.docs) {
+        // Only include docs matching our appName
+        if (docSnap.id !== appName) continue;
+        const userId = docSnap.ref.parent.parent?.id;
+        if (!userId) continue;
+        const data = docSnap.data() as { state?: AgentUserState };
+        if (data?.state) {
+          states.set(userId, data.state);
+        }
+      }
+      callback(states);
+    },
+    (error) => {
+      console.warn(
+        '[liveStateService] collectionGroup("user_state") listener failed — ' +
+        'falling back to polling known user IDs. Add the Firestore rule: ' +
+        'match /{path=**}/user_state/{docId} { allow read: if request.auth != null; }',
+        error,
+      );
+
+      // Fallback: poll known user IDs with individual doc listeners
+      if (cancelled) return;
+      startFallbackListeners(appName, callback);
+    },
+  );
+
+  let fallbackUnsubs: (() => void)[] = [];
+
+  function startFallbackListeners(app: string, cb: AllUserStatesCallback) {
+    const states = new Map<string, AgentUserState>();
+    for (const uid of KNOWN_USER_IDS) {
+      const docRef = doc(db, 'users', uid, 'user_state', app);
+      const unsub = onSnapshot(docRef, (snap) => {
+        if (cancelled) return;
+        if (snap.exists()) {
+          const data = snap.data() as { state?: AgentUserState };
+          if (data?.state) states.set(uid, data.state);
+        }
+        cb(new Map(states));
+      });
+      fallbackUnsubs.push(unsub);
+    }
+  }
+
+  return () => {
+    cancelled = true;
+    unsubscribe();
+    for (const unsub of fallbackUnsubs) unsub();
+    fallbackUnsubs = [];
+  };
 }

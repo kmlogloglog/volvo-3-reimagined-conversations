@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Icon } from '@iconify/react';
+import { toast } from 'sonner';
 import SectionHeader from '@/components/ui/SectionHeader';
 import GlassCard from '@/components/ui/GlassCard';
 import ProfileCard from '@/components/features/ProfileCard';
@@ -18,6 +19,10 @@ export default function ProfilesListPage(): React.JSX.Element {
   const loadProfiles = useProfileStore((s) => s.loadProfiles);
   const deleteProfile = useProfileStore((s) => s.deleteProfile);
   const setSearchQuery = useProfileStore((s) => s.setSearchQuery);
+  const startLiveSync = useProfileStore((s) => s.startLiveSync);
+  const stopLiveSync = useProfileStore((s) => s.stopLiveSync);
+  const newProfileUserId = useProfileStore((s) => s.newProfileUserId);
+  const clearNewProfileUserId = useProfileStore((s) => s.clearNewProfileUserId);
   const navigate = useNavigate();
 
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -25,7 +30,18 @@ export default function ProfilesListPage(): React.JSX.Element {
 
   useEffect(() => {
     void loadProfiles();
-  }, [loadProfiles]);
+    startLiveSync();
+    return () => { stopLiveSync(); };
+  }, [loadProfiles, startLiveSync, stopLiveSync]);
+
+  // Auto-navigate when a new profile is detected
+  useEffect(() => {
+    if (newProfileUserId) {
+      toast.success('New session detected — opening profile');
+      navigate(`/profiles/${newProfileUserId}`);
+      clearNewProfileUserId();
+    }
+  }, [newProfileUserId, navigate, clearNewProfileUserId]);
 
   // Reset to page 1 whenever search changes
   useEffect(() => {

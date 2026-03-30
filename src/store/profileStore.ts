@@ -6,8 +6,12 @@ import {
   deleteProfile as deleteProfileFromDb,
   profileNeedsEnrichment,
   enrichAndPersistProfile,
+  mapAgentStateToProfile,
 } from '@/services/profileService';
+import { subscribeToAllUserStates } from '@/services/liveStateService';
 import demoData from '@/data/Van_Profile_Example_Jon.json';
+
+const APP_NAME = 'volvo_vaen';
 
 interface ProfileStore {
   /** All loaded profiles */
@@ -21,6 +25,9 @@ interface ProfileStore {
   /** Search query for the profiles list */
   searchQuery: string;
 
+  /** User ID of a brand-new profile detected by live sync */
+  newProfileUserId: string | null;
+
   // ── Actions ──
   loadProfiles: () => Promise<void>;
   loadDemoProfiles: () => void;
@@ -30,7 +37,13 @@ interface ProfileStore {
   addProfile: (profile: VanProfileWithId) => void;
   deleteProfile: (userId: string) => Promise<void>;
   clearError: () => void;
+  startLiveSync: () => void;
+  stopLiveSync: () => void;
+  clearNewProfileUserId: () => void;
 }
+
+let _liveSyncUnsub: (() => void) | null = null;
+const _knownUserIds = new Set<string>();
 
 export const useProfileStore = create<ProfileStore>()((set, get) => ({
   profiles: [],
@@ -38,6 +51,7 @@ export const useProfileStore = create<ProfileStore>()((set, get) => ({
   isLoading: false,
   error: null,
   searchQuery: '',
+  newProfileUserId: null,
 
   loadProfiles: async (): Promise<void> => {
     set({ isLoading: true, error: null });
@@ -125,5 +139,79 @@ export const useProfileStore = create<ProfileStore>()((set, get) => ({
 
   clearError: (): void => {
     set({ error: null });
+  },
+
+  startLiveSync: (): void => {
+    // Don't double-subscribe
+    if (_liveSyncUnsub) return;
+
+    // Seed knownUserIds from any profiles already loaded
+    for (const p of get().profiles) {
+      _knownUserIds.add(p.userId);
+    }
+
+    _liveSyncUnsub = subscribeToAllUserStates(APP_NAME, (states) => {
+      const current = get().profiles;
+      const updatedMap = new Map(current.map((p) => [p.userId, p]));
+
+      // Detect new user IDs and update/insert profiles from live state
+      let detectedNewUserId: string | null = null;
+      for (const [userId, agentState] of states) {
+        const liveProfile = mapAgentStateToProfile(userId, agentState);
+
+        // Filter out demo users (matching existing fetchAllProfiles behavior)
+        const name = liveProfile.profileData.demographics.name?.toLowerCase() ?? '';
+        if (name.includes('demo')) continue;
+
+        // Check if this is a brand-new user
+        if (!_knownUserIds.has(userId)) {
+          _knownUserIds.add(userId);
+          detectedNewUserId = userId;
+        }
+
+        // Only overwrite if the existing profile was agent-generated (sparse).
+        // Full uploaded Van Profile docs should not be overwritten by agent state.
+        const existing = updatedMap.get(userId);
+        if (!existing || profileNeedsEnrichment(existing)) {
+          updatedMap.set(userId, liveProfile);
+        }
+      }
+
+      const updatedProfiles = Array.from(updatedMap.values());
+      const nextState: Partial<ProfileStore> = { profiles: updatedProfiles };
+      if (detectedNewUserId) {
+        nextState.newProfileUserId = detectedNewUserId;
+      }
+      set(nextState);
+
+      // Background-enrich newly detected sparse profiles
+      if (detectedNewUserId) {
+        const newProfile = updatedMap.get(detectedNewUserId);
+        if (newProfile && profileNeedsEnrichment(newProfile)) {
+          enrichAndPersistProfile(newProfile)
+            .then((enriched) => {
+              set({
+                profiles: get().profiles.map((p) =>
+                  p.userId === enriched.userId ? enriched : p,
+                ),
+              });
+            })
+            .catch((err) => {
+              console.error(`[profileStore] enrichment failed for ${detectedNewUserId}:`, err);
+            });
+        }
+      }
+    });
+  },
+
+  stopLiveSync: (): void => {
+    if (_liveSyncUnsub) {
+      _liveSyncUnsub();
+      _liveSyncUnsub = null;
+    }
+  },
+
+  clearNewProfileUserId: (): void => {
+    set({ newProfileUserId: null });
   },
 }));

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { motion } from 'motion/react';
@@ -21,6 +21,7 @@ import ContentRecommendations from '@/components/features/profile/ContentRecomme
 import ChannelConsentCard from '@/components/features/profile/ChannelConsentCard';
 import { useProfileStore } from '@/store/profileStore';
 import { useLiveStateStore } from '@/store/liveStateStore';
+import { mapAgentStateToProfile } from '@/services/profileService';
 import AISummaryCard from '@/components/features/profile/AISummaryCard';
 import { useAIEnrichedProfile } from '@/hooks/useAIEnrichedProfile';
 
@@ -102,6 +103,19 @@ export default function ProfileDetailPage(): React.JSX.Element {
     return () => { stopListening(); };
   }, [userId, startListening, stopListening]);
 
+  // Derive profile reactively from live state so demographics, propensity
+  // scores, etc. update in real-time as the agent collects data.
+  const rawProfile = useMemo(() => {
+    if (liveState && userId) {
+      return mapAgentStateToProfile(userId, liveState);
+    }
+    return useProfileStore.getState().selectedProfile
+      ?? profiles.find((p) => p.userId === userId)
+      ?? null;
+  }, [liveState, userId, profiles]);
+
+  const { enrichedProfile: profile, isEnriching } = useAIEnrichedProfile(rawProfile, liveState);
+
   // ── Loading ──
   if (isLoading) {
     return (
@@ -117,12 +131,6 @@ export default function ProfileDetailPage(): React.JSX.Element {
       </div>
     );
   }
-
-  const rawProfile = useProfileStore.getState().selectedProfile
-    ?? profiles.find((p) => p.userId === userId)
-    ?? null;
-
-  const { enrichedProfile: profile, isEnriching } = useAIEnrichedProfile(rawProfile, liveState);
 
   // ── Not found ──
   if (error !== null || profile === null) {
