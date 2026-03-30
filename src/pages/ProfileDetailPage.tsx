@@ -19,6 +19,7 @@ import EngagementStrategyCard from '@/components/features/profile/EngagementStra
 import NextBestActions from '@/components/features/profile/NextBestActions';
 import ContentRecommendations from '@/components/features/profile/ContentRecommendations';
 import ChannelConsentCard from '@/components/features/profile/ChannelConsentCard';
+import CarConfigurationCard from '@/components/features/profile/CarConfigurationCard';
 import { useProfileStore } from '@/store/profileStore';
 import { useLiveStateStore } from '@/store/liveStateStore';
 import { mapAgentStateToProfile } from '@/services/profileService';
@@ -58,6 +59,7 @@ export default function ProfileDetailPage(): React.JSX.Element {
 
   const startListening = useLiveStateStore((s) => s.startListening);
   const stopListening = useLiveStateStore((s) => s.stopListening);
+  const refreshLiveState = useLiveStateStore((s) => s.refresh);
   const liveState = useLiveStateStore((s) => s.state);
   const isLive = useLiveStateStore((s) => s.isListening);
 
@@ -191,6 +193,20 @@ export default function ProfileDetailPage(): React.JSX.Element {
           </span>
         )}
 
+        {/* Refresh profile */}
+        <button
+          type="button"
+          onClick={() => {
+            refreshLiveState();
+            if (userId) void loadProfile(userId);
+            toast.success('Profile refreshed');
+          }}
+          className="flex items-center gap-1.5 h-7 px-3 rounded-lg border border-white/10 bg-white/5 text-xs font-medium text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
+        >
+          <Icon icon="solar:refresh-circle-linear" width={14} />
+          Refresh
+        </button>
+
         {/* Test Drive Call */}
         <button
           type="button"
@@ -264,7 +280,10 @@ export default function ProfileDetailPage(): React.JSX.Element {
           <div className="space-y-4">
             <StaggerCard index={0}><AISummaryCard agentState={liveState} userId={userId ?? ''} /></StaggerCard>
             <StaggerCard index={1}><DemographicsCard profile={profile} /></StaggerCard>
-            <StaggerCard index={2}><ChannelConsentCard profile={profile} /></StaggerCard>
+            {liveState?.car_config && (
+              <StaggerCard index={2}><CarConfigurationCard carConfig={liveState.car_config} /></StaggerCard>
+            )}
+            <StaggerCard index={3}><ChannelConsentCard profile={profile} /></StaggerCard>
           </div>
           <div className="space-y-4">
             <StaggerCard index={1}><PropensityGauge profile={profile} /></StaggerCard>
@@ -286,8 +305,11 @@ export default function ProfileDetailPage(): React.JSX.Element {
               <StaggerCard index={1}><DemographicsCard profile={profile} /></StaggerCard>
               <StaggerCard index={2}><PsychographicsCard profile={profile} /></StaggerCard>
               <StaggerCard index={3}><MobilityNeedsCard profile={profile} /></StaggerCard>
-              <StaggerCard index={4}><SegmentRanking profile={profile} /></StaggerCard>
-              <StaggerCard index={5}><SegmentDonut segmentRanking={profile.analyticalScores.segmentRanking} /></StaggerCard>
+              {liveState?.car_config && (
+                <StaggerCard index={4}><CarConfigurationCard carConfig={liveState.car_config} /></StaggerCard>
+              )}
+              <StaggerCard index={5}><SegmentRanking profile={profile} /></StaggerCard>
+              <StaggerCard index={6}><SegmentDonut segmentRanking={profile.analyticalScores.segmentRanking} /></StaggerCard>
             </div>
           </div>
 

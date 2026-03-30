@@ -25,6 +25,7 @@ export interface AgentUserState {
   full_name?: string;
   email?: string;
   location?: string | { city?: string; nation?: string; street?: string; lat?: number | null; lng?: number | null };
+  current_car?: string;
   height_cm?: string | number;
   preferences?: string;
   test_drive_appointment?: Record<string, unknown>;

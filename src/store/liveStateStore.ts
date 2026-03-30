@@ -23,6 +23,7 @@ interface LiveStateStore {
   // ── Actions ──
   startListening: (userId: string) => void;
   stopListening: () => void;
+  refresh: () => void;
 }
 
 let _unsubscribe: (() => void) | null = null;
@@ -56,5 +57,17 @@ export const useLiveStateStore = create<LiveStateStore>()((set, get) => ({
       _unsubscribe = null;
     }
     set({ isListening: false, userId: null, state: null, lastUpdated: null });
+  },
+
+  refresh: () => {
+    const userId = get().userId;
+    if (!userId) return;
+    if (_unsubscribe) {
+      _unsubscribe();
+      _unsubscribe = null;
+    }
+    _unsubscribe = subscribeToUserState(userId, APP_NAME, (newState) => {
+      set({ state: newState, lastUpdated: new Date() });
+    });
   },
 }));
