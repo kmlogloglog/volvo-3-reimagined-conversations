@@ -241,10 +241,7 @@ export async function fetchAllProfiles(): Promise<VanProfileWithId[]> {
     }
   }
 
-  return profiles.filter((p) => {
-    const name = p.profileData.demographics.name?.toLowerCase() ?? '';
-    return !name.includes('demo');
-  });
+  return profiles.filter((p) => p.userId !== 'demo-jon');
 }
 
 /**

@@ -159,9 +159,8 @@ export const useProfileStore = create<ProfileStore>()((set, get) => ({
       for (const [userId, agentState] of states) {
         const liveProfile = mapAgentStateToProfile(userId, agentState);
 
-        // Filter out demo users (matching existing fetchAllProfiles behavior)
-        const name = liveProfile.profileData.demographics.name?.toLowerCase() ?? '';
-        if (name.includes('demo')) continue;
+        // Skip the JSON demo profile (demo-jon) — but allow real agent sessions
+        if (userId === 'demo-jon') continue;
 
         // Check if this is a brand-new user
         if (!_knownUserIds.has(userId)) {
