@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Volvo Vän — Freja Admin Dashboard Guide</title>
+<title>Freja for Volvo — by VML Map</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -20,6 +20,8 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html { scroll-behavior: smooth; }
+
   body {
     font-family: 'Inter', -apple-system, sans-serif;
     background: var(--bg);
@@ -27,6 +29,21 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
+
+  /* ── Scroll-triggered fade-in ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .fade-in.delay-1 { transition-delay: 0.1s; }
+  .fade-in.delay-2 { transition-delay: 0.2s; }
+  .fade-in.delay-3 { transition-delay: 0.3s; }
 
   /* ── Page container ── */
   .page {
@@ -86,6 +103,22 @@
     margin-top: 48px; font-size: 11px; color: rgba(255,255,255,0.15);
   }
 
+  /* Hero image on cover */
+  .cover .hero-img {
+    width: 100%; max-width: 700px;
+    border-radius: 16px;
+    margin-top: 40px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  }
+
+  /* VML logo */
+  .vml-logo {
+    height: 28px;
+    margin-bottom: 36px;
+    filter: invert(1);
+    opacity: 0.6;
+  }
+
   /* ── Section headers ── */
   .slide-number {
     font-size: 11px; font-weight: 600; text-transform: uppercase;
@@ -126,12 +159,9 @@
     flex: 1; text-align: center; font-size: 11px; color: rgba(255,255,255,0.25);
   }
 
-  /* ── Mock screen content ── */
-  .mock-screen {
-    padding: 28px;
-    min-height: 360px;
-    position: relative;
-    overflow: hidden;
+  .screenshot-frame img {
+    width: 100%;
+    display: block;
   }
 
   /* ── Feature list ── */
@@ -152,240 +182,13 @@
     font-size: 12px; color: var(--text-muted); line-height: 1.5;
   }
 
-  /* ── Inline badge ── */
-  .badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 10px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 1.5px; padding: 4px 12px; border-radius: 100px;
-  }
-  .badge.amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.25); }
-
-  /* ── Mock UI elements ── */
-  .mock-sidebar {
-    position: absolute; left: 0; top: 0; bottom: 0; width: 200px;
-    background: rgba(0,0,0,0.3); border-right: 1px solid var(--border);
-    padding: 16px;
-  }
-  .mock-sidebar .brand {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 24px;
-    padding-bottom: 12px; border-bottom: 1px solid var(--border);
-  }
-  .mock-sidebar .brand-dot {
-    width: 18px; height: 18px; border-radius: 6px; background: white;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .mock-sidebar .brand-dot::after {
-    content: ''; width: 5px; height: 5px; border-radius: 50%; background: black;
-  }
-  .mock-sidebar .brand-text {
-    font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.7);
-  }
-  .mock-nav-item {
-    padding: 8px 10px; border-radius: 8px; font-size: 11px;
-    color: rgba(255,255,255,0.35); margin-bottom: 2px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .mock-nav-item.active {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-weight: 500;
-  }
-  .mock-nav-dot {
-    width: 14px; height: 14px; border-radius: 4px;
-    background: rgba(255,255,255,0.1);
-  }
-  .mock-nav-item.active .mock-nav-dot {
-    background: rgba(251,191,36,0.3);
-  }
-  .mock-content {
-    margin-left: 216px;
-  }
-
-  /* Skeleton bars */
-  .skel { border-radius: 6px; background: rgba(255,255,255,0.05); }
-  .skel-text { height: 10px; margin-bottom: 8px; }
-  .skel-title { height: 14px; width: 160px; margin-bottom: 12px; }
-  .skel-card {
-    border-radius: 12px; border: 1px solid var(--border);
-    background: rgba(255,255,255,0.02); padding: 16px;
-  }
-  .skel-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-  }
-  .skel-badge {
-    height: 20px; width: 80px; border-radius: 100px;
-    background: rgba(255,255,255,0.04);
-  }
-  .skel-bar {
-    height: 6px; border-radius: 4px; background: rgba(255,255,255,0.04);
-  }
-
-  /* amber accent elements */
-  .amber-glow {
-    width: 40px; height: 40px; border-radius: 12px;
-    background: var(--amber-dim); border: 1px solid rgba(251,191,36,0.2);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--amber); font-weight: 700; font-size: 16px;
-    font-family: Georgia, serif;
-  }
-
-  /* Stat tile mock */
-  .mock-stat {
-    border-radius: 12px; border: 1px solid var(--border);
-    background: rgba(255,255,255,0.02); padding: 14px; text-align: center;
-  }
-  .mock-stat .num { font-size: 26px; font-weight: 600; color: var(--text); }
-  .mock-stat .lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-top: 4px; }
-
-  /* Map mock */
-  .mock-map {
-    border-radius: 12px; border: 1px solid var(--border);
-    background: var(--surface-2); height: 220px;
-    position: relative; overflow: hidden;
-  }
-  .map-dot {
-    position: absolute; width: 10px; height: 10px; border-radius: 50%;
-    background: var(--amber); box-shadow: 0 0 12px rgba(251,191,36,0.4);
-  }
-  .map-dot::after {
-    content: ''; position: absolute; inset: -6px; border-radius: 50%;
-    background: rgba(251,191,36,0.12);
-  }
-  .map-landmass {
-    position: absolute; border-radius: 8px; background: rgba(255,255,255,0.04);
-  }
-
-  /* Login card mock */
-  .mock-login-card {
-    max-width: 280px; margin: 40px auto;
-    border-radius: 16px; padding: 32px;
-    background: rgba(6,6,6,0.78);
-    border: 1px solid rgba(255,255,255,0.07);
-    backdrop-filter: blur(24px);
-    text-align: center;
-    position: relative;
-  }
-  .mock-login-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(251,191,36,0.4), transparent);
-  }
-  .mock-btn {
-    width: 100%; padding: 10px; border-radius: 12px; font-size: 12px;
-    font-weight: 500; border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8);
-    margin-top: 8px; text-align: center;
-  }
-  .mock-btn.secondary {
-    background: transparent; border-color: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.25);
-  }
-
-  /* Journey steps mock */
-  .mock-journey {
-    display: flex; align-items: center; justify-content: center; gap: 4px;
-  }
-  .mock-step {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 6px; flex: 1; text-align: center;
-  }
-  .mock-step-icon {
-    width: 36px; height: 36px; border-radius: 10px;
-    background: var(--amber-dim); border: 1px solid rgba(251,191,36,0.2);
-  }
-  .mock-step-num {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: rgba(251,191,36,0.15); border: 1px solid rgba(251,191,36,0.3);
-    font-size: 8px; font-weight: 700; color: var(--amber);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .mock-step-label { font-size: 9px; color: rgba(255,255,255,0.4); max-width: 80px; line-height: 1.3; }
-  .mock-connector {
-    width: 20px; height: 1px; border-top: 1px dashed rgba(251,191,36,0.25);
-    margin-top: -30px;
-  }
-
-  /* Segment tile mock */
-  .mock-seg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .mock-seg {
-    border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);
-    background: rgba(255,255,255,0.02); padding: 12px;
-  }
-  .mock-seg-dot { width: 8px; height: 8px; border-radius: 50%; margin-bottom: 8px; }
-  .mock-seg-num { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-  .mock-seg-bar { height: 4px; border-radius: 4px; background: rgba(255,255,255,0.04); overflow: hidden; }
-  .mock-seg-fill { height: 100%; border-radius: 4px; }
-  .mock-seg-label { font-size: 8px; color: var(--text-muted); margin-top: 4px; }
-
-  /* Profile detail mock cols */
-  .mock-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  .mock-col-header {
-    font-size: 11px; font-weight: 600; color: var(--text);
-    padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);
-    margin-bottom: 10px;
-  }
-
-  /* Gauge mock */
-  .mock-gauge {
-    width: 80px; height: 40px; margin: 8px auto;
-    border-radius: 80px 80px 0 0;
-    border: 3px solid rgba(255,255,255,0.06);
-    border-bottom: none;
-    position: relative;
-  }
-  .mock-gauge::after {
-    content: '72'; position: absolute; bottom: 0; left: 50%;
-    transform: translateX(-50%); font-size: 16px; font-weight: 600;
-    color: var(--amber);
-  }
-
-  /* Email preview mock */
-  .mock-email {
-    border-radius: 10px; border: 1px solid var(--border);
-    background: #1a1a1a; padding: 16px;
-  }
-  .mock-email-header {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
-    padding-bottom: 10px; border-bottom: 1px solid var(--border);
-  }
-  .mock-email-icon {
-    width: 24px; height: 24px; border-radius: 6px;
-    background: var(--amber-dim);
-  }
-
-  /* Print styles */
+  /* ── Print styles ── */
   @media print {
-    body { background: white; color: #111; }
-    .page { page-break-after: always; padding: 40px 30px; min-height: auto; }
-    .screenshot-frame { box-shadow: 0 2px 12px rgba(0,0,0,0.1); border-color: #ddd; }
-    .browser-bar { background: #f5f5f5; border-color: #ddd; }
-    .browser-dot { background: #ddd; }
-    .mock-screen { background: #fafafa; }
-    h2, .slide-number { color: #111; }
-    .slide-desc { color: #666; }
-    .feature { background: #f9f9f9; border-color: #e5e5e5; }
-    .feature .label { color: #111; }
-    .feature .desc { color: #666; }
-  }
-
-  /* ── Screenshot placeholder with instruction ── */
-  .screenshot-placeholder {
-    position: relative;
-    border-radius: 12px;
-    border: 2px dashed rgba(251,191,36,0.25);
-    background: rgba(251,191,36,0.03);
-    padding: 28px;
-    text-align: center;
-    margin-top: 16px;
-  }
-  .screenshot-placeholder .instruction {
-    font-size: 12px; color: var(--amber); opacity: 0.6;
-    font-weight: 500;
-  }
-  .screenshot-placeholder .path {
-    font-size: 10px; color: var(--text-muted); margin-top: 4px;
-    font-family: monospace;
+    .fade-in { opacity: 1 !important; transform: none !important; transition: none !important; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { page-break-after: always; padding: 30px 24px; min-height: auto; }
+    .page:last-child { page-break-after: avoid; }
+    .screenshot-frame { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
   }
 </style>
 </head>
@@ -393,693 +196,277 @@
 
 <!-- ━━━━━━━━━━━━━━ SLIDE 1: COVER ━━━━━━━━━━━━━━ -->
 <div class="page cover">
-  <div class="logo-mark"><span>V</span></div>
-  <h1>Vän</h1>
-  <div class="byline">by Volvo</div>
-  <p class="subtitle">
-    Freja Admin Dashboard — a profiling &amp; prediction tool for personalised customer connections.
+  <img class="vml-logo fade-in" src="https://usercontent.one/wp/www.casecompetition.com/wp-content/uploads/2025/02/vml-map-logo-black-300x107.png?media=1727716353" alt="VML Map">
+  <h1 class="fade-in delay-1">Freja</h1>
+  <div class="byline fade-in delay-1">for Volvo &middot; by VML Map</div>
+  <p class="subtitle fade-in delay-2">
+    AI-powered profiling &amp; prediction dashboard for personalised customer connections.
   </p>
-  <div class="pills">
-    <span class="pill">AI-Powered Profiling</span>
-    <span class="pill">Real-Time Analytics</span>
-    <span class="pill">Personalised Outreach</span>
+  <div class="pills fade-in delay-2">
+    <span class="pill">Conversational AI</span>
+    <span class="pill">Real-Time Profiling</span>
+    <span class="pill">Personalised Campaigns</span>
   </div>
-  <p class="meta">Product Guide &middot; VML &times; Volvo &middot; 2026</p>
+  <img class="hero-img fade-in delay-3" src="screenshots/hero.png" alt="Volvo Vän overview">
+  <p class="meta fade-in delay-3">Product Guide &middot; VML Map &times; Volvo Cars &middot; 2026</p>
 </div>
 
-<!-- ━━━━━━━━━━━━━━ SLIDE 2: LOGIN ━━━━━━━━━━━━━━ -->
+<!-- ━━━━━━━━━━━━━━ SLIDE 2: PROFILES LIST ━━━━━━━━━━━━━━ -->
 <div class="page">
-  <div class="slide-number">01</div>
-  <h2>Login</h2>
-  <p class="slide-desc">
-    Secure entry point with Google SSO or guest access. Animated background and branded card with feature highlights.
+  <div class="slide-number fade-in">01</div>
+  <h2 class="fade-in delay-1">Profiles</h2>
+  <p class="slide-desc fade-in delay-1">
+    All customer profiles generated from conversations with the Volvo AI. Each card shows the customer's top model affinity, propensity score, buying stage, and segment breakdown. Upload new profiles via JSON or let them appear in real-time as customers interact with Vän.
   </p>
 
-  <div class="screenshot-frame">
+  <div class="screenshot-frame fade-in delay-2">
     <div class="browser-bar">
       <span class="browser-dot r"></span>
       <span class="browser-dot y"></span>
       <span class="browser-dot g"></span>
-      <span class="browser-url">van.volvo.internal/login</span>
+      <span class="browser-url">freja-full-719852784419.europe-west4.run.app/dashboard/profiles</span>
     </div>
-    <div class="mock-screen" style="background: linear-gradient(135deg, #080808, #0d0d0d); display: flex; align-items: center; justify-content: center;">
-      <div class="mock-login-card">
-        <div class="amber-glow" style="margin: 0 auto 16px;">V</div>
-        <div style="font-size: 22px; font-weight: 600; margin-bottom: 2px;">Vän</div>
-        <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 2.5px; color: rgba(251,191,36,0.5); margin-bottom: 8px;">by Volvo</div>
-        <div style="font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 16px; line-height: 1.5;">Profiling &amp; prediction for<br>personalised connections</div>
-        <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 20px;">
-          <span class="pill" style="font-size: 9px; padding: 3px 10px;">AI-Powered</span>
-          <span class="pill" style="font-size: 9px; padding: 3px 10px;">Real-Time</span>
-          <span class="pill" style="font-size: 9px; padding: 3px 10px;">Personalised</span>
-        </div>
-        <div class="mock-btn">Continue with Google</div>
-        <div style="display: flex; align-items: center; gap: 8px; margin: 12px 0;">
-          <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.05);"></div>
-          <span style="font-size: 9px; color: rgba(255,255,255,0.15); text-transform: uppercase; letter-spacing: 2px;">or</span>
-          <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.05);"></div>
-        </div>
-        <div class="mock-btn secondary">Continue as Guest</div>
-        <div style="font-size: 9px; color: rgba(255,255,255,0.1); margin-top: 20px;">Internal use only &middot; Volvo Cars</div>
-      </div>
-    </div>
+    <img src="screenshots/profiles.png" alt="Profiles list view">
   </div>
 
-  <div class="screenshot-placeholder">
-    <div class="instruction">Replace with actual screenshot</div>
-    <div class="path">/login</div>
-  </div>
-</div>
-
-<!-- ━━━━━━━━━━━━━━ SLIDE 3: PROFILES LIST ━━━━━━━━━━━━━━ -->
-<div class="page">
-  <div class="slide-number">02</div>
-  <h2>Profiles List</h2>
-  <p class="slide-desc">
-    Browse all customer profiles in a paginated grid. Search by name, city, or email. Upload new profiles via JSON.
-  </p>
-
-  <div class="screenshot-frame">
-    <div class="browser-bar">
-      <span class="browser-dot r"></span>
-      <span class="browser-dot y"></span>
-      <span class="browser-dot g"></span>
-      <span class="browser-url">van.volvo.internal/profiles</span>
+  <div class="features fade-in delay-3" style="margin-top: 24px;">
+    <div class="feature">
+      <div class="label">Real-Time Profiles</div>
+      <div class="desc">Profiles appear and update live as customers speak with the Volvo AI conversational agent.</div>
     </div>
-    <div class="mock-screen" style="background: var(--bg);">
-      <div class="mock-sidebar">
-        <div class="brand">
-          <div class="brand-dot"></div>
-          <span class="brand-text">Freja</span>
-        </div>
-        <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.2); margin-bottom: 8px;">Analytics</div>
-        <div class="mock-nav-item active"><div class="mock-nav-dot"></div>Profiles</div>
-        <div class="mock-nav-item"><div class="mock-nav-dot"></div>Overview</div>
-        <div class="mock-nav-item"><div class="mock-nav-dot"></div>Actions</div>
-        <div class="mock-nav-item"><div class="mock-nav-dot"></div>Map</div>
-      </div>
-      <div class="mock-content">
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <div>
-            <div style="font-size: 16px; font-weight: 600; color: var(--text);">User Profiles</div>
-            <div style="font-size: 10px; color: var(--text-muted);">Showing 1–10 of 24 profiles</div>
-          </div>
-          <div style="padding: 6px 14px; border-radius: 100px; background: var(--amber); font-size: 11px; font-weight: 600; color: black;">Upload JSON</div>
-        </div>
-        <!-- Search -->
-        <div style="height: 32px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); margin-bottom: 16px; padding: 0 14px; display: flex; align-items: center;">
-          <span style="font-size: 10px; color: rgba(255,255,255,0.2);">Search by name, city, or email...</span>
-        </div>
-        <!-- Profile cards grid -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          <div class="skel-card">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-              <div class="skel-avatar" style="background: linear-gradient(135deg, #FBBF24, #F59E0B);"></div>
-              <div><div class="skel skel-text" style="width: 80px;"></div><div class="skel skel-text" style="width: 50px; height: 8px;"></div></div>
-            </div>
-            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-              <div class="skel-badge" style="background: rgba(251,191,36,0.1);"></div>
-              <div class="skel-badge" style="width: 60px; background: rgba(56,189,248,0.1);"></div>
-            </div>
-            <div class="skel-bar" style="background: linear-gradient(90deg, rgba(251,191,36,0.3) 72%, rgba(255,255,255,0.04) 72%);"></div>
-          </div>
-          <div class="skel-card">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-              <div class="skel-avatar" style="background: linear-gradient(135deg, #C084FC, #A855F7);"></div>
-              <div><div class="skel skel-text" style="width: 90px;"></div><div class="skel skel-text" style="width: 45px; height: 8px;"></div></div>
-            </div>
-            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-              <div class="skel-badge" style="background: rgba(192,132,252,0.1);"></div>
-              <div class="skel-badge" style="width: 60px; background: rgba(52,211,153,0.1);"></div>
-            </div>
-            <div class="skel-bar" style="background: linear-gradient(90deg, rgba(192,132,252,0.3) 55%, rgba(255,255,255,0.04) 55%);"></div>
-          </div>
-          <div class="skel-card">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-              <div class="skel-avatar" style="background: linear-gradient(135deg, #38BDF8, #0EA5E9);"></div>
-              <div><div class="skel skel-text" style="width: 70px;"></div><div class="skel skel-text" style="width: 55px; height: 8px;"></div></div>
-            </div>
-            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-              <div class="skel-badge" style="background: rgba(56,189,248,0.1);"></div>
-              <div class="skel-badge" style="width: 60px; background: rgba(251,191,36,0.1);"></div>
-            </div>
-            <div class="skel-bar" style="background: linear-gradient(90deg, rgba(56,189,248,0.3) 88%, rgba(255,255,255,0.04) 88%);"></div>
-          </div>
-          <div class="skel-card">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-              <div class="skel-avatar" style="background: linear-gradient(135deg, #34D399, #10B981);"></div>
-              <div><div class="skel skel-text" style="width: 85px;"></div><div class="skel skel-text" style="width: 40px; height: 8px;"></div></div>
-            </div>
-            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-              <div class="skel-badge" style="background: rgba(52,211,153,0.1);"></div>
-              <div class="skel-badge" style="width: 60px; background: rgba(192,132,252,0.1);"></div>
-            </div>
-            <div class="skel-bar" style="background: linear-gradient(90deg, rgba(52,211,153,0.3) 43%, rgba(255,255,255,0.04) 43%);"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="features" style="margin-top: 24px;">
     <div class="feature">
       <div class="label">Search &amp; Filter</div>
       <div class="desc">Instant search across name, city, and email fields.</div>
     </div>
     <div class="feature">
+      <div class="label">Propensity &amp; Segments</div>
+      <div class="desc">Each card displays a propensity gauge, buying stage, and segment distribution bar.</div>
+    </div>
+    <div class="feature">
       <div class="label">JSON Upload</div>
-      <div class="desc">Import customer profiles directly via JSON file upload.</div>
-    </div>
-    <div class="feature">
-      <div class="label">Segment Badges</div>
-      <div class="desc">Each card shows dominant segment and propensity score.</div>
-    </div>
-    <div class="feature">
-      <div class="label">Pagination</div>
-      <div class="desc">10 profiles per page with smooth animated transitions.</div>
+      <div class="desc">Bulk import customer profiles directly via JSON file upload.</div>
     </div>
   </div>
 </div>
 
-<!-- ━━━━━━━━━━━━━━ SLIDE 4: PROFILE DETAIL (QUICK) ━━━━━━━━━━━━━━ -->
+<!-- ━━━━━━━━━━━━━━ SLIDE 3: PROFILE DETAIL — QUICK VIEW ━━━━━━━━━━━━━━ -->
 <div class="page">
-  <div class="slide-number">03</div>
-  <h2>Profile Detail — Quick View</h2>
-  <p class="slide-desc">
-    Focused overview of a single customer: AI summary, demographics, propensity gauge, mobility needs, and engagement strategy.
+  <div class="slide-number fade-in">02</div>
+  <h2 class="fade-in delay-1">Profile — Quick View</h2>
+  <p class="slide-desc fade-in delay-1">
+    A focused overview of a single customer profile. AI-generated summary, demographics, propensity score, mobility needs, engagement strategy, and channel consent — all at a glance.
   </p>
 
-  <div class="screenshot-frame">
+  <div class="screenshot-frame fade-in delay-2">
     <div class="browser-bar">
       <span class="browser-dot r"></span>
       <span class="browser-dot y"></span>
       <span class="browser-dot g"></span>
-      <span class="browser-url">van.volvo.internal/profiles/u-001</span>
+      <span class="browser-url">freja-full-.../dashboard/profiles/freddy</span>
     </div>
-    <div class="mock-screen" style="background: var(--bg);">
-      <!-- Breadcrumb -->
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
-        <span style="font-size: 11px; color: var(--text-muted);">Profiles</span>
-        <span style="font-size: 11px; color: rgba(255,255,255,0.15);">/</span>
-        <span style="font-size: 11px; font-weight: 500; color: var(--text);">Jane Doe</span>
-        <span class="badge amber" style="margin-left: 4px;">
-          <span style="width: 5px; height: 5px; border-radius: 50%; background: #34D399;"></span>
-          Live
-        </span>
-        <div style="margin-left: auto; display: flex; gap: 2px; padding: 2px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.02);">
-          <div style="padding: 4px 12px; border-radius: 6px; font-size: 10px; font-weight: 500; background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.2);">Quick</div>
-          <div style="padding: 4px 12px; border-radius: 6px; font-size: 10px; color: var(--text-muted);">Advanced</div>
-        </div>
-      </div>
-      <!-- 2 col layout -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        <!-- Left -->
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <div class="skel-card">
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
-              <div style="width: 14px; height: 14px; border-radius: 4px; background: rgba(192,132,252,0.2);"></div>
-              <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #C084FC;">AI Summary</span>
-            </div>
-            <div class="skel skel-text" style="width: 100%;"></div>
-            <div class="skel skel-text" style="width: 85%;"></div>
-            <div class="skel skel-text" style="width: 70%;"></div>
-          </div>
-          <div class="skel-card">
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
-              <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Demographics</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-              <div><div class="skel skel-text" style="width: 40px; height: 7px;"></div><div class="skel skel-text" style="width: 70px;"></div></div>
-              <div><div class="skel skel-text" style="width: 30px; height: 7px;"></div><div class="skel skel-text" style="width: 60px;"></div></div>
-              <div><div class="skel skel-text" style="width: 35px; height: 7px;"></div><div class="skel skel-text" style="width: 90px;"></div></div>
-              <div><div class="skel skel-text" style="width: 50px; height: 7px;"></div><div class="skel skel-text" style="width: 55px;"></div></div>
-            </div>
-          </div>
-        </div>
-        <!-- Right -->
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <div class="skel-card" style="text-align: center;">
-            <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Propensity to Buy</span>
-            <div class="mock-gauge"></div>
-            <div style="font-size: 9px; color: #38BDF8; margin-top: 4px;">Consideration Stage</div>
-          </div>
-          <div class="skel-card">
-            <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Mobility Needs</span>
-            <div style="margin-top: 8px;">
-              <div class="skel skel-text" style="width: 100%;"></div>
-              <div class="skel skel-text" style="width: 80%;"></div>
-            </div>
-          </div>
-          <div class="skel-card">
-            <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Engagement Strategy</span>
-            <div style="margin-top: 8px;">
-              <div class="skel skel-text" style="width: 100%;"></div>
-              <div class="skel skel-text" style="width: 90%;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <img src="screenshots/quick-view.png" alt="Profile quick view">
   </div>
 
-  <div class="features" style="margin-top: 24px;">
+  <div class="features fade-in delay-3" style="margin-top: 24px;">
     <div class="feature">
       <div class="label">AI Summary</div>
-      <div class="desc">Gemini-generated profile characterisation from all data points.</div>
+      <div class="desc">Gemini-generated characterisation from conversation data and profile attributes.</div>
+    </div>
+    <div class="feature">
+      <div class="label">Propensity Gauge</div>
+      <div class="desc">Score with buying stage (awareness, consideration, decision) and action recommendation.</div>
     </div>
     <div class="feature">
       <div class="label">Test Drive Call</div>
-      <div class="desc">Trigger a mock AI call to a salesperson directly from the profile.</div>
+      <div class="desc">Trigger an AI voice call to a dealership salesperson directly from the profile.</div>
     </div>
     <div class="feature">
       <div class="label">Live State</div>
-      <div class="desc">Real-time updates when the customer is interacting with Vän.</div>
-    </div>
-    <div class="feature">
-      <div class="label">Quick / Advanced Toggle</div>
-      <div class="desc">Switch between a focused overview and full analytical dashboard.</div>
+      <div class="desc">Real-time badge when the customer is actively interacting with Vän.</div>
     </div>
   </div>
 </div>
 
-<!-- ━━━━━━━━━━━━━━ SLIDE 5: PROFILE DETAIL (ADVANCED) ━━━━━━━━━━━━━━ -->
+<!-- ━━━━━━━━━━━━━━ SLIDE 4: PROFILE DETAIL — ADVANCED VIEW ━━━━━━━━━━━━━━ -->
 <div class="page">
-  <div class="slide-number">04</div>
-  <h2>Profile Detail — Advanced View</h2>
-  <p class="slide-desc">
-    Full 3-column analytical dashboard: profile data, scores &amp; affinities, and AI-driven recommendations.
+  <div class="slide-number fade-in">03</div>
+  <h2 class="fade-in delay-1">Profile — Advanced View</h2>
+  <p class="slide-desc fade-in delay-1">
+    Full analytical dashboard with affinities radar, affinity constellation, segment ranking, and AI recommendations. Three-column layout for deep-dive analysis.
   </p>
 
-  <div class="screenshot-frame">
+  <div class="screenshot-frame fade-in delay-2">
     <div class="browser-bar">
       <span class="browser-dot r"></span>
       <span class="browser-dot y"></span>
       <span class="browser-dot g"></span>
-      <span class="browser-url">van.volvo.internal/profiles/u-001?view=advanced</span>
+      <span class="browser-url">freja-full-.../dashboard/profiles/freddy?view=advanced</span>
     </div>
-    <div class="mock-screen" style="background: var(--bg);">
-      <!-- Breadcrumb -->
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
-        <span style="font-size: 11px; color: var(--text-muted);">Profiles / Jane Doe</span>
-        <div style="margin-left: auto; display: flex; gap: 2px; padding: 2px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.02);">
-          <div style="padding: 4px 12px; border-radius: 6px; font-size: 10px; color: var(--text-muted);">Quick</div>
-          <div style="padding: 4px 12px; border-radius: 6px; font-size: 10px; font-weight: 500; background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.2);">Advanced</div>
-        </div>
-      </div>
-      <!-- 3 col -->
-      <div class="mock-3col">
-        <div>
-          <div class="mock-col-header">Profile Data</div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="skel-card" style="padding: 10px;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: #C084FC; margin-bottom: 6px;">AI Summary</div>
-              <div class="skel skel-text" style="width: 100%;"></div>
-              <div class="skel skel-text" style="width: 75%;"></div>
-            </div>
-            <div class="skel-card" style="padding: 10px;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Demographics</div>
-              <div class="skel skel-text" style="width: 90%;"></div>
-              <div class="skel skel-text" style="width: 60%;"></div>
-            </div>
-            <div class="skel-card" style="padding: 10px;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Psychographics</div>
-              <div class="skel skel-text" style="width: 80%;"></div>
-              <div class="skel skel-text" style="width: 65%;"></div>
-            </div>
-            <div class="skel-card" style="padding: 10px;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Segment Ranking</div>
-              <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-                <span style="font-size: 8px; padding: 2px 6px; border-radius: 100px; background: rgba(251,191,36,0.1); color: #FBBF24;">45%</span>
-                <span style="font-size: 8px; padding: 2px 6px; border-radius: 100px; background: rgba(192,132,252,0.1); color: #C084FC;">20%</span>
-                <span style="font-size: 8px; padding: 2px 6px; border-radius: 100px; background: rgba(56,189,248,0.1); color: #38BDF8;">20%</span>
-                <span style="font-size: 8px; padding: 2px 6px; border-radius: 100px; background: rgba(52,211,153,0.1); color: #34D399;">15%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="mock-col-header">Analytical Scores</div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="skel-card" style="padding: 10px; text-align: center;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 4px;">Propensity to Buy</div>
-              <div class="mock-gauge" style="width: 60px; height: 30px;"></div>
-            </div>
-            <div class="skel-card" style="padding: 10px;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Affinity Constellation</div>
-              <div style="width: 100%; height: 80px; border-radius: 8px; background: rgba(255,255,255,0.02); position: relative;">
-                <div style="position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--amber); top: 20%; left: 30%;"></div>
-                <div style="position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #38BDF8; top: 50%; left: 60%;"></div>
-                <div style="position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #C084FC; top: 35%; left: 75%;"></div>
-                <div style="position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #34D399; top: 65%; left: 40%;"></div>
-              </div>
-            </div>
-            <div class="skel-card" style="padding: 10px;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Affinities Radar</div>
-              <div class="skel" style="height: 70px;"></div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="mock-col-header">Recommendations</div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="skel-card" style="padding: 10px;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Engagement Strategy</div>
-              <div class="skel skel-text" style="width: 100%;"></div>
-              <div class="skel skel-text" style="width: 85%;"></div>
-            </div>
-            <div class="skel-card" style="padding: 10px;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Next Best Actions</div>
-              <div style="display: flex; flex-direction: column; gap: 4px;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <div style="width: 4px; height: 4px; border-radius: 50%; background: #34D399;"></div>
-                  <span style="font-size: 9px; color: var(--text);">Book Test Drive</span>
-                  <span style="font-size: 8px; color: var(--text-muted); margin-left: auto;">78%</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <div style="width: 4px; height: 4px; border-radius: 50%; background: #38BDF8;"></div>
-                  <span style="font-size: 9px; color: var(--text);">Complete Config</span>
-                  <span style="font-size: 8px; color: var(--text-muted); margin-left: auto;">65%</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <div style="width: 4px; height: 4px; border-radius: 50%; background: var(--amber);"></div>
-                  <span style="font-size: 9px; color: var(--text);">View Content</span>
-                  <span style="font-size: 8px; color: var(--text-muted); margin-left: auto;">55%</span>
-                </div>
-              </div>
-            </div>
-            <div class="skel-card" style="padding: 10px;">
-              <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Content Recs</div>
-              <div class="skel skel-text" style="width: 100%;"></div>
-              <div class="skel skel-text" style="width: 75%;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <img src="screenshots/advanced-view.png" alt="Profile advanced view">
   </div>
 
-  <div class="features" style="margin-top: 24px;">
+  <div class="features fade-in delay-3" style="margin-top: 24px;">
+    <div class="feature">
+      <div class="label">Affinities Radar</div>
+      <div class="desc">Average strength across powertrain, models, personal drivers, and product attributes.</div>
+    </div>
     <div class="feature">
       <div class="label">Affinity Constellation</div>
-      <div class="desc">Interactive visualisation of powertrain, model, and attribute affinities.</div>
+      <div class="desc">Interactive star-map of all affinities with strength-based sizing and tooltips.</div>
+    </div>
+    <div class="feature">
+      <div class="label">Segment Ranking</div>
+      <div class="desc">Full breakdown across all four segments with donut chart visualisation.</div>
     </div>
     <div class="feature">
       <div class="label">Next Best Actions</div>
-      <div class="desc">AI-ranked actions with likelihood scores (test drive, config, content).</div>
-    </div>
-    <div class="feature">
-      <div class="label">Segment Donut</div>
-      <div class="desc">Visual breakdown of segment ranking percentages.</div>
-    </div>
-    <div class="feature">
-      <div class="label">Channel Consent</div>
-      <div class="desc">Opt-in status for conversational, email, and SMS channels.</div>
+      <div class="desc">AI-ranked actions (test drive, configure, content) with likelihood percentages.</div>
     </div>
   </div>
 </div>
 
-<!-- ━━━━━━━━━━━━━━ SLIDE 6: OVERVIEW ━━━━━━━━━━━━━━ -->
+<!-- ━━━━━━━━━━━━━━ SLIDE 5: OVERVIEW ━━━━━━━━━━━━━━ -->
 <div class="page">
-  <div class="slide-number">05</div>
-  <h2>Overview Dashboard</h2>
-  <p class="slide-desc">
-    Aggregate analytics across all loaded profiles: total count, average propensity, stage distribution, and segment breakdown.
+  <div class="slide-number fade-in">04</div>
+  <h2 class="fade-in delay-1">Overview</h2>
+  <p class="slide-desc fade-in delay-1">
+    Aggregate dashboard combining all leads: total profiles, average propensity score, stage distribution, best communication channel, and segment breakdown with individual profile drill-down.
   </p>
 
-  <div class="screenshot-frame">
+  <div class="screenshot-frame fade-in delay-2">
     <div class="browser-bar">
       <span class="browser-dot r"></span>
       <span class="browser-dot y"></span>
       <span class="browser-dot g"></span>
-      <span class="browser-url">van.volvo.internal/overview</span>
+      <span class="browser-url">freja-full-.../dashboard/overview</span>
     </div>
-    <div class="mock-screen" style="background: var(--bg);">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <span style="font-size: 14px; font-weight: 600; color: var(--text);">Profiling &amp; Prediction Dashboard</span>
-        <div style="padding: 6px 14px; border-radius: 100px; background: var(--amber); font-size: 11px; font-weight: 600; color: black;">Upload JSON</div>
-      </div>
-      <!-- Stat tiles -->
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
-        <div class="mock-stat">
-          <div class="num" style="color: var(--amber);">24</div>
-          <div class="lbl">Profiles Loaded</div>
-        </div>
-        <div class="mock-stat">
-          <div class="num" style="color: #38BDF8;">67</div>
-          <div class="lbl">Avg Score</div>
-        </div>
-        <div class="mock-stat">
-          <div style="display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; padding: 6px 0;">
-            <span style="font-size: 9px; padding: 2px 8px; border-radius: 100px; background: rgba(168,85,247,0.1); color: #A855F7;">4 awareness</span>
-            <span style="font-size: 9px; padding: 2px 8px; border-radius: 100px; background: rgba(56,189,248,0.1); color: #38BDF8;">12 consideration</span>
-            <span style="font-size: 9px; padding: 2px 8px; border-radius: 100px; background: rgba(52,211,153,0.1); color: #34D399;">8 decision</span>
-          </div>
-          <div class="lbl">Stage Distribution</div>
-        </div>
-        <div class="mock-stat">
-          <div class="num" style="color: var(--amber); font-size: 16px;">Conversational</div>
-          <div class="lbl">Best Reach</div>
-        </div>
-      </div>
-      <!-- Segment distribution -->
-      <div class="skel-card" style="margin-top: 8px;">
-        <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px;">Segment Distribution</div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #FBBF24;"></span>
-            <span style="font-size: 10px; color: var(--text-muted); width: 140px;">Affluent Progressive</span>
-            <span style="font-size: 10px; font-weight: 500; color: var(--text); width: 16px;">10</span>
-            <div style="flex: 1; height: 6px; border-radius: 4px; background: rgba(255,255,255,0.04);"><div style="height: 100%; width: 42%; border-radius: 4px; background: rgba(251,191,36,0.5);"></div></div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #C084FC;"></span>
-            <span style="font-size: 10px; color: var(--text-muted); width: 140px;">Affluent Social Climber</span>
-            <span style="font-size: 10px; font-weight: 500; color: var(--text); width: 16px;">6</span>
-            <div style="flex: 1; height: 6px; border-radius: 4px; background: rgba(255,255,255,0.04);"><div style="height: 100%; width: 25%; border-radius: 4px; background: rgba(192,132,252,0.5);"></div></div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #38BDF8;"></span>
-            <span style="font-size: 10px; color: var(--text-muted); width: 140px;">Established Elite</span>
-            <span style="font-size: 10px; font-weight: 500; color: var(--text); width: 16px;">5</span>
-            <div style="flex: 1; height: 6px; border-radius: 4px; background: rgba(255,255,255,0.04);"><div style="height: 100%; width: 21%; border-radius: 4px; background: rgba(56,189,248,0.5);"></div></div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #34D399;"></span>
-            <span style="font-size: 10px; color: var(--text-muted); width: 140px;">Technocentric Trendsetter</span>
-            <span style="font-size: 10px; font-weight: 500; color: var(--text); width: 16px;">3</span>
-            <div style="flex: 1; height: 6px; border-radius: 4px; background: rgba(255,255,255,0.04);"><div style="height: 100%; width: 12%; border-radius: 4px; background: rgba(52,211,153,0.5);"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <img src="screenshots/overview.png" alt="Overview dashboard">
   </div>
 
-  <div class="screenshot-placeholder">
-    <div class="instruction">Replace with actual screenshot</div>
-    <div class="path">/overview</div>
+  <div class="features fade-in delay-3" style="margin-top: 24px;">
+    <div class="feature">
+      <div class="label">Aggregate Stats</div>
+      <div class="desc">Profiles loaded, average propensity score, stage distribution, and best reach channel.</div>
+    </div>
+    <div class="feature">
+      <div class="label">Segment Distribution</div>
+      <div class="desc">Visual bar chart of profile distribution across the four customer segments.</div>
+    </div>
+    <div class="feature">
+      <div class="label">Profile Roster</div>
+      <div class="desc">Quick-access list of all profiles with score, stage, segment, and consent indicators.</div>
+    </div>
+    <div class="feature">
+      <div class="label">JSON Template</div>
+      <div class="desc">Expandable reference template for the Van Profile JSON schema with copy-to-clipboard.</div>
+    </div>
   </div>
 </div>
 
-<!-- ━━━━━━━━━━━━━━ SLIDE 7: ACTIONS ━━━━━━━━━━━━━━ -->
+<!-- ━━━━━━━━━━━━━━ SLIDE 6: ACTIONS ━━━━━━━━━━━━━━ -->
 <div class="page">
-  <div class="slide-number">06</div>
-  <h2>Actions &amp; Campaign Engine</h2>
-  <p class="slide-desc">
-    AI-powered journey flow, segment-based campaign generation, and personalised email creation via Gemini.
+  <div class="slide-number fade-in">05</div>
+  <h2 class="fade-in delay-1">Actions &amp; Campaigns</h2>
+  <p class="slide-desc fade-in delay-1">
+    AI journey visualisation, segment-based campaign generation, and personalised email creation. Click any segment to trigger real-time tailored email campaigns based on each customer's conversation with the AI.
   </p>
 
-  <div class="screenshot-frame">
+  <div class="screenshot-frame fade-in delay-2">
     <div class="browser-bar">
       <span class="browser-dot r"></span>
       <span class="browser-dot y"></span>
       <span class="browser-dot g"></span>
-      <span class="browser-url">van.volvo.internal/actions</span>
+      <span class="browser-url">freja-full-.../dashboard/actions</span>
     </div>
-    <div class="mock-screen" style="background: var(--bg);">
-      <!-- Journey flow -->
-      <div class="skel-card" style="margin-bottom: 14px; padding: 16px;">
-        <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 14px;">Volvo AI Journey</div>
-        <div class="mock-journey">
-          <div class="mock-step"><div class="mock-step-icon"></div><div class="mock-step-num">1</div><div class="mock-step-label">Client talks to Volvo AI</div></div>
-          <div class="mock-connector"></div>
-          <div class="mock-step"><div class="mock-step-icon"></div><div class="mock-step-num">2</div><div class="mock-step-label">Profile Saved</div></div>
-          <div class="mock-connector"></div>
-          <div class="mock-step"><div class="mock-step-icon"></div><div class="mock-step-num">3</div><div class="mock-step-label">Engage by Segment</div></div>
-          <div class="mock-connector"></div>
-          <div class="mock-step"><div class="mock-step-icon"></div><div class="mock-step-num">4</div><div class="mock-step-label">AI Creates Email</div></div>
-          <div class="mock-connector"></div>
-          <div class="mock-step"><div class="mock-step-icon"></div><div class="mock-step-num">5</div><div class="mock-step-label">Track Conversion</div></div>
-        </div>
-      </div>
-      <!-- Segmentation -->
-      <div class="skel-card" style="margin-bottom: 14px; padding: 16px;">
-        <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px;">Segmentation</div>
-        <div class="mock-seg-grid">
-          <div class="mock-seg">
-            <div class="mock-seg-dot" style="background: #FBBF24;"></div>
-            <div class="mock-seg-num">10</div>
-            <div class="mock-seg-bar"><div class="mock-seg-fill" style="width: 42%; background: #FBBF24;"></div></div>
-            <div class="mock-seg-label">42% of total</div>
-          </div>
-          <div class="mock-seg">
-            <div class="mock-seg-dot" style="background: #C084FC;"></div>
-            <div class="mock-seg-num">6</div>
-            <div class="mock-seg-bar"><div class="mock-seg-fill" style="width: 25%; background: #C084FC;"></div></div>
-            <div class="mock-seg-label">25% of total</div>
-          </div>
-          <div class="mock-seg">
-            <div class="mock-seg-dot" style="background: #38BDF8;"></div>
-            <div class="mock-seg-num">5</div>
-            <div class="mock-seg-bar"><div class="mock-seg-fill" style="width: 21%; background: #38BDF8;"></div></div>
-            <div class="mock-seg-label">21% of total</div>
-          </div>
-          <div class="mock-seg">
-            <div class="mock-seg-dot" style="background: #34D399;"></div>
-            <div class="mock-seg-num">3</div>
-            <div class="mock-seg-bar"><div class="mock-seg-fill" style="width: 12%; background: #34D399;"></div></div>
-            <div class="mock-seg-label">12% of total</div>
-          </div>
-        </div>
-      </div>
-      <!-- Email gen -->
-      <div class="skel-card" style="padding: 16px;">
-        <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px;">Create Customised Content</div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="padding: 8px 20px; border-radius: 12px; background: var(--amber); font-size: 11px; font-weight: 600; color: black;">Generate Content</div>
-          <span style="font-size: 10px; color: var(--text-muted);">Personalised emails via Gemini AI</span>
-        </div>
-      </div>
-    </div>
+    <img src="screenshots/actions.png" alt="Actions and campaigns">
   </div>
 
-  <div class="features" style="margin-top: 24px;">
+  <div class="features fade-in delay-3" style="margin-top: 24px;">
     <div class="feature">
-      <div class="label">Journey Visualisation</div>
-      <div class="desc">Animated 5-step flow from conversation to conversion tracking.</div>
+      <div class="label">Volvo AI Journey</div>
+      <div class="desc">5-step animated flow: conversation, profile, segmentation, AI email, and conversion tracking.</div>
     </div>
     <div class="feature">
       <div class="label">Segment Campaigns</div>
-      <div class="desc">Click a segment to generate batch emails for all profiles in it.</div>
+      <div class="desc">Click a segment tile to generate batch personalised emails for all profiles in it.</div>
     </div>
     <div class="feature">
-      <div class="label">AI Email Generation</div>
-      <div class="desc">Gemini creates personalised Volvo-branded HTML emails per action.</div>
+      <div class="label">Gemini Email Generation</div>
+      <div class="desc">AI creates Volvo-branded HTML emails tailored to each customer's needs and conversation.</div>
     </div>
     <div class="feature">
       <div class="label">Campaign Summary</div>
-      <div class="desc">AI-generated overview of campaign reach and recommendations.</div>
+      <div class="desc">AI-generated overview of campaign reach, actions taken, and recommendations.</div>
     </div>
   </div>
 </div>
 
-<!-- ━━━━━━━━━━━━━━ SLIDE 8: MAP ━━━━━━━━━━━━━━ -->
+<!-- ━━━━━━━━━━━━━━ SLIDE 7: MAP ━━━━━━━━━━━━━━ -->
 <div class="page">
-  <div class="slide-number">07</div>
-  <h2>Map View</h2>
-  <p class="slide-desc">
-    Geographic visualisation of customer profiles with interactive markers, KPI strip, and test drive interest by location.
+  <div class="slide-number fade-in">06</div>
+  <h2 class="fade-in delay-1">Map</h2>
+  <p class="slide-desc fade-in delay-1">
+    Geographic representation of customer data. Interactive world map with profile markers, city clustering, hover tooltips, and test drive interest breakdown by location.
   </p>
 
-  <div class="screenshot-frame">
+  <div class="screenshot-frame fade-in delay-2">
     <div class="browser-bar">
       <span class="browser-dot r"></span>
       <span class="browser-dot y"></span>
       <span class="browser-dot g"></span>
-      <span class="browser-url">van.volvo.internal/map</span>
+      <span class="browser-url">freja-full-.../dashboard/map</span>
     </div>
-    <div class="mock-screen" style="background: var(--bg);">
-      <!-- KPI strip -->
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px;">
-        <div class="mock-stat" style="padding: 10px;">
-          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-            <div style="width: 20px; height: 20px; border-radius: 6px; background: rgba(56,189,248,0.12); display: flex; align-items: center; justify-content: center;">
-              <div style="width: 6px; height: 6px; border-radius: 2px; background: #38BDF8;"></div>
-            </div>
-            <span style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Total Profiles</span>
-          </div>
-          <div class="num" style="font-size: 22px;">24</div>
-        </div>
-        <div class="mock-stat" style="padding: 10px;">
-          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-            <div style="width: 20px; height: 20px; border-radius: 6px; background: var(--amber-dim);"></div>
-            <span style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Test Drive</span>
-          </div>
-          <div class="num" style="font-size: 22px;">18</div>
-        </div>
-        <div class="mock-stat" style="padding: 10px;">
-          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-            <div style="width: 20px; height: 20px; border-radius: 6px; background: rgba(52,211,153,0.12);"></div>
-            <span style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Cities</span>
-          </div>
-          <div class="num" style="font-size: 22px;">7</div>
-        </div>
-        <div class="mock-stat" style="padding: 10px;">
-          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-            <div style="width: 20px; height: 20px; border-radius: 6px; background: rgba(192,132,252,0.12);"></div>
-            <span style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Plotted</span>
-          </div>
-          <div class="num" style="font-size: 22px;">22</div>
-        </div>
-      </div>
-      <!-- Map -->
-      <div class="mock-map">
-        <!-- Simplified landmasses -->
-        <div class="map-landmass" style="top: 15%; left: 5%; width: 12%; height: 35%; border-radius: 4px 4px 2px 6px;"></div>
-        <div class="map-landmass" style="top: 20%; left: 8%; width: 6%; height: 25%;"></div>
-        <div class="map-landmass" style="top: 10%; left: 38%; width: 18%; height: 30%;"></div>
-        <div class="map-landmass" style="top: 30%; left: 36%; width: 12%; height: 30%;"></div>
-        <div class="map-landmass" style="top: 10%; left: 55%; width: 30%; height: 35%;"></div>
-        <div class="map-landmass" style="top: 55%; left: 60%; width: 15%; height: 25%;"></div>
-        <!-- Dots -->
-        <div class="map-dot" style="top: 22%; left: 45%;"></div>
-        <div class="map-dot" style="top: 18%; left: 48%;"></div>
-        <div class="map-dot" style="top: 25%; left: 42%;"></div>
-        <div class="map-dot" style="top: 30%; left: 50%;"></div>
-        <div class="map-dot" style="top: 20%; left: 10%;"></div>
-        <div class="map-dot" style="top: 35%; left: 65%;"></div>
-        <div class="map-dot" style="top: 15%; left: 52%;"></div>
-        <!-- Label -->
-        <div style="position: absolute; top: 8px; left: 12px; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted);">Profile Locations</div>
-      </div>
-    </div>
+    <img src="screenshots/map.png" alt="Map view">
   </div>
 
-  <div class="features" style="margin-top: 24px;">
+  <div class="features fade-in delay-3" style="margin-top: 24px;">
     <div class="feature">
-      <div class="label">Interactive World Map</div>
-      <div class="desc">Profiles plotted by city with pulsing markers and hover tooltips.</div>
-    </div>
-    <div class="feature">
-      <div class="label">City Clustering</div>
-      <div class="desc">Multiple profiles in one city cluster with count labels.</div>
+      <div class="label">Interactive Map</div>
+      <div class="desc">Profiles plotted by city with pulsing markers and hover tooltips showing names and scores.</div>
     </div>
     <div class="feature">
       <div class="label">KPI Strip</div>
-      <div class="desc">Total profiles, test drive interest, cities mapped, and plotted count.</div>
+      <div class="desc">Total profiles, test drive interest, cities mapped, and plotted count at a glance.</div>
+    </div>
+    <div class="feature">
+      <div class="label">City Clustering</div>
+      <div class="desc">Multiple profiles in the same city cluster with count labels and size scaling.</div>
     </div>
     <div class="feature">
       <div class="label">Test Drive by Location</div>
-      <div class="desc">Ranked list of cities by test drive interest for dealership planning.</div>
+      <div class="desc">Ranked list of cities by test drive interest — useful for dealership planning.</div>
     </div>
   </div>
 </div>
 
-<!-- ━━━━━━━━━━━━━━ SLIDE 9: CLOSING ━━━━━━━━━━━━━━ -->
+<!-- ━━━━━━━━━━━━━━ SLIDE 8: CLOSING ━━━━━━━━━━━━━━ -->
 <div class="page cover">
-  <div class="logo-mark"><span>V</span></div>
-  <h1 style="font-size: 36px;">Built for Personalisation<br>at Scale</h1>
-  <p class="subtitle" style="margin-top: 16px;">
-    Vän transforms raw customer data into actionable insights and AI-generated outreach — from profile to conversion.
+  <img class="vml-logo fade-in" src="https://usercontent.one/wp/www.casecompetition.com/wp-content/uploads/2025/02/vml-map-logo-black-300x107.png?media=1727716353" alt="VML Map">
+  <h1 class="fade-in delay-1" style="font-size: 36px;">From Conversation<br>to Conversion</h1>
+  <p class="subtitle fade-in delay-2" style="margin-top: 16px;">
+    Freja transforms real-time customer conversations into actionable profiles, AI-driven insights, and personalised campaign outreach — all in one dashboard.
   </p>
-  <div class="pills" style="margin-top: 28px;">
-    <span class="pill">Firestore + Real-Time Sync</span>
-    <span class="pill">Gemini AI Integration</span>
-    <span class="pill">Retell Voice AI Calls</span>
+  <div class="pills fade-in delay-2" style="margin-top: 28px;">
+    <span class="pill">Conversational AI Agent</span>
+    <span class="pill">Real-Time Firestore Sync</span>
+    <span class="pill">Gemini AI Enrichment</span>
+    <span class="pill">AI Voice Calls</span>
     <span class="pill">Cloud Run Deployment</span>
   </div>
-  <p class="meta" style="margin-top: 48px;">VML &times; Volvo Cars &middot; Freja Admin Dashboard &middot; 2026</p>
+  <p class="meta fade-in delay-3" style="margin-top: 48px;">VML Map &times; Volvo Cars &middot; Freja Dashboard &middot; 2026</p>
 </div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    }
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+</script>
 
 </body>
 </html>

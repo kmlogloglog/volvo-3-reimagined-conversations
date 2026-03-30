@@ -5,6 +5,8 @@ import type { AgentUserState } from '@/services/liveStateService';
 
 // In-memory cache keyed by userId so we don't re-call Gemini on re-renders
 const enrichmentCache = new Map<string, Partial<AIEnrichment>>();
+// Tracks what data the enrichment was based on, so we can invalidate on change
+const fingerprintCache = new Map<string, string>();
 
 interface AIEnrichment {
   segmentRanking: VanProfile['analyticalScores']['segmentRanking'];
@@ -157,9 +159,24 @@ export function useAIEnrichedProfile(
 
   useEffect(() => {
     if (!profile) return;
-    if (!profileNeedsEnrichment(profile)) return;
 
     const uid = profile.userId;
+
+    // Build a fingerprint from key data points so we can detect real changes
+    const profilingKeys = agentState?.profiling && typeof agentState.profiling === 'object'
+      ? Object.keys(agentState.profiling).length
+      : 0;
+    const fingerprint = `${profilingKeys}|${agentState?.car_config?.model ?? ''}|${profile.profileData.demographics.name ?? ''}|${profile.profileData.demographics.email ?? ''}`;
+
+    // Invalidate cache if the underlying data has changed since last enrichment
+    const prevFingerprint = fingerprintCache.get(uid);
+    if (prevFingerprint && prevFingerprint !== fingerprint) {
+      enrichmentCache.delete(uid);
+      fingerprintCache.delete(uid);
+      requestedRef.current = null;
+    }
+
+    if (!profileNeedsEnrichment(profile)) return;
 
     // Already cached
     const cached = enrichmentCache.get(uid);
@@ -176,6 +193,7 @@ export function useAIEnrichedProfile(
     geminiGenerateJSON<Partial<AIEnrichment>>(buildEnrichmentPrompt(profile, agentState))
       .then((result) => {
         enrichmentCache.set(uid, result);
+        fingerprintCache.set(uid, fingerprint);
         setEnrichment(result);
       })
       .catch((err) => {

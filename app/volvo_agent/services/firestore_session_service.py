@@ -147,6 +147,23 @@ class FirestoreSessionService(BaseSessionService):
     # Public API
     # ------------------------------------------------------------------
 
+    async def ensure_user_state_exists(self, user_id: str, app_name: str) -> None:
+        """Create a minimal user_state doc if it doesn't already exist.
+
+        This seeds the Firestore path ``users/{user_id}/user_state/{app_name}``
+        so that collection-group listeners on the dashboard can detect the user
+        immediately, before the agent has called any state-writing tools.
+        """
+        ref = self._get_user_state_ref(user_id, app_name)
+        doc = await ref.get()
+        if not doc.exists:
+            await ref.set({"state": {}})
+            logger.info(
+                "Seeded empty user_state for user_id=%s app_name=%s",
+                user_id,
+                app_name,
+            )
+
     async def create_session(
         self,
         *,

@@ -153,10 +153,20 @@
 
     // Tracks which mode ('audio' | 'chat') triggered the intro, to prevent duplicates.
     const introSentBy = ref<'audio' | 'chat' | null>(null);
+    const introSentThisConnection = ref(false);
+    const sessionNotified = ref(false);
 
     function sendIntro(mode: 'audio' | 'chat') {
+        if (introSentThisConnection.value) return;
         agent.sendMessage(AGENT.INTRODUCTION);
         introSentBy.value = mode;
+        introSentThisConnection.value = true;
+
+        // Notify the parent window (preview.html) that a session has started — once per session
+        if (!sessionNotified.value) {
+            sessionNotified.value = true;
+            window.parent.postMessage({ type: 'freja:session-started' }, '*');
+        }
     }
 
     const busConnection = useEventBus<ConnectionBusPayload>(BUS.AGENT_CONNECTION);
@@ -169,6 +179,7 @@
     watch(isConnected, (newVal) => {
         if (!newVal) {
             introSentBy.value = null;
+            introSentThisConnection.value = false;
             return;
         }
 
@@ -190,9 +201,6 @@
         }
 
         agent.stopAudio();
-        if (introSentBy.value === 'audio') {
-            introSentBy.value = null;
-        }
     }
 
     const isChatActive = ref(false);
@@ -201,9 +209,6 @@
         isChatActive.value = enabled;
 
         if (!enabled) {
-            if (introSentBy.value === 'chat') {
-                introSentBy.value = null;
-            }
             return;
         }
 

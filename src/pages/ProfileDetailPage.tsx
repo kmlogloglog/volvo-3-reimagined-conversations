@@ -106,12 +106,16 @@ export default function ProfileDetailPage(): React.JSX.Element {
   // Derive profile reactively from live state so demographics, propensity
   // scores, etc. update in real-time as the agent collects data.
   const rawProfile = useMemo(() => {
-    if (liveState && userId) {
+    // Prefer per-user live state when it has real data
+    if (liveState && userId && Object.keys(liveState).length > 0) {
       return mapAgentStateToProfile(userId, liveState);
     }
+    // Fall back to profiles store (updated by collectionGroup listener)
+    const storeProfile = profiles.find((p) => p.userId === userId);
+    if (storeProfile) return storeProfile;
+    // Last resort
     return useProfileStore.getState().selectedProfile
-      ?? profiles.find((p) => p.userId === userId)
-      ?? null;
+      ?? (userId ? mapAgentStateToProfile(userId, {}) : null);
   }, [liveState, userId, profiles]);
 
   const { enrichedProfile: profile, isEnriching } = useAIEnrichedProfile(rawProfile, liveState);

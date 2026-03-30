@@ -34,14 +34,14 @@ export const useLiveStateStore = create<LiveStateStore>()((set, get) => ({
   userId: null,
 
   startListening: (userId: string) => {
-    // Stop any existing listener first
+    // Skip if already listening to the same user
+    if (_unsubscribe && get().isListening && get().userId === userId) return;
+
+    // Stop any existing listener (different user or stale)
     if (_unsubscribe) {
       _unsubscribe();
       _unsubscribe = null;
     }
-
-    // Skip if already listening to the same user
-    if (get().isListening && get().userId === userId) return;
 
     set({ isListening: true, userId, state: null, lastUpdated: null });
 

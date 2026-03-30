@@ -179,8 +179,11 @@ async def websocket_endpoint(
     # Phase 3: Active Session (concurrent bidirectional communication)
     # ========================================
 
+    state_seeded = False
+
     async def upstream_task() -> None:
         """Receives messages from WebSocket and sends to LiveRequestQueue."""
+        nonlocal state_seeded
         logger.debug("upstream_task started")
         try:
             while True:
@@ -203,6 +206,15 @@ async def websocket_endpoint(
                 elif "text" in message:
                     text_data = message["text"]
                     logger.debug(f"Received text message: {text_data[:100]}...")
+
+                    # Seed user_state doc on the first text message so the
+                    # dashboard's collectionGroup listener detects this user
+                    if not state_seeded and hasattr(session_service, "ensure_user_state_exists"):
+                        state_seeded = True
+                        try:
+                            await session_service.ensure_user_state_exists(user_id, APP_NAME)
+                        except Exception as e:
+                            logger.warning(f"Failed to seed user_state: {e}")
 
                     json_message = json.loads(text_data)
 

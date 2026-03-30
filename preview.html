@@ -149,6 +149,7 @@
     <!-- Left: React dashboard (dominant) -->
     <div class="panel-dashboard">
       <iframe
+        id="dashboard-iframe"
         src="/dashboard/"
         title="Vän Analytics Dashboard"
       ></iframe>
@@ -165,7 +166,7 @@
       </div>
       <div class="chat-iframe-wrap">
         <iframe
-          src="/index.html"
+          id="nuxt-iframe"
           title="Freja Conversational UI"
           allow="microphone; autoplay; camera"
         ></iframe>
@@ -175,5 +176,26 @@
   </div>
 
   <a href="/preview/dev" class="dev-link">How it works</a>
+
+  <script>
+    // Generate a shared userId so both iframes reference the same user
+    const sharedUserId = crypto.randomUUID();
+
+    // Set the Nuxt iframe src with the shared user id
+    document.getElementById('nuxt-iframe').src = '/index.html?user=' + sharedUserId;
+
+    // Bridge postMessages from Nuxt iframe to the dashboard iframe
+    window.addEventListener('message', function (event) {
+      if (event.data && event.data.type === 'freja:session-started') {
+        var dashboardIframe = document.getElementById('dashboard-iframe');
+        if (dashboardIframe && dashboardIframe.contentWindow) {
+          dashboardIframe.contentWindow.postMessage(
+            { type: 'freja:session-started', userId: sharedUserId },
+            '*'
+          );
+        }
+      }
+    });
+  </script>
 </body>
 </html>
