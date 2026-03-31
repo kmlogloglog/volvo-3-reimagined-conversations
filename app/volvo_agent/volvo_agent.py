@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from google.adk.agents.llm_agent import LlmAgent
 
 from .callbacks import preload_memories
-from .config import PROMPT_V2
+from .config import PROMPT
 from .tools import (
     book_test_drive_tool,
     display_car_configuration_tool,
@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 volvo_agent = LlmAgent(
     model="gemini-live-2.5-flash-native-audio",
     name="volvo_agent",
-    instruction=PROMPT_V2,
+    instruction=PROMPT,
     before_agent_callback=preload_memories,
     tools=[
         find_retailer_tool,
