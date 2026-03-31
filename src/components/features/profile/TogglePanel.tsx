@@ -85,7 +85,7 @@ function DemographicsView({
 }: {
   readonly profileData: ProfileData;
 }): React.JSX.Element {
-  const { demographics, mobilityNeeds } = profileData;
+  const { demographics } = profileData;
 
   return (
     <div className="grid grid-cols-2 gap-3">
