@@ -84,7 +84,7 @@ export function mapAgentStateToProfile(
     userId,
     profileData: {
       demographics: {
-        name: state.full_name ?? userId,
+        name: state.full_name ?? null,
         email: state.email ?? null,
         city: cityValue,
         maritalStatus: null,
