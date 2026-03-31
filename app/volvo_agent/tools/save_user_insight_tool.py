@@ -33,7 +33,6 @@ async def save_user_insight(
             - driving_environment: Urban, suburban, rural, mixed, etc.
             - daily_car_use: Commute, school runs, errands, etc.
             - weekend_vibe: Adventure, relaxation, family outings, etc.
-            - current_car: The user's current car (make and model).
             - full_name: User's full name.
             - email: User's email address.
             - location: User's city or location.
