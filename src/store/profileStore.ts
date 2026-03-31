@@ -173,6 +173,24 @@ export const useProfileStore = create<ProfileStore>()((set, get) => ({
         const existing = updatedMap.get(userId);
         if (!existing || profileNeedsEnrichment(existing)) {
           updatedMap.set(userId, liveProfile);
+        } else {
+          // Even for enriched profiles, keep demographics in sync with live agent state
+          const merged = {
+            ...existing,
+            profileData: {
+              ...existing.profileData,
+              demographics: {
+                ...existing.profileData.demographics,
+                name: agentState.full_name ?? existing.profileData.demographics.name,
+                email: agentState.email ?? existing.profileData.demographics.email,
+                city: (typeof agentState.location === 'string'
+                  ? agentState.location
+                  : (agentState.location as { city?: string } | undefined)?.city)
+                  ?? existing.profileData.demographics.city,
+              },
+            },
+          };
+          updatedMap.set(userId, merged);
         }
       }
 
