@@ -77,7 +77,6 @@ export default function ProfileCard({
   const name = demographics.name ?? profile.userId;
   const avatarColor = getAvatarColor(demographics.name ?? profile.userId);
   const carOfInterest = analyticalScores.affinities.models[0]?.value ?? null;
-  const currentCar = profileData.mobilityNeeds.currentCar;
   const traits = meta.profileCharacteristics
     ? meta.profileCharacteristics.split(' · ').slice(0, 4)
     : [];
@@ -123,15 +122,8 @@ export default function ProfileCard({
               <span className="text-sm font-medium text-amber-400">Volvo {carOfInterest}</span>
             </div>
           )}
-          {/* Current car (non-Volvo) */}
-          {currentCar && (
-            <div className="flex items-center gap-2 mb-4 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/10">
-              <Icon icon="solar:steering-wheel-linear" width={14} className="text-neutral-400 shrink-0" />
-              <span className="text-xs text-neutral-400">Current: {currentCar}</span>
-            </div>
-          )}
           {/* spacing when only car of interest shown */}
-          {carOfInterest && !currentCar && <div className="mb-2" />}
+          {carOfInterest && <div className="mb-2" />}
 
           {/* Propensity donut — always shown */}
           <div className="flex items-center justify-center mb-4">

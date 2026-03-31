@@ -51,7 +51,6 @@ export default function MobilityNeedsCard({
     weekendItems ||
     mobilityNeeds.passengerCount !== null ||
     mobilityNeeds.cargoNeeds ||
-    mobilityNeeds.currentCar ||
     mobilityNeeds.numberOfCars !== null ||
     mobilityNeeds.carRenewal ||
     mobilityNeeds.reasonForBuying;
@@ -77,9 +76,6 @@ export default function MobilityNeedsCard({
             label="Cargo Needs"
             value={CARGO_LABELS[mobilityNeeds.cargoNeeds] ?? mobilityNeeds.cargoNeeds}
           />
-        )}
-        {mobilityNeeds.currentCar && (
-          <DataRow label="Current Car" value={mobilityNeeds.currentCar} />
         )}
         {mobilityNeeds.numberOfCars !== null && (
           <DataRow label="Number of Cars" value={String(mobilityNeeds.numberOfCars)} />

@@ -117,9 +117,6 @@ function DemographicsView({
         </span>
       </IconValue>
 
-      <IconValue icon="solar:car-linear">
-        {mobilityNeeds.currentCar ?? <UnknownValue />}
-      </IconValue>
     </div>
   );
 }

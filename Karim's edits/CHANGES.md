@@ -2,6 +2,35 @@
 
 ---
 
+## 31/03/2026 — Align Freja prompt with dev branch + remove current car from dashboard
+
+### What changed
+
+**Prompt alignment:** Replaced the Freja prompt flow in `karim-edits` to match the `dev` branch's `PROMPT_V2` exactly. The agent conversational flow now matches the deployed preview.
+
+Key prompt changes:
+- **Initial Greeting** reverted to dev's single "Greet and Set Context" step (removed the "Offer a Choice" step)
+- **Phase 1 Discovery** reverted to dev's "Set the Stage" + "Gather Profiling Data Points" (removed "Save Name and Begin Discovery" step with explicit current_car collection)
+- Removed `current_car` from the prompt's `USER_CONTEXT` section
+- All other phases (2–5), tone/style, constraints, tools, and few-shot examples remain identical to dev
+
+**Dashboard — removed "Current Car" from UI:**
+- `ProfileCard.tsx`: Removed current car badge display
+- `MobilityNeedsCard.tsx`: Removed "Current Car" data row
+- `TogglePanel.tsx`: Removed current car icon/value
+
+**Backend data model kept intact:** The `current_car` category in `save_user_insight_tool`, `InsightCategory` enum, and Firestore storage remain — the field can still be stored if gathered during conversation, it just isn't shown on the dashboard or actively prompted for.
+
+### Files modified
+| File | Change |
+|------|--------|
+| `app/volvo_agent/config/prompts.py` | Replaced Initial Greeting + Phase 1 taskflow to match dev's PROMPT_V2; removed `current_car` from USER_CONTEXT |
+| `src/components/features/ProfileCard.tsx` | Removed current car badge section |
+| `src/components/features/profile/MobilityNeedsCard.tsx` | Removed current car data row and hasData check |
+| `src/components/features/profile/TogglePanel.tsx` | Removed current car icon/value |
+
+---
+
 ## 25/03/2026 — Auto-enrich sparse agent profiles + persist to Firestore
 
 ### What changed
