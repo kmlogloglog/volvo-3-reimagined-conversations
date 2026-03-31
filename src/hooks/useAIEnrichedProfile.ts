@@ -40,7 +40,7 @@ function buildEnrichmentPrompt(
   profile: VanProfileWithId,
   agentState: AgentUserState | null,
 ): string {
-  const name = profile.profileData.demographics.name ?? profile.userId;
+  const name = profile.profileData.demographics.name ?? 'Unknown';
   const city = profile.profileData.demographics.city ?? '';
   const email = profile.profileData.demographics.email ?? '';
   const carModel = agentState?.car_config?.model ?? profile.profileData.mobilityNeeds.currentCar ?? '';

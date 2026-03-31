@@ -309,7 +309,7 @@ export default function MapPage(): React.JSX.Element {
                               style={{ backgroundColor: getPropensityColor(propensity) }}
                             />
                             <span className="text-[11px] truncate" style={{ color: 'var(--van-text-primary)' }}>
-                              {p.profileData.demographics.name ?? p.userId}
+                              {p.profileData.demographics.name ?? 'Unknown'}
                             </span>
                             {topModel && (
                               <span className="text-[10px] shrink-0" style={{ color: 'var(--van-text-muted)' }}>

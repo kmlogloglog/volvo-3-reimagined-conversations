@@ -740,7 +740,7 @@ export default function ActionsPage(): React.JSX.Element {
             {profiles.length === 1 && profiles[0] ? (
               <div className="h-9 px-3 rounded-xl border border-white/10 bg-white/[0.03] flex items-center">
                 <span className="text-sm text-white">
-                  {profiles[0].profileData.demographics.name ?? profiles[0].userId}
+                  {profiles[0].profileData.demographics.name ?? 'Unknown'}
                 </span>
               </div>
             ) : (
@@ -751,7 +751,7 @@ export default function ActionsPage(): React.JSX.Element {
               >
                 {profiles.map((p) => (
                   <option key={p.userId} value={p.userId}>
-                    {p.profileData.demographics.name ?? p.userId}
+                    {p.profileData.demographics.name ?? 'Unknown'}
                   </option>
                 ))}
               </select>

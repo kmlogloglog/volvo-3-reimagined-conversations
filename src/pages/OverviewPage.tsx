@@ -345,7 +345,7 @@ export default function OverviewPage(): React.JSX.Element {
                             {/* Name + city */}
                             <div className="min-w-0 w-36 shrink-0">
                               <p className="text-sm font-medium text-white truncate leading-snug">
-                                {p.profileData.demographics.name ?? p.userId}
+                                {p.profileData.demographics.name ?? 'Unknown'}
                               </p>
                               {p.profileData.demographics.city !== null && (
                                 <p className="text-xs text-neutral-500 truncate leading-snug">

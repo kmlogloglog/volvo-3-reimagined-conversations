@@ -320,7 +320,7 @@ function buildEnrichmentPrompt(
   agentState: AgentUserState | null,
   conversationSummary: string,
 ): string {
-  const name = profile.profileData.demographics.name ?? profile.userId;
+  const name = profile.profileData.demographics.name ?? 'Unknown';
   const city = profile.profileData.demographics.city ?? '';
   const email = profile.profileData.demographics.email ?? '';
   const carModel = agentState?.car_config?.model ?? '';

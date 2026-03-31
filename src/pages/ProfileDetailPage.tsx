@@ -178,7 +178,7 @@ export default function ProfileDetailPage(): React.JSX.Element {
         </Link>
         <span className="text-neutral-700 text-xs">/</span>
         <span className="text-xs text-white font-medium">
-          {profile.profileData.demographics.name ?? userId}
+          {profile.profileData.demographics.name ?? 'Unknown'}
         </span>
         {isLive && (
           <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">

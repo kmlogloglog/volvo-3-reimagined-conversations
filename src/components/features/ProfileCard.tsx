@@ -74,7 +74,7 @@ export default function ProfileCard({
   const { demographics } = profileData;
   const { segmentRanking, propensityToBuy } = analyticalScores;
 
-  const name = demographics.name ?? profile.userId;
+  const name = demographics.name ?? 'Unknown';
   const avatarColor = getAvatarColor(demographics.name ?? profile.userId);
   const carOfInterest = analyticalScores.affinities.models[0]?.value ?? null;
   const traits = meta.profileCharacteristics
@@ -106,7 +106,7 @@ export default function ProfileCard({
           {/* Header */}
           <div className="flex items-center gap-3 mb-4">
             <div className={`w-12 h-12 rounded-full ${avatarColor.bg} ${avatarColor.text} ${avatarColor.border} border flex items-center justify-center font-medium text-sm shrink-0`}>
-              {getInitials(demographics.name ?? profile.userId)}
+              {getInitials(demographics.name)}
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-base text-white font-medium truncate">{name}</div>
