@@ -28,8 +28,20 @@ import type { AgentUserState } from '@/services/liveStateService';
 
 const USERS_COLLECTION = 'users';
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function sanitizeName(name: string | null | undefined): string | null {
+  if (!name || UUID_RE.test(name)) return null;
+  return name;
+}
+
 function castToProfile(data: DocumentData): VanProfile {
-  return data as unknown as VanProfile;
+  const profile = data as unknown as VanProfile;
+  if (profile.profileData?.demographics) {
+    (profile.profileData.demographics as { name: string | null }).name =
+      sanitizeName(profile.profileData.demographics.name);
+  }
+  return profile;
 }
 
 /**
@@ -84,7 +96,7 @@ export function mapAgentStateToProfile(
     userId,
     profileData: {
       demographics: {
-        name: state.full_name ?? null,
+        name: sanitizeName(state.full_name ?? null),
         email: state.email ?? null,
         city: cityValue,
         maritalStatus: null,
