@@ -30,4 +30,5 @@ export interface AgentState {
     animationId: number | null;
     startingAudio: boolean;
     micPermissionGranted: boolean;
+    muted: boolean;
 }

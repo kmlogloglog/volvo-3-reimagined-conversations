@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vän — Analytics Dashboard</title>
+  <title>Freja by Volvo</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -12,17 +12,52 @@
       width: 100%;
       background: #0a0a0b;
       overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
+    /* ════════════════════════════════════════
+       SPLASH OVERLAY
+       ════════════════════════════════════════ */
+    #splash-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #0a0a0b;
+    }
+
+    #splash-overlay img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform-origin: 50.5% 65.2%;
+      transform: scale(1);
+      transition: transform 1.8s cubic-bezier(0.25, 0, 0.15, 1);
+    }
+
+    /* Step 1: zoom into the phone */
+    #splash-overlay.zoomed img {
+      transform: scale(1.5);
+    }
+
+    /* Step 3: quickly fade the whole image to black */
+    #splash-overlay.fading {
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    #splash-overlay.hidden { display: none; }
+
+    /* ════════════════════════════════════════
+       LAYOUT
+       ════════════════════════════════════════ */
     .layout {
-      display: grid;
-      /* Dashboard takes ~72%, conversational panel ~28% */
-      grid-template-columns: 1fr 380px;
+      position: relative;
       height: 100vh;
       width: 100vw;
+      display: grid;
+      grid-template-columns: 1fr 380px;
     }
 
-    /* ── Dashboard (main) ── */
     .panel-dashboard {
       position: relative;
       height: 100vh;
@@ -37,7 +72,6 @@
       background: #0f0f10;
     }
 
-    /* ── Conversational panel (right) ── */
     .panel-chat {
       position: relative;
       height: 100vh;
@@ -48,7 +82,6 @@
       flex-direction: column;
     }
 
-    /* Header bar */
     .chat-header {
       flex-shrink: 0;
       display: flex;
@@ -59,6 +92,12 @@
       background: rgba(0,0,0,0.6);
       backdrop-filter: blur(8px);
       z-index: 10;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .chat-header-title {
@@ -91,10 +130,9 @@
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50%       { opacity: 0.25; }
+      50%      { opacity: 0.25; }
     }
 
-    /* iframe fills the rest of the chat panel */
     .chat-iframe-wrap {
       flex: 1;
       overflow: hidden;
@@ -106,17 +144,6 @@
       height: 100%;
       border: none;
       display: block;
-    }
-
-    /* Divider drag hint */
-    .divider {
-      position: absolute;
-      top: 0;
-      left: -1px;
-      width: 1px;
-      height: 100%;
-      background: rgba(255,255,255,0.07);
-      cursor: col-resize;
     }
 
     .dev-link {
@@ -141,59 +168,374 @@
       color: rgba(255,255,255,0.6);
       border-color: rgba(255,255,255,0.15);
     }
+
+    /* ════════════════════════════════════════
+       MUTE BUTTON
+       ════════════════════════════════════════ */
+    .mute-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 50;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .mute-btn:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.8);
+    }
+
+    .mute-btn.is-muted {
+      background: rgba(239,68,68,0.2);
+      border-color: rgba(239,68,68,0.4);
+      color: #ef4444;
+    }
+
+    .mute-btn.is-muted:hover {
+      background: rgba(239,68,68,0.3);
+      border-color: rgba(239,68,68,0.6);
+    }
+
+    .mute-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* ════════════════════════════════════════
+       PHASE: SPLASH — everything hidden, image showing
+       ════════════════════════════════════════ */
+    body.phase-splash .layout { display: block; }
+    body.phase-splash .panel-dashboard { opacity: 0; pointer-events: none; position: absolute; }
+    body.phase-splash .panel-chat { opacity: 0; pointer-events: none; position: fixed; }
+    body.phase-splash .chat-header { opacity: 0; height: 0; padding: 0; border: none; overflow: hidden; }
+    body.phase-splash .mute-btn { opacity: 0; pointer-events: none; }
+    body.phase-splash .dev-link { opacity: 0; pointer-events: none; }
+    body.phase-splash .show-dashboard-btn { opacity: 0; pointer-events: none; }
+
+    /* ════════════════════════════════════════
+       PHASE: PHONE-OVERLAY — iframe on the zoomed phone screen
+       ════════════════════════════════════════
+       Phone screen at scale(1.5), origin 50.5% 65.2%:
+       left: 43.9vw  top: 44.1vh  width: 13.4vw  height: 42.4vh
+       ════════════════════════════════════════ */
+    body.phase-phone .layout { display: block; }
+    body.phase-phone .panel-dashboard { opacity: 0; pointer-events: none; position: absolute; }
+
+    body.phase-phone .panel-chat {
+      position: fixed;
+      z-index: 1001;
+      left: 43.9vw;
+      top: 44.1vh;
+      width: 13.4vw;
+      height: 42.4vh;
+      border-radius: 10px;
+      border: none;
+      overflow: hidden;
+      opacity: 0.5;
+      pointer-events: auto;
+      animation: phone-fade-in 0.3s ease both;
+    }
+
+    @keyframes phone-fade-in {
+      from { opacity: 0; }
+      to   { opacity: 0.5; }
+    }
+
+    body.phase-phone .chat-header { opacity: 0; height: 0; padding: 0; border: none; overflow: hidden; }
+    body.phase-phone .chat-iframe-wrap { border-radius: 10px; }
+    body.phase-phone .chat-iframe-wrap iframe { border-radius: 10px; }
+    body.phase-phone .mute-btn { opacity: 0; pointer-events: none; }
+    body.phase-phone .dev-link { opacity: 0; pointer-events: none; }
+    body.phase-phone .show-dashboard-btn { opacity: 0; pointer-events: none; }
+
+    /* ════════════════════════════════════════
+       PHASE: FOCUSED — chat grows to centered panel
+       ════════════════════════════════════════ */
+    body.phase-focused .layout { display: block; background: #0a0a0b; }
+    body.phase-focused .panel-dashboard { opacity: 0; filter: blur(20px); position: absolute; inset: 0; pointer-events: none; }
+
+    body.phase-focused .panel-chat {
+      position: fixed;
+      z-index: 10;
+      left: calc(50vw - 240px);
+      top: calc(50vh - 350px);
+      width: 480px;
+      height: 700px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 0 80px rgba(0,0,0,0.6), 0 0 200px rgba(99,102,241,0.06);
+      overflow: hidden;
+    }
+
+    body.phase-focused .chat-header { opacity: 0; height: 0; padding: 0; border: none; overflow: hidden; }
+    body.phase-focused .chat-iframe-wrap { border-radius: 20px; }
+    body.phase-focused .chat-iframe-wrap iframe { border-radius: 20px; }
+
+    body.phase-focused .mute-btn {
+      opacity: 1; pointer-events: auto;
+      top: 16px; right: 16px;
+    }
+
+    body.phase-focused .dev-link { opacity: 0; pointer-events: none; }
+
+    /* ════════════════════════════════════════
+       SHOW DASHBOARD BUTTON
+       ════════════════════════════════════════ */
+    .show-dashboard-btn {
+      position: fixed;
+      bottom: 5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50px;
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      color: rgba(255,255,255,0.45);
+      font-family: sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .show-dashboard-btn svg {
+      width: 15px; height: 15px; fill: currentColor;
+      transition: transform 0.3s ease;
+    }
+
+    .show-dashboard-btn:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.75);
+    }
+
+    .show-dashboard-btn:hover svg { transform: translateX(3px); }
+
+    body.phase-focused .show-dashboard-btn {
+      opacity: 1; pointer-events: auto;
+      animation: fade-in-up 0.5s ease 0.8s both;
+    }
+
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    body.phase-dashboard .show-dashboard-btn { opacity: 0; pointer-events: none; }
+
+    /* ════════════════════════════════════════
+       PHASE: DASHBOARD — standard split layout
+       ════════════════════════════════════════ */
+    body.phase-dashboard .layout { display: grid; grid-template-columns: 1fr 380px; }
+
+    body.phase-dashboard .panel-dashboard {
+      opacity: 1; filter: none; position: relative;
+      transition: opacity 1s ease, filter 1s ease;
+    }
+
+    body.phase-dashboard .panel-chat {
+      position: relative; top: auto; left: auto;
+      width: auto; height: 100vh;
+      border-radius: 0; border: none;
+      border-left: 1px solid rgba(255,255,255,0.07);
+      box-shadow: none;
+      transition: all 1s ease;
+    }
+
+    body.phase-dashboard .chat-header {
+      opacity: 1; height: auto; padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      transition: opacity 0.6s ease 0.4s;
+    }
+
+    body.phase-dashboard .chat-iframe-wrap,
+    body.phase-dashboard .chat-iframe-wrap iframe { border-radius: 0; }
+
+    body.phase-dashboard .dev-link {
+      opacity: 1; pointer-events: auto;
+      transition: opacity 0.6s ease 0.8s;
+    }
+
+    /* ════════════════════════════════════════
+       TRANSITION HELPER — smooth property animations
+       ════════════════════════════════════════ */
+    body.animate-chat .panel-chat {
+      transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    body.animate-chat .panel-dashboard {
+      transition: opacity 1s ease, filter 1s ease;
+    }
   </style>
 </head>
-<body>
-  <div class="layout">
+<body class="phase-splash">
 
-    <!-- Left: React dashboard (dominant) -->
+  <div id="splash-overlay">
+    <img src="/static/meet-freja.png" alt="Meet Freja" />
+  </div>
+
+  <div class="layout">
     <div class="panel-dashboard">
-      <iframe
-        id="dashboard-iframe"
-        src="/dashboard/"
-        title="Vän Analytics Dashboard"
-      ></iframe>
+      <iframe id="dashboard-iframe" src="/dashboard/" title="Freja Analytics Dashboard"></iframe>
     </div>
 
-    <!-- Right: Nuxt conversational UI (compact panel) -->
     <div class="panel-chat">
       <div class="chat-header">
-        <span class="chat-header-title">Freja — Voice &amp; Chat</span>
-        <span class="live-badge">
-          <span class="live-dot"></span>
-          Live
-        </span>
+        <div class="chat-header-left">
+          <span class="chat-header-title">Freja &mdash; Voice &amp; Chat</span>
+        </div>
+        <span class="live-badge"><span class="live-dot"></span> Live</span>
       </div>
       <div class="chat-iframe-wrap">
-        <iframe
-          id="nuxt-iframe"
-          title="Freja Conversational UI"
-          allow="microphone; autoplay; camera"
-        ></iframe>
+        <iframe id="nuxt-iframe" title="Freja Conversational UI" allow="microphone; autoplay; camera"></iframe>
+        <button id="mute-btn" class="mute-btn" title="Mute microphone">
+          <svg id="mic-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+          <svg id="mic-off-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+            <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/>
+          </svg>
+        </button>
       </div>
     </div>
-
   </div>
+
+  <button id="show-dashboard-btn" class="show-dashboard-btn">
+    Show Dashboard
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+    </svg>
+  </button>
 
   <a href="/preview/dev" class="dev-link">How it works</a>
 
   <script>
-    // Generate a shared userId so both iframes reference the same user
-    const sharedUserId = crypto.randomUUID();
-
-    // Set the Nuxt iframe src with the shared user id
+    // ── Shared user id ──
+    var sharedUserId = crypto.randomUUID();
     document.getElementById('nuxt-iframe').src = '/index.html?user=' + sharedUserId;
 
-    // Bridge postMessages from Nuxt iframe to the dashboard iframe
+    var splash = document.getElementById('splash-overlay');
+    var body   = document.body;
+
+    // ╔═══════════════════════════════════════════╗
+    // ║  SEQUENCE:                                ║
+    // ║  0s      — Show image                     ║
+    // ║  2s      — Zoom toward phone (1.8s ease)  ║
+    // ║  3.8s    — Zoom done. Overlay iframe @50% ║
+    // ║           + immediately fade image         ║
+    // ║  4.2s    — Image gone                     ║
+    // ║  4.3s    — Grow iframe to centered panel  ║
+    // ╚═══════════════════════════════════════════╝
+
+    // Step 1: Zoom into the phone
+    setTimeout(function () {
+      splash.classList.add('zoomed');
+    }, 2000);
+
+    // Step 2: Zoom done — show iframe on phone + immediately start fading image
+    setTimeout(function () {
+      body.classList.remove('phase-splash');
+      body.classList.add('phase-phone');
+      splash.classList.add('fading');
+    }, 3800);
+
+    // Step 3: Image gone — grow iframe from phone size to centered
+    setTimeout(function () {
+      splash.classList.add('hidden');
+      body.classList.add('animate-chat');
+      void document.querySelector('.panel-chat').offsetHeight;
+
+      body.classList.remove('phase-phone');
+      body.classList.add('phase-focused');
+
+      setTimeout(function () {
+        body.classList.remove('animate-chat');
+      }, 900);
+    }, 4300);
+
+    // ── FOCUSED → DASHBOARD ──
+    var dashboardRevealed = false;
+
+    function revealDashboard() {
+      if (dashboardRevealed) return;
+      dashboardRevealed = true;
+
+      body.classList.add('animate-chat');
+      void document.querySelector('.panel-chat').offsetHeight;
+
+      body.classList.remove('phase-focused');
+      body.classList.add('phase-dashboard');
+
+      setTimeout(function () {
+        body.classList.remove('animate-chat');
+      }, 1200);
+    }
+
+    document.getElementById('show-dashboard-btn').addEventListener('click', revealDashboard);
+
+    // ── Mute button ──
+    var muteBtn    = document.getElementById('mute-btn');
+    var micIcon    = document.getElementById('mic-icon');
+    var micOffIcon = document.getElementById('mic-off-icon');
+    var isMuted    = false;
+
+    muteBtn.addEventListener('click', function () {
+      isMuted = !isMuted;
+      muteBtn.classList.toggle('is-muted', isMuted);
+      micIcon.style.display    = isMuted ? 'none'  : 'block';
+      micOffIcon.style.display = isMuted ? 'block' : 'none';
+      muteBtn.title = isMuted ? 'Unmute microphone' : 'Mute microphone';
+
+      var nuxtIframe = document.getElementById('nuxt-iframe');
+      if (nuxtIframe && nuxtIframe.contentWindow) {
+        nuxtIframe.contentWindow.postMessage({ type: 'freja:toggle-mute' }, '*');
+      }
+    });
+
+    // ── PostMessage bridge ──
     window.addEventListener('message', function (event) {
-      if (event.data && event.data.type === 'freja:session-started') {
+      if (!event.data || !event.data.type) return;
+
+      if (event.data.type === 'freja:session-started') {
         var dashboardIframe = document.getElementById('dashboard-iframe');
         if (dashboardIframe && dashboardIframe.contentWindow) {
           dashboardIframe.contentWindow.postMessage(
-            { type: 'freja:session-started', userId: sharedUserId },
-            '*'
+            { type: 'freja:session-started', userId: sharedUserId }, '*'
           );
         }
+      }
+
+      if (event.data.type === 'freja:name-collected') {
+        revealDashboard();
+      }
+
+      if (event.data.type === 'freja:mute-changed') {
+        isMuted = !!event.data.muted;
+        muteBtn.classList.toggle('is-muted', isMuted);
+        micIcon.style.display    = isMuted ? 'none'  : 'block';
+        micOffIcon.style.display = isMuted ? 'block' : 'none';
+        muteBtn.title = isMuted ? 'Unmute microphone' : 'Mute microphone';
       }
     });
   </script>

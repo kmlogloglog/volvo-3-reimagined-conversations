@@ -71,7 +71,7 @@ export default function Sidebar({ className }: SidebarProps): React.JSX.Element 
   return (
     <aside
       className={cn(
-        'van-sidebar-bg hidden md:flex w-64 flex-col border-r backdrop-blur-xl z-20',
+        'van-sidebar-bg hidden md:flex w-48 flex-col border-r backdrop-blur-xl z-20',
         className,
       )}
     >
@@ -84,7 +84,7 @@ export default function Sidebar({ className }: SidebarProps): React.JSX.Element 
           className="text-sm font-medium tracking-tight"
           style={{ color: 'var(--van-text-primary)' }}
         >
-          Freja — Admin Dashboard
+          Freja — Admin
         </span>
       </div>
 

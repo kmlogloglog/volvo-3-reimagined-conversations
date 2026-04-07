@@ -134,6 +134,13 @@ export default makeActions({
 
                 const uiAction = part.functionResponse?.response?.ui_action;
 
+                if (uiAction?.action === 'name_collected') {
+                    window.parent.postMessage({
+                        type: 'freja:name-collected',
+                        name: uiAction.data?.name,
+                    }, '*');
+                }
+
                 if (uiAction?.action === AGENT.RESPONSE_ACTION.DISPLAY_COMPONENT) {
                     const functionName = part.functionResponse?.name;
                     const componentName = uiAction.component_name;
@@ -226,6 +233,15 @@ export default makeActions({
         if (event.interrupted) {
             this.speaking = false;
             this.audioPlayerNode?.port.postMessage({ command: 'clear' });
+        }
+
+        // Detect name collected via state delta (reliable in live audio mode)
+        const fullName = event.actions?.stateDelta?.['user:full_name'];
+        if (fullName && typeof fullName === 'string') {
+            window.parent.postMessage({
+                type: 'freja:name-collected',
+                name: fullName,
+            }, '*');
         }
     },
 
@@ -474,6 +490,7 @@ export default makeActions({
                             log.warn('AUDIO', 'Chunk skipped — connected:', this.connected, 'readyState:', this.websocket?.readyState);
                             return;
                         }
+                        if (this.muted) return;
                         const int16Data = this.float32ToInt16(event.data);
                         this.websocket.send(int16Data.buffer);
                     };
@@ -531,6 +548,15 @@ export default makeActions({
 
     clearMessages(): void {
         this.conversation.length = 0;
+    },
+
+    toggleMute(): void {
+        this.muted = !this.muted;
+        log.info('AUDIO', this.muted ? 'Mic muted' : 'Mic unmuted');
+        window.parent.postMessage({
+            type: 'freja:mute-changed',
+            muted: this.muted,
+        }, '*');
     },
 
     set_userName(name: string): void {

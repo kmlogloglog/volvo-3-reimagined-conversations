@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import GlassCard from '@/components/ui/GlassCard';
 import GlassPanel from '@/components/ui/GlassPanel';
@@ -24,6 +24,7 @@ import { useProfileStore } from '@/store/profileStore';
 import { useLiveStateStore } from '@/store/liveStateStore';
 import { mapAgentStateToProfile } from '@/services/profileService';
 import AISummaryCard from '@/components/features/profile/AISummaryCard';
+import TestDriveFollowUp from '@/components/features/profile/TestDriveFollowUp';
 import { useAIEnrichedProfile } from '@/hooks/useAIEnrichedProfile';
 
 function StaggerCard({ children, index }: { children: React.ReactNode; index: number }): React.JSX.Element {
@@ -68,6 +69,7 @@ export default function ProfileDetailPage(): React.JSX.Element {
   const [callName, setCallName] = useState('');
   const [isCallingRetell, setIsCallingRetell] = useState(false);
   const [showCallTriggered, setShowCallTriggered] = useState(false);
+  const [testDriveExpanded, setTestDriveExpanded] = useState(false);
 
   function toggleView() {
     setSearchParams(isAdvanced ? {} : { view: 'advanced' }, { replace: true });
@@ -246,7 +248,7 @@ export default function ProfileDetailPage(): React.JSX.Element {
         </div>
       </div>
 
-      {/* Test drive booking card — shown in both views */}
+      {/* Test drive + AI Intelligence row */}
       {liveState?.test_drive_appointment && (() => {
         const appt = liveState.test_drive_appointment as {
           retailer?: { name?: string; location?: { city?: string; nation?: string; street?: string } };
@@ -257,38 +259,65 @@ export default function ProfileDetailPage(): React.JSX.Element {
         const loc = appt.retailer?.location;
         const locStr = [loc?.street, loc?.city, loc?.nation].filter(Boolean).join(', ');
         return (
-          <GlassCard className="border border-emerald-500/20 bg-emerald-500/[0.03]">
-            <div className="flex items-center gap-2 mb-3">
-              <Icon icon="solar:car-bold" width={15} className="text-emerald-400" />
-              <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold">Test Drive Booked</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            {/* Left: Test Drive Booked (collapsible) + Booking Journey */}
+            <div className="flex flex-col gap-4">
+              <GlassCard className="border border-emerald-500/20 bg-emerald-500/[0.03]">
+                <button
+                  type="button"
+                  onClick={() => setTestDriveExpanded((v) => !v)}
+                  className="w-full flex items-center gap-2 text-left"
+                >
+                  <Icon icon="solar:car-bold" width={15} className="text-emerald-400 shrink-0" />
+                  <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold">Test Drive Booked</span>
+                  <Icon
+                    icon="solar:alt-arrow-down-linear"
+                    width={14}
+                    className={`ml-auto text-emerald-400/60 shrink-0 transition-transform duration-300 ${testDriveExpanded ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                <AnimatePresence initial={false}>
+                  {testDriveExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-3">
+                        {retailer && <p className="text-sm text-white font-medium mb-0.5">{retailer}</p>}
+                        {locStr && <p className="text-xs text-neutral-400 mb-1">{locStr}</p>}
+                        {slot?.date && (
+                          <p className="text-xs text-neutral-300">
+                            {new Date(slot.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            {slot.time ? ` · ${slot.time}` : ''}
+                          </p>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </GlassCard>
+              <TestDriveFollowUp engagementStrategy={profile?.recommendations.engagementStrategy} agentState={liveState} userId={userId ?? ''} />
             </div>
-            {retailer && <p className="text-sm text-white font-medium mb-0.5">{retailer}</p>}
-            {locStr && <p className="text-xs text-neutral-400 mb-1">{locStr}</p>}
-            {slot?.date && (
-              <p className="text-xs text-neutral-300">
-                {new Date(slot.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-                {slot.time ? ` · ${slot.time}` : ''}
-              </p>
-            )}
-          </GlassCard>
+            {/* Right: AI Intelligence spanning full height */}
+            <div className="[&>*]:h-full">
+              <AISummaryCard agentState={liveState} userId={userId ?? ''} />
+            </div>
+          </div>
         );
       })()}
 
       {/* ── Quick View — focused overview ── */}
       {!isAdvanced && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          <div className="space-y-4">
-            <StaggerCard index={0}><AISummaryCard agentState={liveState} userId={userId ?? ''} /></StaggerCard>
-            <StaggerCard index={1}><DemographicsCard profile={profile} /></StaggerCard>
-            {liveState?.car_config && (
-              <StaggerCard index={2}><CarConfigurationCard carConfig={liveState.car_config} /></StaggerCard>
+        <div className="space-y-6">
+          <StaggerCard index={0}><PropensityGauge profile={profile} /></StaggerCard>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            {!liveState?.test_drive_appointment && (
+              <StaggerCard index={1}><AISummaryCard agentState={liveState} userId={userId ?? ''} /></StaggerCard>
             )}
-            <StaggerCard index={3}><ChannelConsentCard profile={profile} /></StaggerCard>
-          </div>
-          <div className="space-y-4">
-            <StaggerCard index={1}><PropensityGauge profile={profile} /></StaggerCard>
-            <StaggerCard index={2}><MobilityNeedsCard profile={profile} /></StaggerCard>
-            <StaggerCard index={3}><EngagementStrategyCard profile={profile} /></StaggerCard>
+            <StaggerCard index={2}><DemographicsCard profile={profile} /></StaggerCard>
           </div>
         </div>
       )}

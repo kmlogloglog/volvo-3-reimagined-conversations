@@ -115,16 +115,6 @@ export default function ProfileCard({
             <Icon icon="solar:bolt-circle-linear" width={16} className="text-neutral-600 group-hover/card:text-amber-400 transition-colors shrink-0" />
           </div>
 
-          {/* Car of interest (Volvo model) */}
-          {carOfInterest && (
-            <div className="flex items-center gap-2 mb-2 px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/15">
-              <Icon icon="solar:car-bold" width={15} className="text-amber-400 shrink-0" />
-              <span className="text-sm font-medium text-amber-400">Volvo {carOfInterest}</span>
-            </div>
-          )}
-          {/* spacing when only car of interest shown */}
-          {carOfInterest && <div className="mb-2" />}
-
           {/* Propensity donut — always shown */}
           <div className="flex items-center justify-center mb-4">
             <div className="relative" style={{ width: 120, height: 120, filter: propensityToBuy.score > 0 ? 'drop-shadow(0 0 12px rgba(251,191,36,0.2))' : undefined }}>

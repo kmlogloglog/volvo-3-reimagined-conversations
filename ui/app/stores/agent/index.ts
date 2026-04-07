@@ -36,6 +36,7 @@ export const useAgentStore = defineStore('agentStore', {
         animationId: null,
         startingAudio: false,
         micPermissionGranted: false,
+        muted: false,
     }),
     actions,
     getters,

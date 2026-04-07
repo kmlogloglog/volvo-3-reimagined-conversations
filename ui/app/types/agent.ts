@@ -72,4 +72,7 @@ export interface AgentEvent {
     inputTranscription?: Transcription;
     turnComplete?: boolean;
     interrupted?: boolean;
+    actions?: {
+        stateDelta?: Record<string, unknown>;
+    };
 }

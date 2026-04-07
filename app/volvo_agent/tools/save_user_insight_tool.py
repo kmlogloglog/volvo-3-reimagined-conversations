@@ -49,7 +49,15 @@ async def save_user_insight(
         profiling[category] = value
         tool_context.state["user:profiling"] = profiling
 
-    return {"success": True, "category": category, "value": value}
+    result: dict = {"success": True, "category": category, "value": value}
+
+    if category == "full_name":
+        result["ui_action"] = {
+            "action": "name_collected",
+            "data": {"name": value},
+        }
+
+    return result
 
 
 save_user_insight_tool = FunctionTool(save_user_insight)

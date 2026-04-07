@@ -219,6 +219,12 @@
 
     onMounted(() => {
         agentStore.connect({ userId: route.query.user as string | undefined, sessionId: route.query.session as string | undefined });
+
+        window.addEventListener('message', (event) => {
+            if (event.data?.type === 'freja:toggle-mute') {
+                agentStore.toggleMute();
+            }
+        });
     });
 </script>
 

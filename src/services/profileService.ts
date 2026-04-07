@@ -222,10 +222,42 @@ export async function fetchAllProfiles(): Promise<VanProfileWithId[]> {
     const stateSnap = await getDocs(collectionGroup(db, 'user_state'));
     for (const docSnap of stateSnap.docs) {
       const userId = docSnap.ref.parent.parent?.id;
-      if (!userId || seenIds.has(userId)) continue;
+      if (!userId) continue;
 
       const data = docSnap.data() as { state?: AgentUserState };
-      profiles.push(mapAgentStateToProfile(userId, data?.state ?? {}));
+      const agentState = data?.state;
+
+      // Already seen in Step 1 — merge live name/email/city into persisted profile
+      if (seenIds.has(userId)) {
+        if (agentState) {
+          const idx = profiles.findIndex((p) => p.userId === userId);
+          if (idx !== -1) {
+            const p = profiles[idx]!;
+            const liveName = sanitizeName(agentState.full_name ?? null);
+            const liveEmail = agentState.email ?? null;
+            const liveCity = typeof agentState.location === 'string'
+              ? agentState.location
+              : (agentState.location as { city?: string } | undefined)?.city ?? null;
+            if (liveName || liveEmail || liveCity) {
+              profiles[idx] = {
+                ...p,
+                profileData: {
+                  ...p.profileData,
+                  demographics: {
+                    ...p.profileData.demographics,
+                    name: liveName ?? p.profileData.demographics.name,
+                    email: liveEmail ?? p.profileData.demographics.email,
+                    city: liveCity ?? p.profileData.demographics.city,
+                  },
+                },
+              };
+            }
+          }
+        }
+        continue;
+      }
+
+      profiles.push(mapAgentStateToProfile(userId, agentState ?? {}));
       seenIds.add(userId);
     }
   } catch (err) {
