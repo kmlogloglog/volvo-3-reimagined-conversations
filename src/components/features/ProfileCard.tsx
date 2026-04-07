@@ -76,7 +76,6 @@ export default function ProfileCard({
 
   const name = demographics.name ?? 'Unknown';
   const avatarColor = getAvatarColor(demographics.name ?? profile.userId);
-  const carOfInterest = analyticalScores.affinities.models[0]?.value ?? null;
   const traits = meta.profileCharacteristics
     ? meta.profileCharacteristics.split(' · ').slice(0, 4)
     : [];
