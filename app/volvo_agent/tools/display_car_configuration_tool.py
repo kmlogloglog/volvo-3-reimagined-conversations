@@ -1,6 +1,5 @@
 import logging
-
-from google.adk.tools import FunctionTool, ToolContext
+from typing import Any
 
 from ..utils import load_car_assets
 
@@ -9,17 +8,9 @@ logger = logging.getLogger(__name__)
 CAR_ASSETS = load_car_assets()
 
 
-def display_car_configuration(tool_context: ToolContext) -> dict:
-    """
-    Displays the final car configuration with all associated images (carousel).
-
-    Args:
-        tool_context: The tool context containing the session state.
-
-    Returns:
-        A dictionary containing the UI action to display the full carousel.
-    """
-    current_config = tool_context.state.get("user:car_config", {})
+def display_car_configuration(state: dict[str, Any]) -> dict:
+    """Displays the final car configuration with all associated images (carousel)."""
+    current_config = state.get("user:car_config", {})
     model_name = current_config.get("model")
     exterior = current_config.get("exterior")
     interior = current_config.get("interior")
@@ -34,7 +25,6 @@ def display_car_configuration(tool_context: ToolContext) -> dict:
 
     model_images = CAR_ASSETS.get(model_name, {})
 
-    # 1. Collect 3 Exterior Images
     exterior_data = (
         model_images.get("exteriors", {})
         .get(exterior, {})
@@ -46,10 +36,8 @@ def display_car_configuration(tool_context: ToolContext) -> dict:
         exterior_data.get("front"),
         exterior_data.get("front34_close"),
     ]
-
     images = [img for img in ext_views if img]
 
-    # 2. Collect 2 Interior Images
     model_int_config = model_images.get("interiors", {})
     interior_data = model_int_config.get(interior, {})
     int_views = [interior_data.get("dashboard"), interior_data.get("seat")]
@@ -69,6 +57,3 @@ def display_car_configuration(tool_context: ToolContext) -> dict:
         },
         "agent_context": "Displayed final configuration images.",
     }
-
-
-display_car_configuration_tool = FunctionTool(display_car_configuration)

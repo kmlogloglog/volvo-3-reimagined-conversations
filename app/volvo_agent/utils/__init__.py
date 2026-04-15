@@ -1,6 +1,5 @@
 from .utils import (
     fuzzy_match,
-    get_secret,
     load_car_assets,
     load_car_configurations,
     load_json,
@@ -8,7 +7,6 @@ from .utils import (
 
 __all__ = [
     "fuzzy_match",
-    "get_secret",
     "load_car_assets",
     "load_car_configurations",
     "load_json",

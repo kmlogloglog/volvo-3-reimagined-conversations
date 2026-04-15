@@ -1,9 +1,7 @@
 import json
 import logging
-import os
 from pathlib import Path
 
-from google.cloud import secretmanager
 from thefuzz import process
 
 logger = logging.getLogger(__name__)
@@ -83,23 +81,3 @@ def fuzzy_match(selected_option: str, valid_options: list[str]) -> str:
     return match
 
 
-def get_secret(secret_id: str, version_id: str = "latest") -> str | None:
-    """
-    Fetch the secret payload from GCP Secret Manager.
-
-    Args:
-        secret_id (str): The ID of the secret to fetch.
-        version_id (str): The version of the secret to fetch. Defaults to "latest".
-
-    Returns:
-        str | None: The secret payload if found, None otherwise.
-    """
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", "vml-map-xd-volvo")
-    try:
-        client = secretmanager.SecretManagerServiceClient()
-        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-        response = client.access_secret_version(request={"name": name})
-        return response.payload.data.decode("UTF-8")
-    except Exception as e:
-        logger.error(f"Failed to fetch secret {secret_id}: {e}")
-        return None

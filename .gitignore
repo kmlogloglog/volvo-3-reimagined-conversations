@@ -223,3 +223,8 @@ dist/
 
 # GitHub Copilot / local agent config
 .DS_Store
+
+# SQLite database
+data/*.db
+data/*.db-journal
+data/*.db-wal

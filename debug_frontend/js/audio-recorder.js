@@ -6,7 +6,7 @@ let micStream;
 
 export async function startAudioRecorderWorklet(audioRecorderHandler) {
   // Create an AudioContext
-  const audioRecorderContext = new AudioContext({ sampleRate: 16000 });
+  const audioRecorderContext = new AudioContext({ sampleRate: 24000 });
   console.log("AudioContext sample rate:", audioRecorderContext.sampleRate);
 
   // Load the AudioWorklet module
